@@ -1,19 +1,30 @@
 import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
 import { showMessage } from "./status";
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElLoading } from 'element-plus'
 import { IResponse, ILogin } from './type';
 
 let axiosInstance:AxiosInstance = axios.create({
-  baseURL: "http://192.168.216.1:8000",
+  baseURL: "http://192.168.161.219:8000",
   headers: {
     Accept: "application/json",
     "Content-Type": "multipart/form-data;charset=UTF-8"
   }
 });
-
+let loadingInstance;
+// axios实例拦截请求
+axiosInstance.interceptors.request.use(
+  (config: AxiosRequestConfig) => {
+    loadingInstance = ElLoading.service({ fullscreen: true })
+    return config;
+  },
+  (error:any) => {
+    return Promise.reject(error);
+  }
+) 
 // axios实例拦截响应
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
+    loadingInstance.close()
     if (response.status === 200) {
       return response;
     } else {
@@ -23,6 +34,7 @@ axiosInstance.interceptors.response.use(
   },
   // 请求失败
   (error: any) => {
+    loadingInstance.close()
     const {response} = error;
     if (response) {
       // 请求已发出，但是不在2xx的范围
@@ -34,15 +46,6 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-// axios实例拦截请求
-axiosInstance.interceptors.request.use(
-  (config: AxiosRequestConfig) => {
-    return config;
-  },
-  (error:any) => {
-    return Promise.reject(error);
-  }
-) 
 
 /**
  * @description: 用户登录

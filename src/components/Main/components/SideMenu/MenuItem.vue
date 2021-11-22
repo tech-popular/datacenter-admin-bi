@@ -1,34 +1,21 @@
 <template>
   <div class="xfk-menu-item">
-    <el-sub-menu v-if="item.type === 'M' && item.visible" :index="item.id">
+    <el-sub-menu v-if="item.children.length > 0" :index="item.id + ''">
       <template #title>
-        <i :class="[item.icon]"></i>
         <span>{{ item.name }}</span>
       </template>
-      <template v-if="item.children && item.children.length">
-        <menu-item
-          v-for="children in item.children"
-          :item="children"
-          :key="children.id"
-        />
-        <a
-          v-if="item.type === 'C' && item.visible"
-          class="xfk-menu-link"
-          @click.prevent
-        >
-          <el-menu-item :index="item.path">
-            <i :class="[item.icon]"></i>
-            <span>{{ item.name }}</span>
-          </el-menu-item>
-        </a>
-      </template>
+      <menu-item
+        v-for="children in item.children"
+        :item="children"
+        :key="children.id + ''"
+      />
     </el-sub-menu>
     <a
-      v-if="item.type === 'C' && item.visible"
+      v-if="item.children.length == 0"
       class="xfk-menu-link"
       @click.prevent
     >
-      <el-menu-item @click="menuClick(item.path)">
+      <el-menu-item @click="menuClick(item.url)">
         <i :class="[item.icon]"></i>
         <span>{{ item.name }}</span>
       </el-menu-item>

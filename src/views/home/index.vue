@@ -1,6 +1,8 @@
 <template>
   <div class="iframeWrap">
+    <p class="wel" v-if="!dataLink">欢迎进入云策BI系统！</p>
     <iframe
+      v-else
       :src="dataLink"
       scrolling="auto"
       frameborder="0"
@@ -39,5 +41,12 @@ export default defineComponent({
 .iframeWrap {
   width: 100%;
   height: 100%;
+  .wel{
+    text-align: center;
+    padding-top: 30%;
+    font-size: 45px;
+    font-weight: 700;
+    color: #333;
+  }
 }
 </style>

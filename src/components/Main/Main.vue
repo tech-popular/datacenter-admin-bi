@@ -10,7 +10,7 @@
         </div>
         <div class="xfk-welcome"></div>
       </div>
-      <div class="xfk-header-handle">欢迎，<span>张三</span>！</div>
+      <div class="xfk-header-handle">欢迎，<span>{{username}}</span>！</div>
     </header>
     <div class="xfk-body hidden-xs-only">
       <el-scrollbar class="xfk-side">
@@ -35,8 +35,12 @@
 <script lang="ts">
 import { defineComponent, defineAsyncComponent, ref } from "vue";
 import { useRoute } from "vue-router";
-const SideMenu = defineAsyncComponent(() => import('./components/SideMenu/SideMenu.vue'))
-const MobileMenu = defineAsyncComponent(() => import('./components/MobileMenu/MobileMenu.vue'))
+const SideMenu = defineAsyncComponent(
+  () => import("./components/SideMenu/SideMenu.vue")
+);
+const MobileMenu = defineAsyncComponent(
+  () => import("./components/MobileMenu/MobileMenu.vue")
+);
 import * as dd from "dingtalk-jsapi";
 import { login } from "@/api/api";
 export default defineComponent({
@@ -51,101 +55,35 @@ export default defineComponent({
   setup() {
     const route = useRoute();
     const corpId = route.query.corpId;
-    // const userId = route.query.userId;
-    const menuData: any = ref([
-      {
-        id: "254d95d2177344f69aa98aab2d4d9ef6",
-        name: "部门管理",
-        path: "http://192.168.216.1:8787/superset/dashboard/2/?preselect_filters=%7B%7D&standalone=true&native_filters=%28%29",
-        type: "C",
-        visible: true,
-        children: null,
-      },
-      {
-        id: "33e8baf9c3e343f69abd69eb034ff84d",
-        name: "员工管理",
-        path: "http://192.168.161.216:8088/superset/dashboard/world_health/?preselect_filters=%7B%7D&standalone=true&native_filters=%28%29",
-        type: "C",
-        visible: true,
-        children: null,
-      },
-      {
-        id: "783d72be93e849829732bad8a8366079",
-        name: "组织机构",
-        path: "",
-        type: "M",
-        visible: true,
-        children: [
-          {
-            id: "fdb04e909aa2482f8472de6cb12c7eec",
-            name: "组织管理",
-            path: "/organization-manage/list",
-            type: "C",
-            visible: true,
-            children: null,
-          },
-          {
-            id: "690c646dbad34d65ad602231dc9da7d9",
-            name: "岗位管理",
-            path: "/position-manage/list",
-            type: "M",
-            visible: true,
-            children: [
-              {
-                id: "fdb04e909aa2482f8472de6cb12c7eec",
-                name: "组织管理",
-                path: "/organization-manage/list",
-                type: "C",
-                visible: true,
-                children: null,
-              },
-            ],
-          },
-        ],
-      },
-      {
-        id: "d0a2616bc1e6448f8e29b91d31c73321",
-        name: "角色管理",
-        parentId: "783d72be93e849829732bad8a8366079",
-        icon: "iconfont iconjiaose",
-        path: "/role-manage/list",
-        component: null,
-        sort: 4,
-        isFrame: 1,
-        type: "C",
-        status: true,
-        visible: true,
-        perms: "",
-        open: null,
-        remark: "",
-        appCode: "0000000000000000",
-        root: null,
-        children: null,
-        needCheck: null,
-        permissionMethod: null,
-        permissionUrl: null,
-      },
-    ]);
+    const userId = route.query.userId;
+    const menuData: any = ref([]);
+    const username: any = ref('');
+    const GetMenuData = async (code: any, userId: any) => {
+      let res: any = await login({
+        code: code,
+        userId: userId,
+      });
+      menuData.value = res.data.menulist;
+      username.value = res.data.username;
+    };
     if (dd.env.platform !== "notInDingTalk") {
       //钉钉内打开
       dd.ready(function () {
         dd.runtime.permission.requestAuthCode({
           corpId: corpId,
           onSuccess: (info) => {
-            GetMenuData(info.code,'');
+            GetMenuData(info.code, "");
           },
         });
       });
+    } else if (userId) {
+      GetMenuData("", userId);
+    } else {
+      window.location.href = "http://test.tech.9fbank.com/canary/#/login";
     }
-    const GetMenuData = async (code: any, userId: any) => {
-      let res: any = await login({
-        code: code,
-        userId: userId,
-      });
-      menuData.value = res;
-    };
     return {
       menuData,
+      username
     };
   },
 });
