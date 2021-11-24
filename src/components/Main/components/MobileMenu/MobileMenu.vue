@@ -18,11 +18,11 @@
         <div v-for="childrens in item.children" :key="childrens.id">
           <div
             class="center"
-            @click="getto"
             v-for="item in childrens.children"
             :key="item.id"
+            @click="getto(item.url)"
           >
-            <div class="img"></div>
+            <!-- <div class="img"></div> -->
             <span>{{ item.name }}</span>
           </div>
         </div>
@@ -32,16 +32,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs, PropType } from "vue";
+import { defineComponent, reactive, toRefs,PropType } from "vue";
 export interface ColumnProps {
   id: any;
   name: any;
+  children:any
 }
 export default defineComponent({
   name: "SideMenu",
   components: {},
   props: {
-    list: Array as PropType<ColumnProps[]>,
+    list: Array as PropType<ColumnProps[]>
   },
   setup(props) {
     const state = reactive({
@@ -55,10 +56,10 @@ export default defineComponent({
   },
   computed: {},
   methods: {
-    getto() {
-      console.log("跳转到新页面");
+    getto(url) {
+      let urls = url
       window.open(
-        "http://192.168.161.216:8088/superset/dashboard/world_health/?preselect_filters=%7B%7D&standalone=true&native_filters=%28%29",
+        urls,
         "_blank"
       ); // 新窗口打开外链接
     },
@@ -120,7 +121,7 @@ export default defineComponent({
 
 .siderBar {
   width: 100px !important;
-  height: 100%;
+  height: 100vh;
   float: left;
   background-color: #f7f8fa;
 }
