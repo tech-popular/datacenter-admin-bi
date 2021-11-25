@@ -54,7 +54,7 @@ export default defineComponent({
   },
   setup() {
     const route = useRoute();
-    const corpId = route.query.corpId;
+    const corpId = 'ding94069beefe61f4b735c2f4657eb6378f';
     const userId = route.query.userId;
     const menuData: any = ref([]);
     const username: any = ref('');
