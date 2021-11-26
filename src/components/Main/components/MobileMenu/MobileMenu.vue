@@ -2,11 +2,10 @@
   <div class="mobileMenuwrap">
     <div @click="showPopup">
       <div class="topTop">
-        <div class="topTitle">{{title}}</div>
+        <div class="topTitle">{{ title }}</div>
         <van-icon name="arrow-down" />
       </div>
     </div>
-    <!--  -->
     <van-popup
       v-model:show="show"
       closeable
@@ -22,7 +21,6 @@
         {{ item.name }}
       </div>
     </van-popup>
-    <!--  -->
     <div v-for="item in itemList" :key="item.id">
       <div class="siderBar">
         <van-sidebar v-model="sctive">
@@ -41,7 +39,6 @@
             :key="item.id"
             @click="getto(item.url)"
           >
-            <!-- <div class="img"></div> -->
             <span>{{ item.name }}</span>
           </div>
         </div>
@@ -51,15 +48,7 @@
 </template>
 
 <script lang="ts">
-import { off } from "dingtalk-jsapi";
-import getItem$ from "dingtalk-jsapi/api/util/domainStorage/getItem";
-import {
-  defineComponent,
-  reactive,
-  toRefs,
-  PropType,
-  onMounted,
-} from "vue";
+import { defineComponent, reactive, toRefs, PropType, onMounted } from "vue";
 export interface ColumnProps {
   id: any;
   name: any;
@@ -69,41 +58,44 @@ export default defineComponent({
   name: "SideMenu",
   components: {},
   props: {
-    list:Array as PropType<ColumnProps[]>,
+    list: Array as PropType<ColumnProps[]>,
   },
   setup(props) {
-    const state = reactive({
+    const state: {
+      sctive?: any;
+      show?: any;
+      title?: any;
+      optionId?: any;
+      showPopup?: any;
+      getTitle?: any;
+      itemList: Array<ColumnProps>;
+    } = reactive({
       sctive: 0,
       show: false,
       title: "",
-      optionId:0,
-      itemList:[],
+      optionId: 0,
+      itemList: [],
       showPopup: () => {
         state.show = true;
       },
-      getTitle:(items)=>{
-        console.log(items.name, "name");
-        console.log(items.id, "id");
-        state.itemList = props.list.filter((item)=>{
-            return item.id == items.id
-        })
-        console.log('plplp', state.itemList)
-        state.title = items.name
-        state.optionId = items.id
+      getTitle: (items) => {
+        state.itemList = (props.list as ColumnProps[]).filter((item) => {
+          return item.id == items.id;
+        });
+        state.title = items.name;
+        state.optionId = items.id;
         state.show = false;
       },
     });
 
-    let initItem=() =>{
-        console.log('ooooooo',typeof props.list[0])
-        state.title = props.list[0].name
-        state.itemList.push(props.list[0])
-      }
+    let initItem = () => {
+      state.title = (props.list as ColumnProps[])[0].name;
+      state.itemList.push((props.list as ColumnProps[])[0]);
+    };
     onMounted(() => {
-      console.log("mounted!");
-      initItem()
+      initItem();
     });
-    return {...toRefs(state),initItem};
+    return { ...toRefs(state), initItem };
   },
 
   methods: {
