@@ -1,10 +1,29 @@
 <template>
   <div class="mobileMenuwrap">
-    <!-- <el-cascader-panel :options="list" :props="propsOptions" /> -->
-    <div v-for="item in list" :key="item.id">
-      <div class="topTitle">{{ item.name }}</div>
+    <div @click="showPopup">
+      <div class="topTop">
+        <div class="topTitle">{{title}}</div>
+        <van-icon name="arrow-down" />
+      </div>
     </div>
-    <div v-for="item in list" :key="item.id">
+    <!--  -->
+    <van-popup
+      v-model:show="show"
+      closeable
+      position="bottom"
+      :style="{ height: '30%' }"
+    >
+      <div
+        class="popupItem"
+        v-for="item in list"
+        :key="item.id"
+        @click="getTitle(item)"
+      >
+        {{ item.name }}
+      </div>
+    </van-popup>
+    <!--  -->
+    <div v-for="item in itemList" :key="item.id">
       <div class="siderBar">
         <van-sidebar v-model="sctive">
           <van-sidebar-item
@@ -32,36 +51,65 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs,PropType } from "vue";
+import { off } from "dingtalk-jsapi";
+import getItem$ from "dingtalk-jsapi/api/util/domainStorage/getItem";
+import {
+  defineComponent,
+  reactive,
+  toRefs,
+  PropType,
+  onMounted,
+} from "vue";
 export interface ColumnProps {
   id: any;
   name: any;
-  children:any
+  children: any;
 }
 export default defineComponent({
   name: "SideMenu",
   components: {},
   props: {
-    list: Array as PropType<ColumnProps[]>
+    list:Array as PropType<ColumnProps[]>,
   },
   setup(props) {
     const state = reactive({
-      options: props,
       sctive: 0,
+      show: false,
+      title: "",
+      optionId:0,
+      itemList:[],
+      showPopup: () => {
+        state.show = true;
+      },
+      getTitle:(items)=>{
+        console.log(items.name, "name");
+        console.log(items.id, "id");
+        state.itemList = props.list.filter((item)=>{
+            return item.id == items.id
+        })
+        console.log('plplp', state.itemList)
+        state.title = items.name
+        state.optionId = items.id
+        state.show = false;
+      },
     });
-    return toRefs(state);
+
+    let initItem=() =>{
+        console.log('ooooooo',typeof props.list[0])
+        state.title = props.list[0].name
+        state.itemList.push(props.list[0])
+      }
+    onMounted(() => {
+      console.log("mounted!");
+      initItem()
+    });
+    return {...toRefs(state),initItem};
   },
-  data() {
-    return { propsOptions: { label: "name", value: "id" } };
-  },
-  computed: {},
+
   methods: {
     getto(url) {
-      let urls = url
-      window.open(
-        urls,
-        "_blank"
-      ); // 新窗口打开外链接
+      let urls = url;
+      window.open(urls, "_blank"); // 新窗口打开外链接
     },
   },
 });
@@ -72,11 +120,16 @@ export default defineComponent({
   width: 100%;
   height: 100%;
   background-color: #fff;
-  .topTitle {
-    width: 100%;
-    padding: 15px;
+  .topTop {
     background-color: rgb(236, 236, 236);
+    display: flex;
+    align-items: center;
+    .topTitle {
+      width: auto;
+      padding: 15px;
+    }
   }
+
   .el-cascader-panel {
     width: 100%;
     height: 100%;
@@ -124,5 +177,24 @@ export default defineComponent({
   height: 100vh;
   float: left;
   background-color: #f7f8fa;
+}
+.van-dropdown-menu__bar {
+  background-color: #f7f8fa;
+  .van-dropdown-menu__item {
+    flex: unset;
+    margin-left: 3%;
+  }
+}
+.van-popup {
+  padding-top: 50px;
+  .popupItem {
+    margin: auto;
+    width: 80%;
+    height: auto;
+    font-size: 100%;
+    text-align: center;
+    line-height: 50px;
+    border-bottom: 1px solid rgb(241, 241, 241);
+  }
 }
 </style>
