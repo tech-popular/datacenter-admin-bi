@@ -6,7 +6,6 @@
         <van-icon name="arrow-down" />
       </div>
     </div>
-    <!--  -->
     <van-popup
       v-model:show="show"
       closeable
@@ -22,7 +21,6 @@
         {{ item.name }}
       </div>
     </van-popup>
-    <!--  -->
     <div v-for="item in itemList" :key="item.id">
       <div class="siderBar">
         <van-sidebar v-model="sctive">
@@ -30,18 +28,18 @@
             v-for="children in item.children"
             :key="children.id"
             :title="children.name"
+            @click="onChange(item)"
           />
         </van-sidebar>
       </div>
       <div class="centerList">
-        <div v-for="childrens in item.children" :key="childrens.id">
+        <div v-for="item in menuList" :key="item.id">
           <div
             class="center"
-            v-for="item in childrens.children"
+            v-for="item in item.children"
             :key="item.id"
             @click="getto(item.url)"
           >
-            <!-- <div class="img"></div> -->
             <span>{{ item.name }}</span>
           </div>
         </div>
@@ -72,22 +70,21 @@ export default defineComponent({
       showPopup?: any;
       getTitle?: any;
       itemList: Array<ColumnProps>;
+      menuList: Array<ColumnProps>;
     } = reactive({
       sctive: 0,
       show: false,
       title: "",
       optionId: 0,
       itemList: [],
+      menuList:[],
       showPopup: () => {
         state.show = true;
       },
       getTitle: (items) => {
-        console.log(items.name, "name");
-        console.log(items.id, "id");
         state.itemList = (props.list as ColumnProps[]).filter((item) => {
           return item.id == items.id;
         });
-        console.log("plplp", state.itemList);
         state.title = items.name;
         state.optionId = items.id;
         state.show = false;
@@ -95,15 +92,19 @@ export default defineComponent({
     });
 
     let initItem = () => {
-      console.log("ooooooo", typeof (props.list as ColumnProps[])[0]);
       state.title = (props.list as ColumnProps[])[0].name;
       state.itemList.push((props.list as ColumnProps[])[0]);
+      state.menuList.push((props.list as ColumnProps[])[0].children[0])
     };
+    let onChange = (items)=>{
+      state.menuList = (items.children as ColumnProps[]).filter((item)=>{
+          return item.id == items.children[0].id;
+      })
+    }
     onMounted(() => {
-      console.log("mounted!");
       initItem();
     });
-    return { ...toRefs(state), initItem };
+    return { ...toRefs(state), initItem ,onChange};
   },
 
   methods: {
