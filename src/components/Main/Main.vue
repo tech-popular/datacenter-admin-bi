@@ -28,7 +28,7 @@
       </div>
     </div>
     <!--  移动端菜单   -->
-    <MobileMenu :list="menuData"></MobileMenu>
+    <MobileMenu :list="menuData" v-if="menuData"></MobileMenu>
   </div>
 </template>
 
