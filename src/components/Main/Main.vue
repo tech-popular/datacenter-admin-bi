@@ -79,7 +79,7 @@ export default defineComponent({
     } else if (userId) {
       GetMenuData("", userId);
     } else {
-      window.location.href = "http://test.tech.9fbank.com/canary/#/login";
+      window.location.href = "http://test.tech.9fbank.com/canary/#/login?from=newbi";
     }
     return {
       menuData,
