@@ -38,7 +38,7 @@
             class="center"
             v-for="item in item.children"
             :key="item.id"
-            @click="getto(item.url)"
+            @click="getTo(item.url)"
           >
             <span>{{ item.name }}</span>
           </div>
@@ -77,7 +77,7 @@ export default defineComponent({
       title: "",
       optionId: 0,
       itemList: [],
-      menuList:[],
+      menuList: [],
       showPopup: () => {
         state.show = true;
       },
@@ -94,24 +94,20 @@ export default defineComponent({
     let initItem = () => {
       state.title = (props.list as ColumnProps[])[0].name;
       state.itemList.push((props.list as ColumnProps[])[0]);
-      state.menuList.push((props.list as ColumnProps[])[0].children[0])
+      state.menuList.push((props.list as ColumnProps[])[0].children[0]);
     };
-    let onChange = (items)=>{
-      state.menuList = (items.children as ColumnProps[]).filter((item)=>{
-          return item.id == items.children[0].id;
-      })
-    }
+    let onChange = (items) => {
+      state.menuList = (items.children as ColumnProps[]).filter((item) => {
+        return item.id == items.children[0].id;
+      });
+    };
+    let getTo = (url) => {
+      window.open(url, "_blank"); // 新窗口打开外链接
+    };
     onMounted(() => {
       initItem();
     });
-    return { ...toRefs(state), initItem ,onChange};
-  },
-
-  methods: {
-    getto(url) {
-      let urls = url;
-      window.open(urls, "_blank"); // 新窗口打开外链接
-    },
+    return { ...toRefs(state), initItem, onChange,getTo };
   },
 });
 </script>
