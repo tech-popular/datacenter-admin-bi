@@ -25,10 +25,10 @@
       <div class="siderBar">
         <van-sidebar v-model="sctive">
           <van-sidebar-item
-            v-for="children in item.children"
+            v-for="(children,index) in item.children"
             :key="children.id"
             :title="children.name"
-            @click="onChange(item)"
+            @click="onChange(item,index)"
           />
         </van-sidebar>
       </div>
@@ -96,10 +96,12 @@ export default defineComponent({
       state.itemList.push((props.list as ColumnProps[])[0]);
       state.menuList.push((props.list as ColumnProps[])[0].children[0]);
     };
-    let onChange = (items) => {
+    let onChange = (items,index) => {
+      // console.log('items',items)
       state.menuList = (items.children as ColumnProps[]).filter((item) => {
-        return item.id == items.children[0].id;
+        return item.id == items.children[index].id;
       });
+      console.log('menulist',state.menuList)
     };
     let getTo = (url) => {
       window.open(url, "_blank"); // 新窗口打开外链接
@@ -159,9 +161,10 @@ export default defineComponent({
   }
 }
 .van-sidebar {
-  width: 100px !important;
+  width: 100% !important;
   .van-sidebar-item {
-    --van-sidebar-padding: 15px var(--van-padding-sm);
+    width: 100%;
+    --van-sidebar-padding: 15px ;
   }
   .van-sidebar-item--select::before {
     height: 100% !important;
@@ -170,7 +173,7 @@ export default defineComponent({
 }
 
 .siderBar {
-  width: 100px !important;
+  width: 30% !important;
   height: 100vh;
   float: left;
   background-color: #f7f8fa;
