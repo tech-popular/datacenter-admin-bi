@@ -28,16 +28,17 @@
             v-for="children in item.children"
             :key="children.id"
             :title="children.name"
+            @click="onChange(item)"
           />
         </van-sidebar>
       </div>
       <div class="centerList">
-        <div v-for="childrens in item.children" :key="childrens.id">
+        <div v-for="item in menuList" :key="item.id">
           <div
             class="center"
-            v-for="item in childrens.children"
+            v-for="item in item.children"
             :key="item.id"
-            @click="getto(item.url)"
+            @click="getTo(item.url)"
           >
             <span>{{ item.name }}</span>
           </div>
@@ -69,12 +70,14 @@ export default defineComponent({
       showPopup?: any;
       getTitle?: any;
       itemList: Array<ColumnProps>;
+      menuList: Array<ColumnProps>;
     } = reactive({
       sctive: 0,
       show: false,
       title: "",
       optionId: 0,
       itemList: [],
+      menuList: [],
       showPopup: () => {
         state.show = true;
       },
@@ -91,18 +94,20 @@ export default defineComponent({
     let initItem = () => {
       state.title = (props.list as ColumnProps[])[0].name;
       state.itemList.push((props.list as ColumnProps[])[0]);
+      state.menuList.push((props.list as ColumnProps[])[0].children[0]);
+    };
+    let onChange = (items) => {
+      state.menuList = (items.children as ColumnProps[]).filter((item) => {
+        return item.id == items.children[0].id;
+      });
+    };
+    let getTo = (url) => {
+      window.open(url, "_blank"); // 新窗口打开外链接
     };
     onMounted(() => {
       initItem();
     });
-    return { ...toRefs(state), initItem };
-  },
-
-  methods: {
-    getto(url) {
-      let urls = url;
-      window.open(urls, "_blank"); // 新窗口打开外链接
-    },
+    return { ...toRefs(state), initItem, onChange,getTo };
   },
 });
 </script>
