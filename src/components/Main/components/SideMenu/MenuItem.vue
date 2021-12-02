@@ -10,16 +10,10 @@
         :key="children.id + ''"
       />
     </el-sub-menu>
-    <a
-      v-if="item.children.length == 0"
-      class="xfk-menu-link"
-      @click.prevent
-    >
-      <el-menu-item @click="menuClick(item.url)">
-        <i :class="[item.icon]"></i>
-        <span>{{ item.name }}</span>
-      </el-menu-item>
-    </a>
+    <el-menu-item v-if="item.children.length == 0" @click="menuClick(item.url)" :index="item.id + ''">
+      <i :class="[item.icon]"></i>
+      <span>{{ item.name }}</span>
+    </el-menu-item>
   </div>
 </template>
 
@@ -47,11 +41,4 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss">
-.xfk-menu-item {
-  .xfk-menu-link {
-    display: block;
-    text-decoration: none;
-  }
-}
-</style>
+<style lang="scss"></style>
