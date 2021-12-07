@@ -88,6 +88,7 @@ export default defineComponent({
         state.title = items.name;
         state.optionId = items.id;
         state.show = false;
+        onChange(items,0)
       },
     });
 
@@ -97,7 +98,7 @@ export default defineComponent({
       state.menuList.push((props.list as ColumnProps[])[0].children[0]);
     };
     let onChange = (items,index) => {
-      // console.log('items',items)
+      state.sctive = 0
       state.menuList = (items.children as ColumnProps[]).filter((item) => {
         return item.id == items.children[index].id;
       });
