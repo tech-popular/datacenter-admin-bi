@@ -13,8 +13,11 @@ import 'vant/lib/index.css';
 import "./styles/index.scss";
 import "element-plus/theme-chalk/display.css";
 
-import VConsole from "vconsole";
-new VConsole();
+// import VConsole from "vconsole";
+// if(process.env.NODE_ENV != 'production'){ 
+//   //开发环境 development
+//   new VConsole()
+// }
 
 const app = createApp(App);
 
