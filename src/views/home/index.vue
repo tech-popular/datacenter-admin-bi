@@ -1,6 +1,6 @@
 <template>
   <div class="iframeWrap">
-    <p class="wel" v-if="!dataLink">欢迎进入云策BI系统！</p>
+    <p class="wel" v-if="!dataLink">欢迎进入新BI系统</p>
     <iframe
       v-else
       :src="dataLink"
@@ -43,7 +43,7 @@ export default defineComponent({
   height: 100%;
   .wel{
     text-align: center;
-    padding-top: 30%;
+    padding-top: 25%;
     font-size: 45px;
     font-weight: 700;
     color: #333;
