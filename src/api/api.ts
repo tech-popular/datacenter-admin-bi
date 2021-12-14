@@ -5,17 +5,18 @@ import { IResponse, ILogin } from './type';
 
 let axiosInstance:AxiosInstance = axios.create({
   // baseURL: "http://192.168.161.219:8000", //test
-  baseURL: "http://tech.9f.cn", //
+  baseURL: "http://tech.9f.cn/canary-admin", //
   headers: {
     Accept: "application/json",
-    "Content-Type": "multipart/form-data;charset=UTF-8"
-  }
+    "Content-Type": "multipart/form-data;charset=UTF-8",
+  },
 });
 let loadingInstance;
 // axios实例拦截请求
 axiosInstance.interceptors.request.use(
   (config: AxiosRequestConfig) => {
     loadingInstance = ElLoading.service({ fullscreen: true })
+    config.headers.token = localStorage.getItem("token")
     return config;
   },
   (error:any) => {
@@ -53,7 +54,11 @@ axiosInstance.interceptors.response.use(
  * @params {ILogin} params
  * @return {Promise}
  */
-export const login = (params: ILogin): Promise<IResponse> => {
-  return axiosInstance.get('/canary-admin/bi/biSysMenu/getUserMenuList',{ params: params }).then(res => res.data);
+
+export const PcLogin = (params: ILogin): Promise<IResponse> => {
+  return axiosInstance.get('/bi/biSysMenu/getUserMenuList',{ params: params }).then(res => res.data);
+};
+export const DdLogin = (params: ILogin): Promise<IResponse> => {
+  return axiosInstance.get('/bi/dingding/biSysMenu/getUserMenuList',{ params: params }).then(res => res.data);
 };
 

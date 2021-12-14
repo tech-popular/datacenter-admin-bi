@@ -10,7 +10,10 @@
         </div>
         <div class="xfk-welcome"></div>
       </div>
-      <div class="xfk-header-handle">欢迎，<span>{{username}}</span>！</div>
+      <div class="xfk-header-handle">
+        欢迎，<span>{{ username }}</span
+        >！
+      </div>
     </header>
     <div class="xfk-body hidden-xs-only">
       <el-scrollbar class="xfk-side">
@@ -28,7 +31,7 @@
       </div>
     </div>
     <!--  移动端菜单   -->
-    <MobileMenu :list="menuData" v-if="menuData.length>0"></MobileMenu>
+    <MobileMenu :list="menuData" v-if="menuData.length > 0"></MobileMenu>
   </div>
 </template>
 
@@ -42,7 +45,7 @@ const MobileMenu = defineAsyncComponent(
   () => import("./components/MobileMenu/MobileMenu.vue")
 );
 import * as dd from "dingtalk-jsapi";
-import { login } from "@/api/api";
+import { PcLogin, DdLogin } from "@/api/api";
 export default defineComponent({
   name: "Main",
   components: { SideMenu, MobileMenu },
@@ -54,18 +57,27 @@ export default defineComponent({
   },
   setup() {
     const route = useRoute();
-    const corpId = 'ding94069beefe61f4b735c2f4657eb6378f';
+    const corpId = "ding94069beefe61f4b735c2f4657eb6378f";
     const userId = route.query.userId;
     const menuData: any = ref([]);
-    const username: any = ref('');
+    const username: any = ref("");
     const GetMenuData = async (code: any, userId: any) => {
-      let res: any = await login({
-        code: code,
-        userId: userId,
-      });
-      menuData.value = res.data.menulist;
-      username.value = res.data.username;
+      if (code) {
+        console.log('code',code)
+        let res: any = await DdLogin({
+          code: code,
+        });
+        menuData.value = res.data.menulist;
+        username.value = res.data.username;
+      }else{
+         let res: any = await PcLogin({
+          userId: userId,
+        });
+        menuData.value = res.data.menulist;
+        username.value = res.data.username;
+      }
     };
+
     if (dd.env.platform !== "notInDingTalk") {
       //钉钉内打开
       dd.ready(function () {
@@ -82,9 +94,10 @@ export default defineComponent({
       // window.location.href = "http://test.tech.9fbank.com/canary/#/login?from=newbi"; //test
       window.location.href = "http://tech.9fbank.com/canary/#/login";
     }
+    console.log('menuData',menuData.value)
     return {
       menuData,
-      username
+      username,
     };
   },
 });
