@@ -15,9 +15,9 @@ let loadingInstance;
 // axios实例拦截请求
 axiosInstance.interceptors.request.use(
   (config: AxiosRequestConfig) => {
-    loadingInstance = ElLoading.service({ fullscreen: true })
-    config.headers.token = localStorage.getItem("token")
-    return config;
+    loadingInstance = ElLoading.service({ fullscreen: true });
+    (config.headers as any).token = localStorage.getItem("token")
+    return config; 
   },
   (error:any) => {
     return Promise.reject(error);

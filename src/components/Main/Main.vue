@@ -37,7 +37,7 @@
 
 <script lang="ts">
 import { defineComponent, defineAsyncComponent, ref } from "vue";
-import { useRoute } from "vue-router";
+// import { useRoute } from "vue-router";
 const SideMenu = defineAsyncComponent(
   () => import("./components/SideMenu/SideMenu.vue")
 );
@@ -56,12 +56,12 @@ export default defineComponent({
     };
   },
   setup() {
-    const route = useRoute();
+    // const route = useRoute();
     const corpId = "ding94069beefe61f4b735c2f4657eb6378f";
-    const userId = route.query.userId;
+    // const userId = route.query.userId;
     const menuData: any = ref([]);
     const username: any = ref("");
-    const GetMenuData = async (code: any, userId: any) => {
+    const GetMenuData = async (code: any) => {
       if (code) {
         console.log('code',code)
         let res: any = await DdLogin({
@@ -71,7 +71,7 @@ export default defineComponent({
         username.value = res.data.username;
       }else{
          let res: any = await PcLogin({
-          userId: userId,
+          // userId: userId,
         });
         menuData.value = res.data.menulist;
         username.value = res.data.username;
@@ -79,21 +79,24 @@ export default defineComponent({
     };
 
     if (dd.env.platform !== "notInDingTalk") {
+      console.log('11111')
       //钉钉内打开
       dd.ready(function () {
         dd.runtime.permission.requestAuthCode({
           corpId: corpId,
           onSuccess: (info) => {
-            GetMenuData(info.code, "");
+            GetMenuData(info.code);
+            console.log('info.code',info.code)
           },
         });
       });
-    } else if (userId) {
-      GetMenuData("", userId);
     } else {
-      // window.location.href = "http://test.tech.9fbank.com/canary/#/login?from=newbi"; //test
-      window.location.href = "http://tech.9fbank.com/canary/#/login";
-    }
+      GetMenuData("");
+    } 
+    // else {
+    //   // window.location.href = "http://test.tech.9fbank.com/canary/#/login?from=newbi"; //test
+    //   window.location.href = "http://tech.9fbank.com/canary/#/login";
+    // }
     console.log('menuData',menuData.value)
     return {
       menuData,
