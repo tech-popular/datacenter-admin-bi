@@ -79,7 +79,6 @@ export default defineComponent({
     };
 
     if (dd.env.platform !== "notInDingTalk") {
-      console.log('11111')
       //钉钉内打开
       dd.ready(function () {
         dd.runtime.permission.requestAuthCode({

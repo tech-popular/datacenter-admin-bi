@@ -27,6 +27,7 @@
 import { defineComponent, toRefs, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
+import * as dd from "dingtalk-jsapi";
 export default defineComponent({
   name: "Login",
   setup() {
@@ -85,17 +86,21 @@ export default defineComponent({
           if (ret.data) {
             router.push({
               path: "/Main",
-              query:{
-                  userId:1130
-              }
             });
           }
-          localStorage.setItem("token",ret.data.token);
+          localStorage.setItem("token", ret.data.token);
         });
     };
     onMounted(() => {
       getUUID();
       getTime();
+      // 钉钉内打开免登录
+      if (dd.env.platform !== "notInDingTalk") {
+        //钉钉内打开
+        router.push({
+          path: "/Main",
+        });
+      }
     });
     return {
       ...toRefs(loginform),
