@@ -68,13 +68,10 @@ export default defineComponent({
     };
     let getTime = () => {
       let timestamp = new Date().getTime();
-      console.log(timestamp);
       loginform.time = timestamp;
     };
 
     let signIn = async () => {
-      console.log("loginform", loginform);
-
       axios
         .post("http://tech.9f.cn/canary-admin/sys/login", {
           username: loginform.userName,
@@ -91,16 +88,16 @@ export default defineComponent({
           localStorage.setItem("token", ret.data.token);
         });
     };
-    onMounted(() => {
-      getUUID();
-      getTime();
-      // 钉钉内打开免登录
-      if (dd.env.platform !== "notInDingTalk") {
+
+    if (dd.env.platform !== "notInDingTalk") {
         //钉钉内打开
         router.push({
           path: "/Main",
         });
       }
+    onMounted(() => {
+      getUUID();
+      getTime();
     });
     return {
       ...toRefs(loginform),
