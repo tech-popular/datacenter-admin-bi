@@ -4,8 +4,8 @@ import { ElMessage, ElLoading } from 'element-plus'
 import { IResponse, ILogin } from './type';
 
 let axiosInstance:AxiosInstance = axios.create({
-  // baseURL: "http://192.168.161.219:8000", //test
-  baseURL: "http://tech.9f.cn/canary-admin", //
+  baseURL: "http://192.168.161.219:8000", //test
+  // baseURL: "http://tech.9f.cn/canary-admin", //
   headers: {
     Accept: "application/json",
     "Content-Type": "multipart/form-data;charset=UTF-8",
