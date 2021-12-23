@@ -1,14 +1,14 @@
 import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
 import { showMessage } from "./status";
 import { ElMessage, ElLoading } from 'element-plus'
-import { IResponse, ILogin } from './type';
+import { IResponse, ILogin, ZLogin } from './type';
 
 let axiosInstance:AxiosInstance = axios.create({
   baseURL: "http://192.168.161.219:8000/canary-admin", //test
   // baseURL: "http://tech.9f.cn/canary-admin", //
   headers: {
     Accept: "application/json",
-    "Content-Type": "multipart/form-data;charset=UTF-8",
+    "Content-Type": "application/json;charset=UTF-8",
   },
 });
 let loadingInstance;
@@ -56,9 +56,12 @@ axiosInstance.interceptors.response.use(
  */
 
 export const PcLogin = (params: ILogin): Promise<IResponse> => {
-  return axiosInstance.get('/bi/biSysMenu/getUserMenuList',{ params: params }).then(res => res.data);
+  return axiosInstance.get('/bi/biSysMenu/getUserMenuList',{ params }).then(res => res.data);
 };
 export const DdLogin = (params: ILogin): Promise<IResponse> => {
-  return axiosInstance.get('/bi/dingding/biSysMenu/getUserMenuList',{ params: params }).then(res => res.data);
+  return axiosInstance.get('/bi/dingding/biSysMenu/getUserMenuList',{ params }).then(res => res.data);
 };
 
+export const SysLogin = (params: ZLogin): Promise<IResponse> => {
+  return axiosInstance.post('/sys/login', { ...params }).then(res => res);
+};

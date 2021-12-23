@@ -26,7 +26,7 @@
 <script lang="ts">
 import { defineComponent, toRefs, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import axios from "axios";
+import { SysLogin } from "@/api/api";
 import * as dd from "dingtalk-jsapi";
 export default defineComponent({
   name: "Login",
@@ -72,21 +72,18 @@ export default defineComponent({
     };
 
     let signIn = async () => {
-      axios
-        .post("http://tech.9f.cn/canary-admin/sys/login", {
-          username: loginform.userName,
+      const res: any = await SysLogin({
+        username: loginform.userName,
           password: loginform.passWord,
           t: loginform.time,
-          uuid: loginform.UUid,
-        })
-        .then(function (ret) {
-          if (ret.data) {
-            router.push({
-              path: "/Main",
-            });
-          }
-          localStorage.setItem("token", ret.data.token);
+          uuid: loginform.UUid
+      });
+      if (res.data) {
+        router.push({
+          path: "/Main",
         });
+        localStorage.setItem("token", res.data.token);
+      }
     };
 
     if (dd.env.platform !== "notInDingTalk") {
