@@ -24,6 +24,11 @@ const router = createRouter({
           name: "home",
           component: () => import("@/views/home/index.vue"),
         },
+        {
+          path: "/report/:modelId",
+          name: "report",
+          component: () => import("@/views/report/tableData.vue"),
+        },
       ],
     },
     {

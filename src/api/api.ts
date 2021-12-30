@@ -1,7 +1,7 @@
 import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
 import { showMessage } from "./status";
 import { ElMessage, ElLoading } from 'element-plus'
-import { IResponse, ILogin, ZLogin } from './type';
+import { IResponse, ILogin, ZLogin, IModelColumn, IModelSearch } from './type';
 
 let axiosInstance:AxiosInstance = axios.create({
   baseURL: "http://192.168.161.219:8000/canary-admin", //test
@@ -9,6 +9,7 @@ let axiosInstance:AxiosInstance = axios.create({
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json;charset=UTF-8",
+    // "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
   },
 });
 let loadingInstance;
@@ -64,4 +65,14 @@ export const DdLogin = (params: ILogin): Promise<IResponse> => {
 
 export const SysLogin = (params: ZLogin): Promise<IResponse> => {
   return axiosInstance.post('/sys/login', { ...params }).then(res => res);
+};
+
+// 报表-查询列名接口
+export const getReportColumns = (params: IModelColumn): Promise<IResponse> => {
+  return axiosInstance.get('/bi/olapModelColumn/getColumnList', { params }).then(res => res.data);
+};
+
+// 报表-查询搜索接口
+export const getReportSearchData = (params: IModelSearch): Promise<IResponse> => {
+  return axiosInstance.get('/bi/olapModel/doSearchAnalysisModel', { params }).then(res => res.data);
 };

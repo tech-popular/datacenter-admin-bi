@@ -20,3 +20,19 @@ export interface IResponse {
     t?:any
     uuid:any
   }
+
+  /**报表列名 */
+  export interface IModelColumn {
+    model_id: string
+  }
+
+  /**报表查询请求参数 */
+  export interface IModelSearch {
+    model_id: string,
+    page: number,
+    pageSize: number,
+    ascColumn?: string, // 升序字段，多个用逗号分隔
+    descColumn?: string, // 降序字段，多个用逗号分隔
+    pt?: string, // 时间范围，用逗号分隔
+    groupColumn?: string // 分组字段，多个用逗号分隔
+  }

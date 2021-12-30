@@ -6,6 +6,7 @@ import App from "./App.vue";
 
 import ElementPlus from "element-plus";
 import "element-plus/dist/index.css";
+import zhCn from 'element-plus/es/locale/lang/zh-cn';
 
 import Vant from 'vant';
 import 'vant/lib/index.css';
@@ -25,7 +26,9 @@ setupRouter(app); // 引入路由
 
 setupStore(app); // 引入状态管理
 
-app.use(ElementPlus);
+app.use(ElementPlus, {
+  locale: zhCn
+});
 app.use(Vant)
 
 router.isReady().then(() => {
