@@ -74,5 +74,10 @@ export const getReportColumns = (params: IModelColumn): Promise<IResponse> => {
 
 // 报表-查询搜索接口
 export const getReportSearchData = (params: IModelSearch): Promise<IResponse> => {
-  return axiosInstance.get('/bi/olapModel/doSearchAnalysisModel', { params }).then(res => res.data);
+  return axiosInstance.post('/bi/olapModel/doSearchAnalysisModel', { ...params }).then(res => res.data);
+};
+
+// tableau查询菜单接口
+export const getTableauInfo = (modelId: string): Promise<IResponse> => {
+  return axiosInstance.get(`/bi/tableau/info/${modelId}`).then(res => res.data);
 };
