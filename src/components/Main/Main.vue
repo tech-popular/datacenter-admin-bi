@@ -11,18 +11,13 @@
         <div class="xfk-welcome"></div>
       </div>
       <div class="xfk-header-handle">
-        欢迎，<span>{{ username }}</span
-        >！
+        欢迎，
+        <span>{{ username }}</span>！
       </div>
     </header>
     <div class="xfk-body hidden-xs-only">
       <el-scrollbar class="xfk-side">
-        <SideMenu
-          :list="menuData"
-          background-color="#545c64"
-          text-color="#fff"
-          active-text-color="#ffd04b"
-        />
+        <SideMenu :list="menuData" background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" />
       </el-scrollbar>
       <div class="xfk-content">
         <el-scrollbar class="xfk-view" wrapClass="xfk-content-wrap">
@@ -36,73 +31,82 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, defineAsyncComponent, ref } from "vue";
-// import { useRoute } from "vue-router";
-const SideMenu = defineAsyncComponent(
-  () => import("./components/SideMenu/SideMenu.vue")
-);
-const MobileMenu = defineAsyncComponent(
-  () => import("./components/MobileMenu/MobileMenu.vue")
-);
-import * as dd from "dingtalk-jsapi";
-import { PcLogin, DdLogin } from "@/api/api";
+import { defineComponent, defineAsyncComponent, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+const SideMenu = defineAsyncComponent(() =>
+  import('./components/SideMenu/SideMenu.vue')
+)
+const MobileMenu = defineAsyncComponent(() =>
+  import('./components/MobileMenu/MobileMenu.vue')
+)
+import * as dd from 'dingtalk-jsapi'
+import { PcLogin, DdLogin } from '@/api/api'
 export default defineComponent({
-  name: "Main",
+  name: 'Main',
   components: { SideMenu, MobileMenu },
   data() {
     return {
       // 移动端展示折叠菜单
-      mobileMenuVisible: false,
-    };
+      mobileMenuVisible: false
+    }
   },
+
   setup() {
-    // const route = useRoute();
-    const corpId = "ding94069beefe61f4b735c2f4657eb6378f";
-    // const userId = route.query.userId;
-    const menuData: any = ref([]);
-    const username: any = ref("");
+    const route = useRoute()
+    const router = useRouter()
+    // const corpId = "ding94069beefe61f4b735c2f4657eb6378f";
+    const path = router.path
+    const userId = route.query.userId
+    const token = route.query.token
+    const menuData: any = ref([])
+    const username: any = ref('')
+    localStorage.setItem('token', token)
+    if (route.query.token) {
+      router.push({
+        path: '/home'
+      })
+    }
     const GetMenuData = async (code: any) => {
       if (code) {
-        console.log('code',code)
+        console.log('code', code)
         let res: any = await DdLogin({
-          code: code,
-        });
-        menuData.value = res.data.menulist;
-        username.value = res.data.username;
-      }else{
-         let res: any = await PcLogin({
-          // userId: userId,
-        });
-        menuData.value = res.data.menulist;
-        username.value = res.data.username;
+          code: code
+        })
+        menuData.value = res.data.menulist
+        username.value = res.data.username
+      } else {
+        let res: any = await PcLogin({
+          userId: userId
+        })
+        menuData.value = res.data.menulist
+        username.value = res.data.username
       }
-    };
-
-    if (dd.env.platform !== "notInDingTalk") {
+    }
+    if (dd.env.platform !== 'notInDingTalk') {
       //钉钉内打开
-      dd.ready(function () {
+      dd.ready(function() {
         dd.runtime.permission.requestAuthCode({
           corpId: corpId,
-          onSuccess: (info) => {
-            GetMenuData(info.code);
-            console.log('info.code',info.code)
-          },
-        });
-      });
+          onSuccess: info => {
+            GetMenuData(info.code)
+            console.log('info.code', info.code)
+          }
+        })
+      })
     } else {
-      GetMenuData("");
-    } 
+      GetMenuData('')
+    }
     // else {
     //   // window.location.href = "http://test.tech.9fbank.com/canary/#/login?from=newbi"; //test
     //   window.location.href = "http://tech.9fbank.com/canary/#/login";
     // }
-    console.log('menuData',menuData.value)
+    console.log('menuData', menuData.value)
     return {
       menuData,
-      username,
-    };
-  },
-});
+      username
+    }
+  }
+})
 </script>
 
 <style lang="scss">
