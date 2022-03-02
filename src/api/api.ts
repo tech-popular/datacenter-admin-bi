@@ -2,10 +2,10 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { showMessage } from './status'
 import { ElMessage, ElLoading } from 'element-plus'
 import { IResponse, ILogin, ZLogin, IModelColumn, IModelSearch } from './type'
-
+import * as dd from 'dingtalk-jsapi'
 let axiosInstance: AxiosInstance = axios.create({
   // baseURL: 'http://192.168.161.219:8000/canary-admin', //test
-  baseURL: 'https://tech.9f.cn/canary-admin', //
+  baseURL: 'http://tech.9f.cn/canary-admin', //
 
   headers: {
     Accept: 'application/json',
@@ -32,11 +32,12 @@ axiosInstance.interceptors.response.use(
     if (response.status === 200) {
       if (response.data && response.data.code === 401) {
         // 401, token失效
-        showMessage(response.data.msg)
-        if (process.env.NODE_ENV != 'production') {
-          window.location.href = 'http://test.tech.9fbank.com/canary/#/login' //test
-        } else {
-          window.location.href = 'https://tech.9fbank.com/canary/#/login'
+        if (dd.env.platform === 'notInDingTalk') {
+          if (process.env.NODE_ENV != 'production') {
+            window.location.href = 'http://test.tech.9fbank.com/canary/#/login' //test
+          } else {
+            window.location.href = 'http://tech.9fbank.cn/canary/#/login'
+          }
         }
       }
       return response

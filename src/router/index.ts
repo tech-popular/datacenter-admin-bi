@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import type { App } from 'vue'
 import Main from '@/components/Main/Main.vue'
+import * as dd from 'dingtalk-jsapi'
 // import { useRoute } from 'vue-router'
 const routerHistory = createWebHashHistory()
 // createWebHashHistory hash 路由
@@ -48,12 +49,12 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   console.log('from: ', from)
   console.log('to: ', to)
-  const token = localStorage.getItem('token')
-  if (!token || !/\S/.test(token)) {
+  const token: any = localStorage.getItem('token')
+  if (dd.env.platform === 'notInDingTalk' && (!token || !/\S/.test(token))) {
     if (process.env.NODE_ENV != 'production') {
       window.location.href = 'http://test.tech.9fbank.com/canary/#/login' //test
     } else {
-      window.location.href = 'https://tech.9fbank.com/canary/#/login'
+      window.location.href = 'http://tech.9fbank.cn/canary/#/login'
     }
   }
   next()

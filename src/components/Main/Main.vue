@@ -59,11 +59,16 @@ export default defineComponent({
     const token: any = route.query.token
     const menuData: any = ref([])
     const username: any = ref('')
-    localStorage.setItem('token', token)
-    if (route.query.token) {
-      router.push({
-        path: '/home'
-      })
+    if (dd.env.platform === 'notInDingTalk') {
+      if (token) {
+        localStorage.setItem('token', token)
+        localStorage.setItem('userId', userId)
+      }
+      if (route.query.token) {
+        router.push({
+          path: '/home'
+        })
+      }
     }
     const GetMenuData = async (code: any) => {
       if (code) {
@@ -75,7 +80,7 @@ export default defineComponent({
         username.value = res.data.username
       } else {
         let res: any = await PcLogin({
-          userId: userId
+          userId: localStorage.getItem('userId', userId)
         })
         menuData.value = res.data.menulist
         username.value = res.data.username
