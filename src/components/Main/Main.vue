@@ -87,6 +87,7 @@ export default defineComponent({
       }
     }
     if (dd.env.platform !== 'notInDingTalk') {
+      console.log('dd.env.platform: ', dd.env.platform)
       //钉钉内打开
       dd.ready(function() {
         dd.runtime.permission.requestAuthCode({
