@@ -32,8 +32,8 @@
 
 <script lang="ts">
 import { defineComponent, defineAsyncComponent, ref } from 'vue'
-// import { useRoute, useRouter } from 'vue-router'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+// import { useRoute } from 'vue-router'
 const SideMenu = defineAsyncComponent(() =>
   import('./components/SideMenu/SideMenu.vue')
 )
@@ -54,7 +54,8 @@ export default defineComponent({
 
   setup() {
     const route = useRoute()
-    // const router = useRouter()
+    const router = useRouter()
+    console.log('router: ', router)
     const corpId = 'ding94069beefe61f4b735c2f4657eb6378f'
     const userId: any = route.query.userId
     console.log('route.query: ', route.query)
@@ -68,11 +69,11 @@ export default defineComponent({
       localStorage.setItem('token', token)
       localStorage.setItem('userId', userId)
     }
-    // if (route.query.token) {
-    //   router.push({
-    //     path: '/home'
-    //   })
-    // }
+    if (route.query.token && localStorage.getItem('token')) {
+      router.push({
+        path: '/home'
+      })
+    }
     const userid: any = localStorage.getItem('userId')
     const GetMenuData = async (code: any) => {
       if (code) {

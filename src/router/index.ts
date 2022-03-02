@@ -8,6 +8,7 @@ const routerHistory = createWebHashHistory()
 // createWebHistory history 路由
 // createMemoryHistory 带缓存 history 路由
 const router = createRouter({
+  // history: routerHistory,
   history: routerHistory,
   routes: [
     // {
