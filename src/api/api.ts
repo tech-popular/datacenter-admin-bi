@@ -31,7 +31,8 @@ axiosInstance.interceptors.response.use(
     if (response.status === 200) {
       if (response.data && response.data.code === 401) {
         // 401, token失效
-        window.location.href = 'http://tech.9fbank.com/canary/#/login'
+        console.log('401, token失效: ')
+        // window.location.href = 'http://tech.9fbank.com/canary/#/login'
       }
       return response
     } else {

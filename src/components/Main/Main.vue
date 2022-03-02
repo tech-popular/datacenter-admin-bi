@@ -57,6 +57,9 @@ export default defineComponent({
     // const router = useRouter()
     const corpId = 'ding94069beefe61f4b735c2f4657eb6378f'
     const userId: any = route.query.userId
+    console.log('route.query: ', route.query)
+    console.log('route: ', route)
+    console.log('userId111: ', userId)
     const token: any = route.query.token
     console.log('token111: ', token)
     const menuData: any = ref([])
