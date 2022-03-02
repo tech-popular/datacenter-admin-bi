@@ -50,14 +50,16 @@ router.beforeEach((to, from, next) => {
   console.log('from: ', from)
   console.log('to: ', to)
   const token: any = localStorage.getItem('token')
-  if (dd.env.platform === 'notInDingTalk' && (!token || !/\S/.test(token))) {
-    if (process.env.NODE_ENV != 'production') {
-      window.location.href = 'http://test.tech.9fbank.com/canary/#/login' //test
-    } else {
-      window.location.href = 'http://tech.9fbank.cn/canary/#/login'
+  if (dd.env.platform === 'notInDingTalk') {
+    if (!token || !/\S/.test(token)) {
+      if (process.env.NODE_ENV != 'production') {
+        window.location.href = 'http://test.tech.9fbank.com/canary/#/login' //test
+      } else {
+        window.location.href = 'http://tech.9fbank.cn/canary/#/login'
+      }
     }
+    next()
   }
-  next()
 })
 export function setupRouter(app: App<Element>) {
   app.use(router)

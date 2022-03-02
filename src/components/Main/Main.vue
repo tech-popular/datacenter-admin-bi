@@ -59,6 +59,7 @@ export default defineComponent({
     const token: any = route.query.token
     const menuData: any = ref([])
     const username: any = ref('')
+    console.log('dd.env.platform: ', dd.env.platform)
     if (dd.env.platform === 'notInDingTalk') {
       if (token) {
         localStorage.setItem('token', token)
@@ -70,6 +71,7 @@ export default defineComponent({
         })
       }
     }
+    const userid: any = localStorage.getItem('userId')
     const GetMenuData = async (code: any) => {
       if (code) {
         console.log('code', code)
@@ -79,9 +81,9 @@ export default defineComponent({
         menuData.value = res.data.menulist
         username.value = res.data.username
       } else {
-        userId.value = localStorage.getItem('userId')
+        // userId.value = localStorage.getItem('userId')
         let res: any = await PcLogin({
-          userId: userId
+          userId: userid
         })
         menuData.value = res.data.menulist
         username.value = res.data.username

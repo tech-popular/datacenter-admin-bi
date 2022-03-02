@@ -4,8 +4,8 @@ import { ElMessage, ElLoading } from 'element-plus'
 import { IResponse, ILogin, ZLogin, IModelColumn, IModelSearch } from './type'
 import * as dd from 'dingtalk-jsapi'
 let axiosInstance: AxiosInstance = axios.create({
-  // baseURL: 'http://192.168.161.219:8000/canary-admin', //test
-  baseURL: 'http://tech.9f.cn/canary-admin', //
+  baseURL: 'http://192.168.161.219:8000/canary-admin', //test
+  // baseURL: 'http://tech.9f.cn/canary-admin', //
 
   headers: {
     Accept: 'application/json',
