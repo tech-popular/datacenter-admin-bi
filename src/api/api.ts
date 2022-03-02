@@ -34,7 +34,8 @@ axiosInstance.interceptors.response.use(
         // 401, token失效
         if (dd.env.platform === 'notInDingTalk') {
           if (process.env.NODE_ENV != 'production') {
-            window.location.href = 'http://test.tech.9fbank.com/canary/#/login' //test
+            console.log('notInDingTalk: ')
+            // window.location.href = 'http://test.tech.9fbank.com/canary/#/login' //test
           } else {
             window.location.href = 'http://tech.9fbank.com/canary/#/login'
           }

@@ -1,7 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import type { App } from 'vue'
 import Main from '@/components/Main/Main.vue'
-import * as dd from 'dingtalk-jsapi'
+// import * as dd from 'dingtalk-jsapi'
 // import { useRoute } from 'vue-router'
 const routerHistory = createWebHashHistory()
 // createWebHashHistory hash 路由
@@ -46,21 +46,22 @@ const router = createRouter({
 /*
     全局守卫
   */
-router.beforeEach((to, from, next) => {
-  console.log('from: ', from)
-  console.log('to: ', to)
-  const token: any = localStorage.getItem('token')
-  if (dd.env.platform === 'notInDingTalk') {
-    if (!token || !/\S/.test(token)) {
-      if (process.env.NODE_ENV != 'production') {
-        window.location.href = 'http://test.tech.9fbank.com/canary/#/login' //test
-      } else {
-        window.location.href = 'http://tech.9fbank.com/canary/#/login'
-      }
-    }
-  }
-  next()
-})
+// router.beforeEach((to, from, next) => {
+//   console.log('from: ', from)
+//   console.log('to: ', to)
+//   const token: any = localStorage.getItem('token')
+//   if (dd.env.platform === 'notInDingTalk') {
+//     if (!token || !/\S/.test(token)) {
+//       if (process.env.NODE_ENV != 'production') {
+//         console.log('production: ')
+//         // window.location.href = 'http://test.tech.9fbank.com/canary/#/login' //test
+//       } else {
+//         window.location.href = 'http://tech.9fbank.com/canary/#/login'
+//       }
+//     }
+//   }
+//   next()
+// })
 export function setupRouter(app: App<Element>) {
   app.use(router)
 }
