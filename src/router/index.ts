@@ -50,8 +50,11 @@ router.beforeEach((to, from, next) => {
   console.log('to: ', to)
   const token = localStorage.getItem('token')
   if (!token || !/\S/.test(token)) {
-    window.location.href = 'https://tech.9fbank.com/canary/#/login'
-    // window.location.href = 'http://test.tech.9fbank.com/canary/#/login' //test
+    if (process.env.NODE_ENV != 'production') {
+      window.location.href = 'http://test.tech.9fbank.com/canary/#/login' //test
+    } else {
+      window.location.href = 'https://tech.9fbank.com/canary/#/login'
+    }
   }
   next()
 })

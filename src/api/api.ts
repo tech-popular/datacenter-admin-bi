@@ -6,6 +6,7 @@ import { IResponse, ILogin, ZLogin, IModelColumn, IModelSearch } from './type'
 let axiosInstance: AxiosInstance = axios.create({
   // baseURL: 'http://192.168.161.219:8000/canary-admin', //test
   baseURL: 'https://tech.9f.cn/canary-admin', //
+
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json;charset=UTF-8',
@@ -32,8 +33,11 @@ axiosInstance.interceptors.response.use(
       if (response.data && response.data.code === 401) {
         // 401, token失效
         showMessage(response.data.msg)
-        // window.location.href = 'http://test.tech.9fbank.com/canary/#/login' //test
-        window.location.href = 'https://tech.9fbank.com/canary/#/login'
+        if (process.env.NODE_ENV != 'production') {
+          window.location.href = 'http://test.tech.9fbank.com/canary/#/login' //test
+        } else {
+          window.location.href = 'https://tech.9fbank.com/canary/#/login'
+        }
       }
       return response
     } else {
