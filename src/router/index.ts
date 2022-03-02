@@ -58,8 +58,8 @@ router.beforeEach((to, from, next) => {
         window.location.href = 'http://tech.9fbank.com/canary/#/login'
       }
     }
-    next()
   }
+  next()
 })
 export function setupRouter(app: App<Element>) {
   app.use(router)

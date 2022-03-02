@@ -59,7 +59,6 @@ export default defineComponent({
     const token: any = route.query.token
     const menuData: any = ref([])
     const username: any = ref('')
-    console.log('dd.env.platform: ', dd.env.platform)
     if (dd.env.platform === 'notInDingTalk') {
       if (token) {
         localStorage.setItem('token', token)
