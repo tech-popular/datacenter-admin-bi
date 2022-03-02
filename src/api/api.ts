@@ -3,6 +3,8 @@ import { showMessage } from './status'
 import { ElMessage, ElLoading } from 'element-plus'
 import { IResponse, ILogin, ZLogin, IModelColumn, IModelSearch } from './type'
 import * as dd from 'dingtalk-jsapi'
+import { useRoute } from 'vue-router'
+const route = useRoute()
 let axiosInstance: AxiosInstance = axios.create({
   baseURL: 'http://192.168.161.219:8000/canary-admin', //test
   // baseURL: 'http://tech.9f.cn/canary-admin', //
@@ -18,7 +20,9 @@ let loadingInstance
 axiosInstance.interceptors.request.use(
   (config: AxiosRequestConfig) => {
     loadingInstance = ElLoading.service({ fullscreen: true })
-    ;(config.headers as any).token = localStorage.getItem('token')
+    ;(config.headers as any).token = route.query.token
+      ? route.query.token
+      : localStorage.getItem('token')
     return config
   },
   (error: any) => {
