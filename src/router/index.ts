@@ -55,7 +55,7 @@ router.beforeEach((to, from, next) => {
       if (process.env.NODE_ENV != 'production') {
         window.location.href = 'http://test.tech.9fbank.com/canary/#/login' //test
       } else {
-        window.location.href = 'http://tech.9fbank.cn/canary/#/login'
+        window.location.href = 'http://tech.9fbank.com/canary/#/login'
       }
     }
     next()
