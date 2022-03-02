@@ -50,7 +50,7 @@ router.beforeEach((to, from, next) => {
   console.log('to: ', to)
   const token = localStorage.getItem('token')
   if (!token || !/\S/.test(token)) {
-    window.location.href = 'http://tech.9fbank.com/canary/#/login'
+    window.location.href = 'https://tech.9fbank.com/canary/#/login'
     // window.location.href = 'http://test.tech.9fbank.com/canary/#/login' //test
   }
   next()

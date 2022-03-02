@@ -33,7 +33,7 @@ axiosInstance.interceptors.response.use(
         // 401, token失效
         showMessage(response.data.msg)
         // window.location.href = 'http://test.tech.9fbank.com/canary/#/login' //test
-        window.location.href = 'http://tech.9fbank.com/canary/#/login'
+        window.location.href = 'https://tech.9fbank.com/canary/#/login'
       }
       return response
     } else {
