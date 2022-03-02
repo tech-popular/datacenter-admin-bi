@@ -19,12 +19,12 @@ export interface ILogin {
 }
 
 /**中台登录 */
-// export interface ZLogin{
-//   username?:any
-//   password?:any
-//   t?:any
-//   uuid:any
-// }
+export interface ZLogin {
+  username?: any
+  password?: any
+  t?: any
+  uuid: any
+}
 
 /**报表列名 */
 export interface IModelColumn {

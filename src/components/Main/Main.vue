@@ -54,10 +54,9 @@ export default defineComponent({
   setup() {
     const route = useRoute()
     const router = useRouter()
-    // const corpId = "ding94069beefe61f4b735c2f4657eb6378f";
-    const path = router.path
-    const userId = route.query.userId
-    const token = route.query.token
+    const corpId = 'ding94069beefe61f4b735c2f4657eb6378f'
+    const userId: any = route.query.userId
+    const token: any = route.query.token
     const menuData: any = ref([])
     const username: any = ref('')
     localStorage.setItem('token', token)

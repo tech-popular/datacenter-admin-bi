@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { showMessage } from './status'
 import { ElMessage, ElLoading } from 'element-plus'
-import { IResponse, ILogin, IModelColumn, IModelSearch } from './type'
+import { IResponse, ILogin, ZLogin, IModelColumn, IModelSearch } from './type'
 
 let axiosInstance: AxiosInstance = axios.create({
   // baseURL: 'http://192.168.161.219:8000/canary-admin', //test
@@ -32,6 +32,7 @@ axiosInstance.interceptors.response.use(
       if (response.data && response.data.code === 401) {
         // 401, token失效
         showMessage(response.data.msg)
+        // window.location.href = 'http://test.tech.9fbank.com/canary/#/login' //test
         window.location.href = 'http://tech.9fbank.com/canary/#/login'
       }
       return response
@@ -71,9 +72,9 @@ export const DdLogin = (params: ILogin): Promise<IResponse> => {
     .then((res) => res.data)
 }
 
-// export const SysLogin = (params: ZLogin): Promise<IResponse> => {
-//   return axiosInstance.post('/sys/login', { ...params }).then((res) => res)
-// }
+export const SysLogin = (params: ZLogin): Promise<IResponse> => {
+  return axiosInstance.post('/sys/login', { ...params }).then((res) => res)
+}
 
 // 报表-查询列名接口
 export const getReportColumns = (params: IModelColumn): Promise<IResponse> => {

@@ -46,9 +46,12 @@ const router = createRouter({
     全局守卫
   */
 router.beforeEach((to, from, next) => {
+  console.log('from: ', from)
+  console.log('to: ', to)
   const token = localStorage.getItem('token')
   if (!token || !/\S/.test(token)) {
     window.location.href = 'http://tech.9fbank.com/canary/#/login'
+    // window.location.href = 'http://test.tech.9fbank.com/canary/#/login' //test
   }
   next()
 })
