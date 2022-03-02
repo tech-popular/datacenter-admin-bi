@@ -79,8 +79,9 @@ export default defineComponent({
         menuData.value = res.data.menulist
         username.value = res.data.username
       } else {
+        userId.value = localStorage.getItem('userId')
         let res: any = await PcLogin({
-          userId: localStorage.getItem('userId', userId)
+          userId: userId
         })
         menuData.value = res.data.menulist
         username.value = res.data.username
