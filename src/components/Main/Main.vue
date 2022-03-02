@@ -32,7 +32,8 @@
 
 <script lang="ts">
 import { defineComponent, defineAsyncComponent, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+// import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 const SideMenu = defineAsyncComponent(() =>
   import('./components/SideMenu/SideMenu.vue')
 )
