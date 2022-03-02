@@ -2,9 +2,6 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { showMessage } from './status'
 import { ElMessage, ElLoading } from 'element-plus'
 import { IResponse, ILogin, ZLogin, IModelColumn, IModelSearch } from './type'
-import * as dd from 'dingtalk-jsapi'
-import { useRoute } from 'vue-router'
-const route = useRoute()
 let axiosInstance: AxiosInstance = axios.create({
   baseURL: 'http://192.168.161.219:8000/canary-admin', //test
   // baseURL: 'http://tech.9f.cn/canary-admin', //
@@ -20,9 +17,7 @@ let loadingInstance
 axiosInstance.interceptors.request.use(
   (config: AxiosRequestConfig) => {
     loadingInstance = ElLoading.service({ fullscreen: true })
-    ;(config.headers as any).token = route.query.token
-      ? route.query.token
-      : localStorage.getItem('token')
+    ;(config.headers as any).token = localStorage.getItem('token')
     return config
   },
   (error: any) => {
@@ -34,16 +29,9 @@ axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
     loadingInstance.close()
     if (response.status === 200) {
-      if (dd.env.platform === 'notInDingTalk') {
-        if (response.data && response.data.code === 401) {
-          // 401, token失效
-          if (process.env.NODE_ENV != 'production') {
-            console.log('notInDingTalk: ')
-            window.location.href = 'http://test.tech.9fbank.com/canary/#/login' //test
-          } else {
-            window.location.href = 'http://tech.9fbank.com/canary/#/login'
-          }
-        }
+      if (response.data && response.data.code === 401) {
+        // 401, token失效
+        window.location.href = 'http://tech.9fbank.com/canary/#/login'
       }
       return response
     } else {

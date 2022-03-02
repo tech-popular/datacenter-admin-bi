@@ -1,12 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import type { App } from 'vue'
 import Main from '@/components/Main/Main.vue'
-import { useRoute } from 'vue-router'
-const route = useRoute()
-const token: any = route.query.token
-if (token) {
-  localStorage.setItem('token', token)
-}
 // import * as dd from 'dingtalk-jsapi'
 // import { useRoute } from 'vue-router'
 const routerHistory = createWebHashHistory()
