@@ -53,7 +53,7 @@ export default defineComponent({
 
   setup() {
     const route = useRoute()
-    const router = useRouter()
+    // const router = useRouter()
     const corpId = 'ding94069beefe61f4b735c2f4657eb6378f'
     const userId: any = route.query.userId
     const token: any = route.query.token
