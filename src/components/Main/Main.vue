@@ -59,18 +59,17 @@ export default defineComponent({
     const token: any = route.query.token
     const menuData: any = ref([])
     const username: any = ref('')
-    if (dd.env.platform === 'notInDingTalk') {
-      if (token) {
-        localStorage.setItem('token', token)
-        localStorage.setItem('userId', userId)
-      }
-      if (route.query.token) {
-        router.push({
-          path: '/home'
-        })
-      }
+    if (token) {
+      localStorage.setItem('token', token)
+      localStorage.setItem('userId', userId)
+    }
+    if (route.query.token) {
+      router.push({
+        path: '/home'
+      })
     }
     const userid: any = localStorage.getItem('userId')
+    console.log('userid: ', userid)
     const GetMenuData = async (code: any) => {
       if (code) {
         console.log('code', code)
