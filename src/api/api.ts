@@ -2,13 +2,9 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { showMessage } from './status'
 import { ElMessage, ElLoading } from 'element-plus'
 import { IResponse, ILogin, ZLogin, IModelColumn, IModelSearch } from './type'
-import * as dd from 'dingtalk-jsapi'
+import base from './untils'
 let axiosInstance: AxiosInstance = axios.create({
-  // baseURL: 'http://192.168.161.219:8000/canary-admin', //test
-  baseURL:
-    dd.env.platform !== 'notInDingTalk'
-      ? 'https://tech.9f.cn/canary-admin'
-      : 'http://tech.9f.cn/canary-admin', //
+  baseURL: base.baseurl,
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json;charset=UTF-8',
