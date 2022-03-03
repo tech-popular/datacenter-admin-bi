@@ -55,16 +55,18 @@ export default defineComponent({
   setup() {
     const route = useRoute()
     const router = useRouter()
-    console.log('router: ', router)
     const corpId = 'ding94069beefe61f4b735c2f4657eb6378f'
-    const userId: any = route.query.userId
-    console.log('route.query: ', route.query)
-    console.log('route: ', route)
-    console.log('userId111: ', userId)
-    const token: any = route.query.token
-    console.log('token111: ', token)
+    // const userId: any = route.query.userId
+    // const token: any = route.query.token
     const menuData: any = ref([])
     const username: any = ref('')
+    console.log('window.location.href', window.location.href)
+    const dz_url = window.location.href //获取当前url
+    const cs = dz_url.split('?')[1] //获取?之后的参数字符串
+    const token = cs.split('&')[0].split('=')[1] //参数字符串分割为数组
+    console.log('token: 1111', token)
+    const userId = cs.split('&')[1].split('=')[1]
+    console.log('userId: 222', userId)
     if (token) {
       localStorage.setItem('token', token)
       localStorage.setItem('userId', userId)
