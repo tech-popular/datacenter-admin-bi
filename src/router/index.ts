@@ -16,7 +16,7 @@ const router = createRouter({
     //   redirect: '/login'
     // },
     {
-      path: '/',
+      path: '/Main',
       component: Main,
       // redirect: '/Main',
       children: [

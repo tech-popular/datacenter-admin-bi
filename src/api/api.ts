@@ -2,16 +2,20 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { showMessage } from './status'
 import { ElMessage, ElLoading } from 'element-plus'
 import { IResponse, ILogin, ZLogin, IModelColumn, IModelSearch } from './type'
+import * as dd from 'dingtalk-jsapi'
 let axiosInstance: AxiosInstance = axios.create({
   // baseURL: 'http://192.168.161.219:8000/canary-admin', //test
-  baseURL: 'http://tech.9f.cn/canary-admin', //
-
+  baseURL:
+    dd.env.platform !== 'notInDingTalk'
+      ? 'https://tech.9f.cn/canary-admin'
+      : 'http://tech.9f.cn/canary-admin', //
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json;charset=UTF-8',
     // "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
   },
 })
+
 let loadingInstance
 // axios实例拦截请求
 axiosInstance.interceptors.request.use(
@@ -32,7 +36,7 @@ axiosInstance.interceptors.response.use(
       if (response.data && response.data.code === 401) {
         // 401, token失效
         console.log('401, token失效: ')
-        // window.location.href = 'http://tech.9fbank.com/canary/#/login'
+        window.location.href = 'http://tech.9fbank.com/canary/#/login'
       }
       return response
     } else {
