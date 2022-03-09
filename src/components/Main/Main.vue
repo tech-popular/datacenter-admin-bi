@@ -8,7 +8,7 @@
         <div class="xfk-menu-switch">
           <!-- <div class="xfk-menu-switch hidden-sm-and-up"> -->
           <!-- <i class="el-icon-s-unfold"></i> -->
-          <img @click="iconClick(sidebarFold)" :src="sidebarFold ? rightIcon : leftIcon" alt />
+          <img @click="iconClick(sidebarFold)" :src="sidebarFold ? rightIcon : leftIcon" />
         </div>
       </div>
       <div class="xfk-header-handle">
