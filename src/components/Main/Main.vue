@@ -5,8 +5,10 @@
         <div class="xfk-brand">
           <h1>新BI系统</h1>
         </div>
-        <div class="xfk-menu-switch hidden-sm-and-up">
-          <i class="el-icon-s-unfold"></i>
+        <div class="xfk-menu-switch">
+          <!-- <div class="xfk-menu-switch hidden-sm-and-up"> -->
+          <!-- <i class="el-icon-s-unfold"></i> -->
+          <img @click="iconClick(sidebarFold)" :src="sidebarFold ? rightIcon : leftIcon" alt />
         </div>
       </div>
       <div class="xfk-header-handle">
@@ -15,7 +17,7 @@
       </div>
     </header>
     <div class="xfk-body hidden-xs-only">
-      <el-scrollbar class="xfk-side">
+      <el-scrollbar class="xfk-side" :class="{ 'xfk-side-col': sidebarFold }">
         <SideMenu :list="menuData" background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" />
       </el-scrollbar>
       <div class="xfk-content">
@@ -30,10 +32,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, defineAsyncComponent, ref } from 'vue'
+import { computed, defineComponent, defineAsyncComponent, ref } from 'vue'
 // import { useRoute, useRouter } from 'vue-router'
-// import { useStore } from '@/store/index'
+import { useStore } from '@/store/index'
 // import { useRoute } from 'vue-router'
+import leftIcon from '@/styles/img/left1.png'
+import rightIcon from '@/styles/img/right1.png'
 const SideMenu = defineAsyncComponent(() =>
   import('./components/SideMenu/SideMenu.vue')
 )
@@ -72,11 +76,14 @@ export default defineComponent({
     //   })
     // }
 
-    // const store = useStore()
-    // const sidebarFold: any = computed(() => {
-    //   return store.state.sidebarFold
-    //   store.commit('changeSidebarFold', val)
-    // })
+    const store = useStore()
+    const sidebarFold: any = computed(() => {
+      return store.state.sidebarFold
+    })
+    const iconClick = (sidebarFold: any) => {
+      console.log(!sidebarFold)
+      store.commit('changeSidebarFold', !sidebarFold)
+    }
     // const userid: any = localStorage.getItem('userId')
     const GetMenuData = async (code: any) => {
       if (code) {
@@ -115,7 +122,11 @@ export default defineComponent({
     console.log('menuData', menuData.value)
     return {
       menuData,
-      username
+      username,
+      leftIcon,
+      rightIcon,
+      sidebarFold,
+      iconClick
     }
   }
 })
@@ -138,6 +149,8 @@ export default defineComponent({
       height: 100%;
       align-items: center;
       .xfk-menu-switch {
+        width: 100%;
+        height: 60px;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -192,6 +205,16 @@ export default defineComponent({
     .xfk-side {
       flex-shrink: 0;
       width: 200px;
+      height: 100%;
+      overflow: hidden;
+      background-color: #545c64;
+      .el-scrollbar__wrap {
+        overflow-x: hidden;
+      }
+    }
+    .xfk-side-col {
+      flex-shrink: 0;
+      width: 10px;
       height: 100%;
       overflow: hidden;
       background-color: #545c64;

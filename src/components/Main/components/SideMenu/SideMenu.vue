@@ -1,5 +1,13 @@
 <template>
-  <el-menu class="xfk-side-menu" :background-color="backgroundColor" :text-color="textColor" :active-text-color="activeTextColor" :default-active="defaultActive">
+  <el-menu
+    class="xfk-side-menu"
+    :background-color="backgroundColor"
+    :collapse="sidebarFold"
+    :collapseTransition="false"
+    :text-color="textColor"
+    :active-text-color="activeTextColor"
+    :default-active="defaultActive"
+  >
     <menu-item v-for="item in list" :key="item.id" :item="item" />
   </el-menu>
 </template>
@@ -40,6 +48,7 @@ export default defineComponent({
 .xfk-side-menu {
   border-right: none !important;
   user-select: none;
+
   span {
     line-height: 1.5em;
   }

@@ -1,5 +1,6 @@
 import * as dd from 'dingtalk-jsapi'
 const NODE_ENV = process.env.NODE_ENV
+console.log('NODE_ENV: ', NODE_ENV)
 let baseURL
 if (NODE_ENV == 'development') {
   baseURL = 'http://192.168.161.219:8000/canary-admin;'
