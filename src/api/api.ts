@@ -5,6 +5,8 @@ import { IResponse, ILogin, ZLogin, IModelColumn, IModelSearch } from './type'
 import base from './untils'
 let axiosInstance: AxiosInstance = axios.create({
   baseURL: base.baseurl,
+  // baseURL: 'http://192.168.161.219:8000/canary-admin',
+  // baseURL: 'http://tech.9f.cn/canary-admin',
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json;charset=UTF-8',
@@ -29,11 +31,11 @@ axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
     loadingInstance.close()
     if (response.status === 200) {
-      if (response.data && response.data.code === 401) {
-        // 401, token失效
-        console.log('401, token失效: ')
-        window.location.href = 'http://tech.9fbank.com/canary/#/login'
-      }
+      // if (response.data && response.data.code === 401) {
+      //   // 401, token失效
+      //   console.log('401, token失效: ')
+      //   window.location.href = 'http://tech.9fbank.com/canary/#/login'
+      // }
       return response
     } else {
       showMessage(response.status)
@@ -72,7 +74,7 @@ export const DdLogin = (params: ILogin): Promise<IResponse> => {
 }
 
 export const SysLogin = (params: ZLogin): Promise<IResponse> => {
-  return axiosInstance.post('/sys/login', { ...params }).then((res) => res)
+  return axiosInstance.post('/bi/sys/login', { ...params }).then((res) => res)
 }
 
 // 报表-查询列名接口

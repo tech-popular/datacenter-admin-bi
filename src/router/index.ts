@@ -9,14 +9,14 @@ const router = createRouter({
   // history: routerHistory,
   history: routerHistory,
   routes: [
-    // {
-    //   path: '/',
-    //   redirect: '/login'
-    // },
     {
       path: '/',
+      redirect: '/login',
+    },
+    {
+      path: '/Main',
       component: Main,
-      // redirect: '/Main',
+      redirect: '/home',
       children: [
         {
           path: '/home',
@@ -35,11 +35,11 @@ const router = createRouter({
         },
       ],
     },
-    // {
-    //   path: "/login",
-    //   name: "login",
-    //   component: ()=>import("@/views/Login/index.vue"),
-    // },
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('@/views/Login/index.vue'),
+    },
   ],
 })
 export function setupRouter(app: App<Element>) {

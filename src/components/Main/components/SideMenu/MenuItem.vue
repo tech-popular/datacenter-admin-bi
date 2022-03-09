@@ -4,11 +4,7 @@
       <template #title>
         <span>{{ item.name }}</span>
       </template>
-      <menu-item
-        v-for="children in item.children"
-        :item="children"
-        :key="children.id + ''"
-      />
+      <menu-item v-for="children in item.children" :item="children" :key="children.id + ''" />
     </el-sub-menu>
     <el-menu-item v-if="item.children.length == 0" @click="menuClick(item)" :index="item.id + ''">
       <i :class="[item.icon]"></i>
@@ -18,53 +14,53 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { useRouter } from "vue-router";
-import { useStore } from "@/store/index";
+import { defineComponent } from 'vue'
+import { useRouter } from 'vue-router'
+import { useStore } from '@/store/index'
 export default defineComponent({
-  name: "MenuItem",
+  name: 'MenuItem',
   props: {
     item: {
       type: Object,
-      default: () => ({}),
-    },
+      default: () => ({})
+    }
   },
   setup() {
-    const router = useRouter();
-    const store = useStore();
+    const router = useRouter()
+    const store = useStore()
     const menuClick = (item: any) => {
-      console.log(item);
+      console.log(item)
       switch (item.menuType) {
         case 0:
-          store.commit("changeDataLink", item.url);
+          store.commit('changeDataLink', item.url)
+          store.commit('changeMenuType', item.menuType)
           router.push({
             path: '/home'
-          });
-          break;
+          })
+          break
         case 1:
           router.push({
             path: `/report/${item.url}`
-          });
-          break;
+          })
+          break
         case 2:
           router.push({
             path: `/tableau/${item.url}`
-          });
-          break;
+          })
+          break
         default:
-          store.commit("changeDataLink", '');
+          store.commit('changeDataLink', '')
           router.push({
             path: '/home'
-          });
+          })
       }
-      
-    };
+    }
 
     return {
-      menuClick,
-    };
-  },
-});
+      menuClick
+    }
+  }
+})
 </script>
 
 <style lang="scss"></style>

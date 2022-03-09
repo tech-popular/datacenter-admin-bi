@@ -8,7 +8,6 @@
         <div class="xfk-menu-switch hidden-sm-and-up">
           <i class="el-icon-s-unfold"></i>
         </div>
-        <div class="xfk-welcome"></div>
       </div>
       <div class="xfk-header-handle">
         欢迎，
@@ -32,7 +31,8 @@
 
 <script lang="ts">
 import { defineComponent, defineAsyncComponent, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+// import { useRoute, useRouter } from 'vue-router'
+// import { useStore } from '@/store/index'
 // import { useRoute } from 'vue-router'
 const SideMenu = defineAsyncComponent(() =>
   import('./components/SideMenu/SideMenu.vue')
@@ -53,25 +53,31 @@ export default defineComponent({
   },
 
   setup() {
-    const route = useRoute()
-    const router = useRouter()
+    // const route = useRoute()
+    // const router = useRouter()
     const corpId = 'ding94069beefe61f4b735c2f4657eb6378f'
-    const userId: any = route.query.userId
-    console.log('userId11: ', userId)
-    const token: any = route.query.token
-    console.log('token:222 ', token)
+    // const userId: any = route.query.userId
+    // console.log('userId11: ', userId)
+    // const token: any = route.query.token
+    // console.log('token:222 ', token)
     const menuData: any = ref([])
     const username: any = ref('')
-    if (token) {
-      localStorage.setItem('token', token)
-      localStorage.setItem('userId', userId)
-    }
-    if (route.query.token && localStorage.getItem('token')) {
-      router.push({
-        path: '/home'
-      })
-    }
-    const userid: any = localStorage.getItem('userId')
+    // if (token) {
+    //   localStorage.setItem('token', token)
+    //   localStorage.setItem('userId', userId)
+    // }
+    // if (route.query.token && localStorage.getItem('token')) {
+    //   router.push({
+    //     path: '/home'
+    //   })
+    // }
+
+    // const store = useStore()
+    // const sidebarFold: any = computed(() => {
+    //   return store.state.sidebarFold
+    //   store.commit('changeSidebarFold', val)
+    // })
+    // const userid: any = localStorage.getItem('userId')
     const GetMenuData = async (code: any) => {
       if (code) {
         console.log('code', code)
@@ -82,14 +88,13 @@ export default defineComponent({
         username.value = res.data.username
       } else {
         let res: any = await PcLogin({
-          userId: userid
+          // userId: 315
         })
         menuData.value = res.data.menulist
         username.value = res.data.username
       }
     }
     if (dd.env.platform !== 'notInDingTalk') {
-      console.log('dd.env.platform: ', dd.env.platform)
       //钉钉内打开
       dd.ready(function() {
         dd.runtime.permission.requestAuthCode({

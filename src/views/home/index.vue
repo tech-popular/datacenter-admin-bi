@@ -1,52 +1,45 @@
 <template>
   <div class="iframeWrap">
     <p class="wel" v-if="!dataLink">欢迎进入新BI系统</p>
-    <iframe
-      v-else
-      :src="dataLink"
-      scrolling="auto"
-      frameborder="0"
-      class="frame"
-      width="100%"
-      height="100%"
-    >
-    </iframe>
+    <iframe v-else class="frame" :src="dataLink" scrolling="auto" frameborder="0" width="100%" height="100%"></iframe>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from "vue";
-import { useStore } from "@/store/index";
+import { computed, defineComponent } from 'vue'
+import { useStore } from '@/store/index'
 export default defineComponent({
-  name: "Main",
+  name: 'Main',
   data() {
-    return {
-    };
+    return {}
   },
   setup() {
-    const store = useStore();
+    const store = useStore()
 
     const dataLink: any = computed(() => {
-      return store.state.curDataLink;
-    });
-
+      return store.state.curDataLink
+    })
     return {
-      dataLink,
-    };
-  },
-});
+      dataLink
+    }
+  }
+})
 </script>
 
 <style lang="scss">
 .iframeWrap {
   width: 100%;
   height: 100%;
-  .wel{
+
+  .wel {
     text-align: center;
     padding-top: 25%;
     font-size: 45px;
     font-weight: 700;
     color: #333;
+  }
+  .frame {
+    margin-top: -63px;
   }
 }
 </style>
