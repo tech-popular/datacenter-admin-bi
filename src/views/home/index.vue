@@ -1,7 +1,7 @@
 <template>
   <div class="iframeWrap">
     <p class="wel" v-if="!dataLink">欢迎进入新BI系统</p>
-    <iframe v-else class="frame" :src="dataLink" scrolling="auto" frameborder="0" width="100%" height="100%"></iframe>
+    <iframe v-else class="superset-iframe" :src="dataLink" scrolling="auto" frameborder="0" width="100%" height="100%"></iframe>
   </div>
 </template>
 
@@ -38,7 +38,7 @@ export default defineComponent({
     font-weight: 700;
     color: #333;
   }
-  .frame {
+  .superset-iframe {
     margin-top: -63px;
   }
 }

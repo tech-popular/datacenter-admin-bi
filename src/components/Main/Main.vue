@@ -9,6 +9,9 @@
           <!-- <div class="xfk-menu-switch hidden-sm-and-up"> -->
           <!-- <i class="el-icon-s-unfold"></i> -->
           <img @click="iconClick(sidebarFold)" :src="sidebarFold ? rightIcon : leftIcon" />
+          <el-select placeholder="请选择" v-model="gradeName" @change="gradeClick(gradeName)" style="width: 140px;height: 40px; margin-left: 50px; line-height: 36px;">
+            <el-option v-for="item in gradeList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+          </el-select>
         </div>
       </div>
       <div class="xfk-header-handle">
@@ -66,6 +69,8 @@ export default defineComponent({
     // console.log('token:222 ', token)
     const menuData: any = ref([])
     const username: any = ref('')
+    const gradeList: any = ref([])
+    const gradeName: any = ref('')
     // if (token) {
     //   localStorage.setItem('token', token)
     //   localStorage.setItem('userId', userId)
@@ -84,6 +89,14 @@ export default defineComponent({
       console.log(!sidebarFold)
       store.commit('changeSidebarFold', !sidebarFold)
     }
+    const gradeClick = (gradeName: any) => {
+      console.log('gradeName: ', gradeName)
+      gradeList.value.forEach(element => {
+        if (element.id == gradeName) {
+          menuData.value = element.children
+        }
+      })
+    }
     // const userid: any = localStorage.getItem('userId')
     const GetMenuData = async (code: any) => {
       if (code) {
@@ -97,7 +110,15 @@ export default defineComponent({
         let res: any = await PcLogin({
           // userId: 315
         })
-        menuData.value = res.data.menulist
+        // res.data.menulist.forEach(element => {
+        //   if (element.grade === 1) {
+        //     gradeList.value.push(element)
+        //   }
+        // })
+        // console.log('gradeList: ', gradeList.value)
+        gradeList.value = res.data.menulist
+        gradeName.value = res.data.menulist[0].id
+        menuData.value = res.data.menulist[0].children
         username.value = res.data.username
       }
     }
@@ -126,7 +147,10 @@ export default defineComponent({
       leftIcon,
       rightIcon,
       sidebarFold,
-      iconClick
+      iconClick,
+      gradeList,
+      gradeClick,
+      gradeName
     }
   }
 })
