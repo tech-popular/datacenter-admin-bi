@@ -21,7 +21,7 @@
     </header>
     <div class="xfk-body hidden-xs-only">
       <el-scrollbar class="xfk-side" :class="{ 'xfk-side-col': sidebarFold }">
-        <SideMenu :list="menuData" background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" />
+        <SideMenu :list="pcmenuData" background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" />
       </el-scrollbar>
       <div class="xfk-content">
         <el-scrollbar class="xfk-view" wrapClass="xfk-content-wrap">
@@ -38,6 +38,7 @@
 import { computed, defineComponent, defineAsyncComponent, ref } from 'vue'
 // import { useRoute, useRouter } from 'vue-router'
 import { useStore } from '@/store/index'
+import { cloneDeep } from 'lodash'
 // import { useRoute } from 'vue-router'
 import leftIcon from '@/styles/img/left1.png'
 import rightIcon from '@/styles/img/right1.png'
@@ -68,6 +69,7 @@ export default defineComponent({
     // const token: any = route.query.token
     // console.log('token:222 ', token)
     const menuData: any = ref([])
+    const pcmenuData: any = ref([])
     const username: any = ref('')
     const gradeList: any = ref([])
     const gradeName: any = ref('')
@@ -90,10 +92,9 @@ export default defineComponent({
       store.commit('changeSidebarFold', !sidebarFold)
     }
     const gradeClick = (gradeName: any) => {
-      console.log('gradeName: ', gradeName)
       gradeList.value.forEach(element => {
         if (element.id == gradeName) {
-          menuData.value = element.children
+          pcmenuData.value = element.children
         }
       })
     }
@@ -110,15 +111,9 @@ export default defineComponent({
         let res: any = await PcLogin({
           // userId: 315
         })
-        // res.data.menulist.forEach(element => {
-        //   if (element.grade === 1) {
-        //     gradeList.value.push(element)
-        //   }
-        // })
-        // console.log('gradeList: ', gradeList.value)
         gradeList.value = res.data.menulist
         gradeName.value = res.data.menulist[0].id
-        menuData.value = res.data.menulist[0].children
+        gradeClick(gradeName.value)
         username.value = res.data.username
       }
     }
@@ -140,9 +135,10 @@ export default defineComponent({
     //   // window.location.href = "http://test.tech.9fbank.com/canary/#/login?from=newbi"; //test
     //   window.location.href = "http://tech.9fbank.com/canary/#/login";
     // }
-    console.log('menuData', menuData.value)
+    console.log('menuData', pcmenuData.value)
     return {
       menuData,
+      pcmenuData,
       username,
       leftIcon,
       rightIcon,
