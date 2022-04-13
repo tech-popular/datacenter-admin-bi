@@ -2,9 +2,11 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { showMessage } from './status'
 import { ElMessage, ElLoading } from 'element-plus'
 import { IResponse, ILogin, ZLogin, IModelColumn, IModelSearch } from './type'
-import base from './untils'
+// import base from './untils'
 let axiosInstance: AxiosInstance = axios.create({
-  baseURL: base.baseurl,
+  // baseURL: base.baseurl,
+  // baseURL: 'https://tech.9f.cn/canary-admin',
+  baseURL: 'http://192.168.161.219:8000/canary-admin',
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json;charset=UTF-8',
@@ -17,7 +19,7 @@ let loadingInstance
 axiosInstance.interceptors.request.use(
   (config: AxiosRequestConfig) => {
     loadingInstance = ElLoading.service({ fullscreen: true })
-    ;(config.headers as any).token = localStorage.getItem('token')
+      ; (config.headers as any).token = localStorage.getItem('token')
     return config
   },
   (error: any) => {

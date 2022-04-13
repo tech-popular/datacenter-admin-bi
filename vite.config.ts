@@ -14,8 +14,8 @@ export default defineConfig({
 			views: resolve('src/views'),
 			utils: resolve('src/utils'),
 			routes: resolve('src/routes'),
-			styles: resolve('src/styles'),
-			types: resolve('src/types')
+			styles: resolve('src/styles')
+			// types: resolve('src/types')
 		}
 	},
 	server: {
