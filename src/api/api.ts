@@ -5,12 +5,12 @@ import { IResponse, ILogin, ZLogin, IModelColumn, IModelSearch } from './type'
 // import base from './untils'
 let axiosInstance: AxiosInstance = axios.create({
   // baseURL: base.baseurl,
-  // baseURL: 'https://tech.9f.cn/canary-admin',
-  baseURL: 'http://192.168.161.219:8000/canary-admin',
+  baseURL: 'https://tech.9f.cn/canary-admin',
+  // baseURL: 'http://192.168.161.219:8000/canary-admin',
   headers: {
     Accept: 'application/json',
-    'Content-Type': 'application/json;charset=UTF-8',
-    // "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+    // 'Content-Type': 'application/json;charset=UTF-8',
+    "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
   },
 })
 

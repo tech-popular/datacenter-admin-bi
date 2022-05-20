@@ -3,10 +3,10 @@
     <el-form-item label="统计日期：" prop="dateParam" v-if="dateParamVisible">
       <el-date-picker v-model="searchForm.dateParam" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="YYYYMMDD"></el-date-picker>
     </el-form-item>
-    <el-form-item label="日期：" prop="dateOption" v-if="dateOptionVisible">
+    <!-- <el-form-item label="日期：" prop="dateOption" v-if="dateOptionVisible">
       <el-date-picker v-model="searchForm.dateOption" type="date" placeholder="选择日期" value-format="YYYYMMDD"></el-date-picker>
-    </el-form-item>
-    <el-form-item>
+    </el-form-item>-->
+    <!-- <el-form-item>
       <el-popover placement="right" width="400px" trigger="click">
         <template #reference>
           <el-button type="info" plain>过滤条件</el-button>
@@ -22,7 +22,6 @@
           </el-form-item>
           <el-form-item :label="item.colBizName">
             <InputTag v-model="item.colFlag" :valueType="'string'" :add-tag-on-blur="true" :allow-duplicates="true" class="itemIput inputTag" placeholder="可用回车输入多条" />
-            <!-- <el-input v-model="item.colFlag" placeholder="以逗号分割输入多个条件"></el-input> -->
           </el-form-item>
           <el-form-item :label="item.colBizName">
             <el-select>
@@ -37,7 +36,7 @@
           </el-form-item>
         </div>
       </el-popover>
-    </el-form-item>
+    </el-form-item>-->
     <el-form-item v-model="dimParams.length">
       <el-popover placement="right" width="400px" trigger="click">
         <template #reference>
@@ -129,7 +128,8 @@ import {
   reactive,
   toRefs,
   nextTick,
-  defineAsyncComponent
+  defineAsyncComponent,
+  toRaw
 } from 'vue'
 import { useRoute, RouteLocationNormalized } from 'vue-router'
 import {
@@ -143,6 +143,8 @@ import order1 from '@/static/image/order1.gif'
 import order2 from '@/static/image/order2.gif'
 const InputTag = defineAsyncComponent(() => import('./components/InputTag.vue'))
 import dayjs from 'dayjs'
+import qs from 'qs'
+
 export default defineComponent({
   name: 'TableData',
   components: { InputTag },
@@ -154,8 +156,8 @@ export default defineComponent({
         total: 200
       },
       searchForm: {
-        dateParam: '',
-        dateOption: '',
+        dateParam: [],
+        dateOption: [],
         dim: [],
         option: []
       }, // 查询条件报表数据
@@ -163,8 +165,6 @@ export default defineComponent({
       dateOptionVisible: true,
       value2: '',
       columnDatas: [], // 记录表头数据
-      // const dateParam = ref('') // 记录日期字段
-      // const dateOption = ref('') // 年月时间格式
       optionParams: [], // 记录过 滤条件数据
       dimParams: [], // 记录维度数据
       indexParams: [], // 记录指标数据
@@ -187,7 +187,7 @@ export default defineComponent({
     const route: RouteLocationNormalized = useRoute()
     const modelId: string = String(route.params.modelId)
     // const columnDatas: any = ref([]) // 记录表头数据
-    // // const dateParam = ref('') // 记录日期字段
+    // const dateParam: any = ref([]) // 记录日期字段
     // // const dateOption = ref('') // 年月时间格式
     // const optionParams: any = ref([]) // 记录过 滤条件数据
     // const dimParams: any = ref([]) // 记录维度数据
@@ -238,8 +238,8 @@ export default defineComponent({
     // }
     const tableData: any = ref([])
     const getTableData = async (params: IModelSearch) => {
-      // const res: IResponse = await getReportSearchData(params)
-      // tableData.value = res.data
+      const res: IResponse = await getReportSearchData(params)
+      tableData.value = res.data
     }
 
     return {
@@ -256,7 +256,9 @@ export default defineComponent({
       order0,
       order1,
       order2,
-      dayjs
+      dayjs,
+      qs
+      // dateParam
       // checkedDim,
       // ...toRefs(searchForm),
       // handleFilterCondition,
@@ -265,40 +267,70 @@ export default defineComponent({
   },
   mounted() {
     // 获取表头数据
-    // this.getColumns({
-    //   // model_id: this.modelId
-    // })
     this.getColumns()
-    // 获取表数据
-    this.searchData()
   },
   methods: {
     // 搜索数据
     searchData() {
       let params: IModelSearch = {
-        model_id: this.modelId,
-        page: this.pagination.page,
-        pageSize: this.pagination.pageSize,
-        ascColumn: '',
-        descColumn: '',
-        groupColumn: ''
+        modelID: Number(this.modelId),
+        pageNo: this.pagination.page,
+        pageRows: this.pagination.pageSize,
+        dimCodeJSON: {}, // 维度入参
+        kpiCodeJSON: {}, // 指标入参
+        dateTextJSON: {}, // 统计日期
+        dateOptionJSON: {},
+        optionJSON: {},
+        textJSON: {},
+        orderJSON: {}, // 排序入参
+        compareTextJson: {}
       }
-
-      // if (!!this.dateParam && !!this.searchForm.qt) {
-      //   params.dataList = [
-      //     {
-      //       dataColumn: this.dateParam,
-      //       startTime: this.searchForm.qt[0],
-      //       endTime: this.searchForm.qt[1]
-      //     }
-      //   ]
-      // }
-
-      // if (this.searchForm.dim.length > 0) {
-      //   params.dimList = this.searchForm.dim
-      // }
-
-      // this.getTableData(params)
+      // 统计日期
+      if (this.searchForm.dateParam.length) {
+        params.dateTextJSON = {
+          beginTimeKey: JSON.stringify(this.conditionList[0]),
+          beginTimeValue: this.searchForm.dateParam[0],
+          endTimeKey: JSON.stringify(this.conditionList[0]),
+          endTimeValue: this.searchForm.dateParam[1]
+        }
+      }
+      // 排序
+      if (this.checkedorders.length) {
+        let orderDataJSON = []
+        this.orderParams.filter(item => {
+          if (this.checkedorders.indexOf(item.colName) > -1) {
+            orderDataJSON.push({
+              column: JSON.stringify(item),
+              value: JSON.stringify(item.colOrderFlag)
+              // column: item,
+              // value: item.colOrderFlag
+            })
+          }
+        })
+        params.orderJSON = orderDataJSON
+      }
+      // 指标
+      if (this.checkedFields.length) {
+        let kpiCodeDataJSON = []
+        this.indexParams.filter(item => {
+          if (this.checkedFields.indexOf(item.colName) > -1) {
+            kpiCodeDataJSON.push(JSON.stringify(item))
+          }
+        })
+        params.kpiCodeJSON = kpiCodeDataJSON
+      }
+      // 维度
+      if (this.checkedDim.length) {
+        let dimCodeDataJSON = []
+        this.dimParams.filter(item => {
+          if (this.checkedDim.indexOf(item.colName) > -1) {
+            dimCodeDataJSON.push(JSON.stringify(item))
+          }
+        })
+        params.dimCodeJSON = dimCodeDataJSON
+      }
+      console.log('params: ', params)
+      this.getTableData(params)
     },
     async getColumns() {
       const res: IResponse = await getAnalysisModelColumn(this.modelId)
@@ -363,6 +395,8 @@ export default defineComponent({
           dayjs(today).format('YYYY-MM-DD')
         ]
       }
+      console.log('this.searchForm.dateParam: ', this.searchForm.dateParam)
+
       // 今天
       if (conditionType === 23) {
         this.searchForm.dateParam = [
@@ -420,6 +454,9 @@ export default defineComponent({
       }
       // 24 其它时间段条件 1个日期 beginTimeValue 开始时间
       // 14、15 拉链表开始时间、拉链表结束时间 1个日期 beginTimeValue 开始时间
+
+      // 获取表数据
+      this.searchData()
     },
     getFirstDayOfWeek(date) {
       let weekday = date.getDay() || 7 //获取星期几,getDay()返回值是 0（周日） 到 6（周六） 之间的一个整数。0||7为7，即weekday的值为1-7
@@ -438,8 +475,7 @@ export default defineComponent({
       this.searchData()
     },
     onSearch() {
-      console.log(this.searchForm.qt)
-      console.log(this.searchForm.dim)
+      console.log(this.searchForm)
       this.searchData()
     },
     onSortChange({ order, prop }) {
@@ -461,7 +497,14 @@ export default defineComponent({
       console.log(this.checkedFields)
     },
     handleCheckAllChange(value: boolean) {
-      this.checkedFields = value ? this.indexParams : []
+      if (value) {
+        this.indexParams.forEach(element => {
+          this.checkedFields.push(element.colName)
+        })
+      } else {
+        this.checkedFields = []
+      }
+      // this.checkedFields = value ? this.indexParams : []
       this.isFieldIndeterminate = false
       console.log(this.checkedFields, '指标')
     },
@@ -473,7 +516,14 @@ export default defineComponent({
       console.log(this.checkedDim)
     },
     handleCheckAllChangeDim(value: boolean) {
-      this.checkedDim = value ? this.dimParams : []
+      if (value) {
+        this.dimParams.forEach(element => {
+          this.checkedDim.push(element.colName)
+        })
+      } else {
+        this.checkedDim = []
+      }
+      // this.checkedDim = value ? this.dimParams : []
       this.isDimIndeterminate = false
       console.log(this.checkedDim, '维度')
     },
