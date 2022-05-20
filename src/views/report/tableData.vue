@@ -103,18 +103,18 @@
       <el-button type="primary" plain @click="onSearch">查询</el-button>
     </el-form-item>
   </el-form>
-  <el-table :data="tableData" fit border stripe :header-cell-class-name="handleHeadAddClass" @sort-change="onSortChange" size="small">
+  <el-table :data="tableData" show-summary fit border stripe :header-cell-class-name="handleHeadAddClass" @sort-change="onSortChange" size="small">
     <template v-for="column in columnDatas" :key="column.tabID">
-      <el-table-column :prop="column.colName" :label="column.colBizName" :sortable="column.sortable" />
+      <el-table-column :fixed="column.fixed" :prop="column.colName" :label="column.colBizName" :sortable="column.sortable" />
     </template>
   </el-table>
   <div class="pagination">
     <el-pagination
-      v-model:currentPage="pagination.page"
+      v-model:currentPage="page"
       :page-sizes="[10, 20, 50, 100]"
-      :page-size="pagination.pageSize"
+      :page-size="pageSize"
       layout="total, sizes, prev, pager, next, jumper"
-      :total="pagination.total"
+      :total="total"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     ></el-pagination>
@@ -149,11 +149,6 @@ export default defineComponent({
   components: { InputTag },
   data() {
     return {
-      pagination: {
-        page: 1,
-        pageSize: 10,
-        total: 200
-      },
       searchForm: {
         dateParam: [],
         dateOption: [],
@@ -163,7 +158,7 @@ export default defineComponent({
       dateParamVisible: true,
       dateOptionVisible: true,
       value2: '',
-      columnDatas: [], // 记录表头数据
+      // columnDatas: [], // 记录表头数据
       optionParams: [], // 记录过 滤条件数据
       dimParams: [], // 记录维度数据
       indexParams: [], // 记录指标数据
@@ -188,7 +183,18 @@ export default defineComponent({
     const clickVal = ref<string>()
     const moveVal = ref<string>()
     const endVal = ref<string>()
-    // const columnDatas: any = ref([]) // 记录表头数据
+    const pagination = reactive({
+      page: 1,
+      pageSize: 10,
+      total: 0
+    })
+    //  const searchForm = reactive({
+    //   dateParam: [],
+    //     dateOption: [],
+    //     dim: [],
+    //     option: []
+    // }) // 查询条件报表数据
+    const columnDatas: any = ref([]) // 记录表头数据
     // const dateParam: any = ref([]) // 记录日期字段
     // // const dateOption = ref('') // 年月时间格式
     // const optionParams: any = ref([]) // 记录过 滤条件数据
@@ -241,12 +247,23 @@ export default defineComponent({
     const tableData: any = ref([])
     const getTableData = async (params: IModelSearch) => {
       const res: IResponse = await getReportSearchData(params)
-      tableData.value = res.data
+      console.log('res: ', res)
+      if (res.code === 0) {
+        res.analysisModel.rowList.forEach(citem => {
+          const rowListData = {}
+          citem.fieldValueList.forEach(item => {
+            rowListData[item.column.colName] = item.value
+          })
+          tableData.value.push(rowListData)
+        })
+        pagination.total =
+          res.analysisModel.portalPage.conditionRelationList.totalRows
+      }
     }
 
     return {
       modelId,
-      // columnDatas,
+      columnDatas,
       tableData,
       // getColumns,
       getTableData,
@@ -261,10 +278,10 @@ export default defineComponent({
       dayjs,
       clickVal,
       moveVal,
-      endVal
+      endVal,
+      ...toRefs(pagination)
       // dateParam
       // checkedDim,
-      // ...toRefs(searchForm),
       // handleFilterCondition,
       // conditionList
     }
@@ -278,8 +295,8 @@ export default defineComponent({
     searchData() {
       let params: IModelSearch = {
         modelID: Number(this.modelId),
-        pageNo: this.pagination.page,
-        pageRows: this.pagination.pageSize
+        pageNo: this.page,
+        pageRows: this.pageSize
         // dimCodeJSON: {}, // 维度入参
         // kpiCodeJSON: {}, // 指标入参
         // dateTextJSON: {}, // 统计日期
@@ -290,49 +307,68 @@ export default defineComponent({
         // compareTextJson: {}
       }
       // 统计日期
-      // if (this.searchForm.dateParam.length) {
-      //   params.dateTextJSON = {
-      //     beginTimeKey: JSON.stringify(this.conditionList[0]),
-      //     beginTimeValue: this.searchForm.dateParam[0],
-      //     endTimeKey: JSON.stringify(this.conditionList[0]),
-      //     endTimeValue: this.searchForm.dateParam[1]
-      //   }
-      // }
+      if (this.searchForm.dateParam.length) {
+        params.dateTextJSON = {
+          beginTimeKey: JSON.stringify(this.conditionList[0]),
+          beginTimeValue: this.searchForm.dateParam[0],
+          endTimeKey: JSON.stringify(this.conditionList[0]),
+          endTimeValue: this.searchForm.dateParam[1]
+        }
+      }
       // // 排序
-      // if (this.checkedorders.length) {
-      //   let orderDataJSON = []
-      //   this.orderParams.filter(item => {
-      //     if (this.checkedorders.indexOf(item.colName) > -1) {
-      //       orderDataJSON.push({
-      //         column: JSON.stringify(item),
-      //         value: JSON.stringify(item.colOrderFlag)
-      //         // column: item,
-      //         // value: item.colOrderFlag
-      //       })
-      //     }
-      //   })
-      //   params.orderJSON = orderDataJSON
-      // }
-      // // 指标
-      // if (this.checkedFields.length) {
-      //   let kpiCodeDataJSON = []
-      //   this.indexParams.filter(item => {
-      //     if (this.checkedFields.indexOf(item.colName) > -1) {
-      //       kpiCodeDataJSON.push(JSON.stringify(item))
-      //     }
-      //   })
-      //   params.kpiCodeJSON = kpiCodeDataJSON
-      // }
-      // // 维度
-      // if (this.checkedDim.length) {
-      //   let dimCodeDataJSON = []
-      //   this.dimParams.filter(item => {
-      //     if (this.checkedDim.indexOf(item.colName) > -1) {
-      //       dimCodeDataJSON.push(JSON.stringify(item))
-      //     }
-      //   })
-      //   params.dimCodeJSON = dimCodeDataJSON
-      // }
+      if (this.checkedorders.length) {
+        let orderDataJSON = {}
+        let orderindex = 0
+        this.orderParams.filter(item => {
+          if (this.checkedorders.indexOf(item.colName) > -1) {
+            for (let key in item) {
+              if (!item[key]) {
+                item[key] = ''
+              }
+            }
+            orderDataJSON[orderindex] = {
+              column: JSON.stringify(item),
+              value: JSON.stringify(item.colOrderFlag)
+            }
+            orderindex = orderindex + 1
+          }
+        })
+        params.orderJSON = orderDataJSON
+      }
+      // 指标
+      if (this.checkedFields.length) {
+        let kpiCodeDataJSON = {}
+        let kpiIndex = 0
+        this.indexParams.filter(item => {
+          if (this.checkedFields.indexOf(item.colName) > -1) {
+            for (let key in item) {
+              if (!item[key]) {
+                item[key] = ''
+              }
+            }
+            kpiCodeDataJSON[kpiIndex] = JSON.stringify(item)
+            kpiIndex = kpiIndex + 1
+          }
+        })
+        params.kpiCodeJSON = kpiCodeDataJSON
+      }
+      // 维度
+      if (this.checkedDim.length) {
+        let dimCodeDataJSON = {}
+        let dimIndex = 0
+        this.dimParams.filter(item => {
+          if (this.checkedDim.indexOf(item.colName) > -1) {
+            for (let key in item) {
+              if (!item[key]) {
+                item[key] = ''
+              }
+            }
+            dimCodeDataJSON[dimIndex] = JSON.stringify(item)
+            dimIndex = dimIndex + 1
+          }
+        })
+        params.dimCodeJSON = dimCodeDataJSON
+      }
       // const formData = new FormData()
       // Object.keys(params).forEach(key => {
       //   formData.append(key, params[key])
@@ -352,7 +388,9 @@ export default defineComponent({
     async getColumns() {
       const res: IResponse = await getAnalysisModelColumn(this.modelId)
       console.log('res:报表 ', res)
-      console.log('res.optionHTMLList: ', res.optionHTMLList)
+      res.headRows.forEach(item => {
+        item.colBizNameData = ''
+      })
       this.columnDatas = res.headRows
       this.optionParams = res.optionHTMLList
       this.orderParams = res.orderHTMLList
@@ -402,7 +440,6 @@ export default defineComponent({
         conditionTypeOneArr.includes(conditionType)
           ? (this.dateOptionVisible = true)
           : (this.dateOptionVisible = false)
-        console.log('this.dateOptionVisible: ', this.dateOptionVisible)
       })
       // 昨天
       if ([1, 7, 8].includes(conditionType)) {
@@ -412,8 +449,6 @@ export default defineComponent({
           dayjs(today).format('YYYY-MM-DD')
         ]
       }
-      console.log('this.searchForm.dateParam: ', this.searchForm.dateParam)
-
       // 今天
       if (conditionType === 23) {
         this.searchForm.dateParam = [
@@ -484,11 +519,11 @@ export default defineComponent({
     //  10 输入值：1,5  1 <= x <= 5
     handleInputString(value) {},
     handleSizeChange(val: number) {
-      this.pagination.pageSize = val
+      this.pageSize = val
       this.searchData()
     },
     handleCurrentChange(val: number) {
-      this.pagination.page = val
+      this.page = val
       this.searchData()
     },
     onSearch() {
