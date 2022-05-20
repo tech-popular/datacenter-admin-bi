@@ -91,8 +91,8 @@
             <span style="color:red">请拖动进行排序，并选择升/降序（灰色箭头为不排序）</span>
           </el-col>
         </el-row>
-        <el-checkbox-group v-model="checkedorders" @change="handleCheckedOrderChange">
-          <div v-for="(order, index) in orderParams" :key="index">
+        <el-checkbox-group v-model="checkedorders">
+          <div v-for="(order, index) in orderParams" :key="index" draggable="true" @dragstart="dragstart(order)" @dragenter="dragenter(order)" @dragend="dragend(order)">
             <el-checkbox :label="order.colName">{{order.colBizName}}</el-checkbox>
             <img v-if="checkedorders.includes(order.colName)" @click="changeOrderFlag(order, index)" :src="order.colOrderFlag ? (order.colOrderFlag === 1 ? order1 : order2) : order0" />
           </div>
@@ -143,8 +143,7 @@ import order1 from '@/static/image/order1.gif'
 import order2 from '@/static/image/order2.gif'
 const InputTag = defineAsyncComponent(() => import('./components/InputTag.vue'))
 import dayjs from 'dayjs'
-import qs from 'qs'
-
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 export default defineComponent({
   name: 'TableData',
   components: { InputTag },
@@ -186,6 +185,9 @@ export default defineComponent({
   setup() {
     const route: RouteLocationNormalized = useRoute()
     const modelId: string = String(route.params.modelId)
+    const clickVal = ref<string>()
+    const moveVal = ref<string>()
+    const endVal = ref<string>()
     // const columnDatas: any = ref([]) // 记录表头数据
     // const dateParam: any = ref([]) // 记录日期字段
     // // const dateOption = ref('') // 年月时间格式
@@ -257,7 +259,9 @@ export default defineComponent({
       order1,
       order2,
       dayjs,
-      qs
+      clickVal,
+      moveVal,
+      endVal
       // dateParam
       // checkedDim,
       // ...toRefs(searchForm),
@@ -275,61 +279,74 @@ export default defineComponent({
       let params: IModelSearch = {
         modelID: Number(this.modelId),
         pageNo: this.pagination.page,
-        pageRows: this.pagination.pageSize,
-        dimCodeJSON: {}, // 维度入参
-        kpiCodeJSON: {}, // 指标入参
-        dateTextJSON: {}, // 统计日期
-        dateOptionJSON: {},
-        optionJSON: {},
-        textJSON: {},
-        orderJSON: {}, // 排序入参
-        compareTextJson: {}
+        pageRows: this.pagination.pageSize
+        // dimCodeJSON: {}, // 维度入参
+        // kpiCodeJSON: {}, // 指标入参
+        // dateTextJSON: {}, // 统计日期
+        // dateOptionJSON: {},
+        // optionJSON: {},
+        // textJSON: {},
+        // orderJSON: {}, // 排序入参
+        // compareTextJson: {}
       }
       // 统计日期
-      if (this.searchForm.dateParam.length) {
-        params.dateTextJSON = {
-          beginTimeKey: JSON.stringify(this.conditionList[0]),
-          beginTimeValue: this.searchForm.dateParam[0],
-          endTimeKey: JSON.stringify(this.conditionList[0]),
-          endTimeValue: this.searchForm.dateParam[1]
-        }
-      }
-      // 排序
-      if (this.checkedorders.length) {
-        let orderDataJSON = []
-        this.orderParams.filter(item => {
-          if (this.checkedorders.indexOf(item.colName) > -1) {
-            orderDataJSON.push({
-              column: JSON.stringify(item),
-              value: JSON.stringify(item.colOrderFlag)
-              // column: item,
-              // value: item.colOrderFlag
-            })
-          }
-        })
-        params.orderJSON = orderDataJSON
-      }
-      // 指标
-      if (this.checkedFields.length) {
-        let kpiCodeDataJSON = []
-        this.indexParams.filter(item => {
-          if (this.checkedFields.indexOf(item.colName) > -1) {
-            kpiCodeDataJSON.push(JSON.stringify(item))
-          }
-        })
-        params.kpiCodeJSON = kpiCodeDataJSON
-      }
-      // 维度
-      if (this.checkedDim.length) {
-        let dimCodeDataJSON = []
-        this.dimParams.filter(item => {
-          if (this.checkedDim.indexOf(item.colName) > -1) {
-            dimCodeDataJSON.push(JSON.stringify(item))
-          }
-        })
-        params.dimCodeJSON = dimCodeDataJSON
-      }
-      console.log('params: ', params)
+      // if (this.searchForm.dateParam.length) {
+      //   params.dateTextJSON = {
+      //     beginTimeKey: JSON.stringify(this.conditionList[0]),
+      //     beginTimeValue: this.searchForm.dateParam[0],
+      //     endTimeKey: JSON.stringify(this.conditionList[0]),
+      //     endTimeValue: this.searchForm.dateParam[1]
+      //   }
+      // }
+      // // 排序
+      // if (this.checkedorders.length) {
+      //   let orderDataJSON = []
+      //   this.orderParams.filter(item => {
+      //     if (this.checkedorders.indexOf(item.colName) > -1) {
+      //       orderDataJSON.push({
+      //         column: JSON.stringify(item),
+      //         value: JSON.stringify(item.colOrderFlag)
+      //         // column: item,
+      //         // value: item.colOrderFlag
+      //       })
+      //     }
+      //   })
+      //   params.orderJSON = orderDataJSON
+      // }
+      // // 指标
+      // if (this.checkedFields.length) {
+      //   let kpiCodeDataJSON = []
+      //   this.indexParams.filter(item => {
+      //     if (this.checkedFields.indexOf(item.colName) > -1) {
+      //       kpiCodeDataJSON.push(JSON.stringify(item))
+      //     }
+      //   })
+      //   params.kpiCodeJSON = kpiCodeDataJSON
+      // }
+      // // 维度
+      // if (this.checkedDim.length) {
+      //   let dimCodeDataJSON = []
+      //   this.dimParams.filter(item => {
+      //     if (this.checkedDim.indexOf(item.colName) > -1) {
+      //       dimCodeDataJSON.push(JSON.stringify(item))
+      //     }
+      //   })
+      //   params.dimCodeJSON = dimCodeDataJSON
+      // }
+      // const formData = new FormData()
+      // Object.keys(params).forEach(key => {
+      //   formData.append(key, params[key])
+      // })
+      // axios({
+      //   method: 'post',
+      //   url: `https://tech.9f.cn/canary-admin/bi/olapModel/doSearchAnalysisModel`,
+      //   data: formData,
+      //   headers: {
+      //     token: localStorage.getItem('token')
+      //   }
+      // }).then(res => {
+      //   console.log('res: ', res)
+      // })
       this.getTableData(params)
     },
     async getColumns() {
@@ -523,15 +540,8 @@ export default defineComponent({
       } else {
         this.checkedDim = []
       }
-      // this.checkedDim = value ? this.dimParams : []
       this.isDimIndeterminate = false
       console.log(this.checkedDim, '维度')
-    },
-    handleCheckedOrderChange(value: string[]) {
-      // this.checkedorders
-      console.log('this.checkedorders: ', this.checkedorders)
-      const checkedCount = value.length
-      // this.checkDimAll = checkedCount === this.dimParams.length
     },
     changeOrderFlag(order, index) {
       switch (order.colOrderFlag) {
@@ -547,6 +557,20 @@ export default defineComponent({
         default:
           this.orderParams[index].colOrderFlag = 1
       }
+    },
+    dragstart(item) {
+      this.clickVal = item
+    },
+    dragenter(item) {
+      this.moveVal = item
+    },
+    dragend(item) {
+      this.endVal = item
+      let index = this.orderParams.indexOf(item) //移动元素的当前位置
+      let moveObj = this.moveVal ? this.moveVal : ''
+      let addIndex = this.orderParams.indexOf(moveObj) //要移动后的位置
+      this.orderParams.splice(index, 1)
+      this.orderParams.splice(addIndex, 0, item)
     }
   }
 })

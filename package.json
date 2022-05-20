@@ -20,6 +20,7 @@
     "vconsole": "^3.9.4",
     "vue": "^3.2.16",
     "vue-router": "^4.0.12",
+    "vuedraggable": "^2.24.3",
     "vuex": "^4.0.2"
   },
   "devDependencies": {
