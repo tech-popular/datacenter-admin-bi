@@ -103,14 +103,25 @@
       <el-button type="primary" plain @click="onSearch">查询</el-button>
     </el-form-item>
   </el-form>
-  <el-table :data="tableData" show-summary fit border stripe :header-cell-class-name="handleHeadAddClass" @sort-change="onSortChange" size="small">
+  <el-table
+    :data="tableData"
+    fit
+    border
+    stripe
+    height="500px"
+    :header-cell-class-name="handleHeadAddClass"
+    @sort-change="onSortChange"
+    :span-method="objectSpanMethod"
+    highlight-current-row
+    size="small"
+  >
     <template v-for="column in columnDatas" :key="column.tabID">
       <el-table-column :fixed="column.fixed" :prop="column.colName" :label="column.colBizName" :sortable="column.sortable" />
     </template>
   </el-table>
   <div class="pagination">
     <el-pagination
-      v-model:currentPage="page"
+      :current-page="page"
       :page-sizes="[10, 20, 50, 100]"
       :page-size="pageSize"
       layout="total, sizes, prev, pager, next, jumper"
@@ -144,6 +155,7 @@ import order2 from '@/static/image/order2.gif'
 const InputTag = defineAsyncComponent(() => import('./components/InputTag.vue'))
 import dayjs from 'dayjs'
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
+import { log } from 'util'
 export default defineComponent({
   name: 'TableData',
   components: { InputTag },
@@ -195,6 +207,8 @@ export default defineComponent({
     //     option: []
     // }) // 查询条件报表数据
     const columnDatas: any = ref([]) // 记录表头数据
+    const dateTextConditionHTMLList: any = ref([])
+    const columnArr = ref([]) // 合并列
     // const dateParam: any = ref([]) // 记录日期字段
     // // const dateOption = ref('') // 年月时间格式
     // const optionParams: any = ref([]) // 记录过 滤条件数据
@@ -247,17 +261,38 @@ export default defineComponent({
     const tableData: any = ref([])
     const getTableData = async (params: IModelSearch) => {
       const res: IResponse = await getReportSearchData(params)
-      console.log('res: ', res)
+      columnArr.value = []
+      tableData.value = []
       if (res.code === 0) {
+        console.log('res: ', res)
         res.analysisModel.rowList.forEach(citem => {
           const rowListData = {}
+          columnDatas.value = []
           citem.fieldValueList.forEach(item => {
             rowListData[item.column.colName] = item.value
+            if (!columnDatas.value.includes(item.column)) {
+              columnDatas.value.push(item.column)
+            }
           })
           tableData.value.push(rowListData)
         })
-        pagination.total =
-          res.analysisModel.portalPage.conditionRelationList.totalRows
+        if (res.analysisModel.totalRow) {
+          const totalRowListData = {}
+          res.analysisModel.totalRow.fieldValueList.forEach((citem, cindex) => {
+            columnDatas.value.forEach((item, index) => {
+              if (cindex === index) {
+                totalRowListData[item.colName] = citem.value
+                if (citem.value === 'TOTAL') {
+                  item['fixed'] = true
+                } else {
+                  item['fixed'] = false
+                }
+              }
+            })
+          })
+          tableData.value.push(totalRowListData)
+        }
+        pagination.total = res.analysisModel.portalPage.totalRows
       }
     }
 
@@ -265,6 +300,7 @@ export default defineComponent({
       modelId,
       columnDatas,
       tableData,
+      columnArr,
       // getColumns,
       getTableData,
       // dimParams,
@@ -279,6 +315,7 @@ export default defineComponent({
       clickVal,
       moveVal,
       endVal,
+      dateTextConditionHTMLList,
       ...toRefs(pagination)
       // dateParam
       // checkedDim,
@@ -306,16 +343,34 @@ export default defineComponent({
         // orderJSON: {}, // 排序入参
         // compareTextJson: {}
       }
-      // 统计日期
+      // // 统计日期
       if (this.searchForm.dateParam.length) {
+        delete this.conditionList[0].bizName
+        delete this.conditionList[0].columnName
+        delete this.conditionList[0].beginTimeKey
+        delete this.conditionList[0].beginTimeValue
+        // console.log(' this.conditionList[0]: ', this.conditionList[0])
+        // // this.conditionList[0]['modelId'] = Number(this.modelId)
+        //   for (let key in this.conditionList[0]) {
+        //     if (!this.conditionList[0][key]) {
+        //       this.conditionList[0][key] = ''
+        //     }
+        //   }
         params.dateTextJSON = {
-          beginTimeKey: JSON.stringify(this.conditionList[0]),
-          beginTimeValue: this.searchForm.dateParam[0],
-          endTimeKey: JSON.stringify(this.conditionList[0]),
-          endTimeValue: this.searchForm.dateParam[1]
+          // beginTimeKey: this.dateTextConditionHTMLList[0].beginTimeKey,
+
+          // beginTimeValue: this.dateTextConditionHTMLList[0].beginTimeValue,
+          // endTimeKey: this.dateTextConditionHTMLList[0].endTimeKey,
+          // endTimeValue: this.dateTextConditionHTMLList[0].endTimeValue
+          beginTimeKey:
+            '{"code":1,"colBizName":"统计日期","colName":"day_id","colRefTab":0,"conditionRefColName":"","conditionType":1,"databaseName":"bd_rpt","dateType":1,"foreignList":[],"isNull":"yes","modelId":3425011,"olapModelConditionTypeList":[],"relation":"and","status":"1","tabName":"fk_wk_customer_trust_day_sum"}',
+          beginTimeValue: '2022-05-20',
+          endTimeKey:
+            '{"code":1,"colBizName":"统计日期","colName":"day_id","colRefTab":0,"conditionRefColName":"","conditionType":1,"databaseName":"bd_rpt","dateType":1,"foreignList":[],"isNull":"yes","modelId":3425011,"olapModelConditionTypeList":[],"relation":"and","status":"1","tabName":"fk_wk_customer_trust_day_sum"}',
+          endTimeValue: '2022-05-20'
         }
       }
-      // // 排序
+      // 排序
       if (this.checkedorders.length) {
         let orderDataJSON = {}
         let orderindex = 0
@@ -369,20 +424,6 @@ export default defineComponent({
         })
         params.dimCodeJSON = dimCodeDataJSON
       }
-      // const formData = new FormData()
-      // Object.keys(params).forEach(key => {
-      //   formData.append(key, params[key])
-      // })
-      // axios({
-      //   method: 'post',
-      //   url: `https://tech.9f.cn/canary-admin/bi/olapModel/doSearchAnalysisModel`,
-      //   data: formData,
-      //   headers: {
-      //     token: localStorage.getItem('token')
-      //   }
-      // }).then(res => {
-      //   console.log('res: ', res)
-      // })
       this.getTableData(params)
     },
     async getColumns() {
@@ -401,6 +442,7 @@ export default defineComponent({
         }
       })
       this.conditionList = res.conditionList
+      this.dateTextConditionHTMLList = res.dateTextConditionHTMLList
       this.dimParams = res.dimHTMLList
       // 维度
       this.dimParams.forEach(element => {
@@ -534,6 +576,27 @@ export default defineComponent({
       this.sortField[prop] = order
       console.log(this.sortField)
     },
+    objectSpanMethod({ row, column, rowIndex, columnIndex }) {
+      if (column.fixed && !this.columnArr.includes(columnIndex)) {
+        this.columnArr.push(columnIndex)
+      }
+      this.columnArr.sort(function(a, b) {
+        /*
+         * return b-a; —> 降序排序
+         * return a-b; —> 升序排列
+         */
+        return a - b
+      }) //括号里不写回调函数则默认按照字母逐位升序排列
+      if (rowIndex === this.tableData.length - 1) {
+        if (columnIndex === this.columnArr[this.columnArr.length - 1]) {
+          return [1, this.columnArr.length]
+        } else if (columnIndex < this.columnArr[this.columnArr.length - 1]) {
+          return [0, 0]
+        }
+      }
+    },
+
+    getNodeSummaries({ columns, data }) {},
     handleHeadAddClass({ column }) {
       if (this.sortField[column.property]) {
         column.order = this.sortField[column.property]
@@ -629,5 +692,11 @@ export default defineComponent({
   line-height: 22px;
   display: inline-block;
   border: 1px solid #dcdfe6;
+}
+.el-table .cell {
+  padding: 0 !important;
+  height: 40px;
+  line-height: 40px !important;
+  text-align: center;
 }
 </style>
