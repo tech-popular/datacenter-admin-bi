@@ -1,12 +1,30 @@
 <template>
   <el-form :inline="true" :model="searchForm" class="demo-form-inline" size="small">
-    <el-form-item label="统计日期：" prop="dateParam" v-if="dateParamVisible">
+    <!-- <el-form-item label="统计日期：" prop="dateParam" v-if="dateParamVisible">
       <el-date-picker v-model="searchForm.dateParam" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="YYYYMMDD"></el-date-picker>
-    </el-form-item>
-    <!-- <el-form-item label="日期：" prop="dateOption" v-if="dateOptionVisible">
-      <el-date-picker v-model="searchForm.dateOption" type="date" placeholder="选择日期" value-format="YYYYMMDD"></el-date-picker>
     </el-form-item>-->
-    <!-- <el-form-item>
+    <div style="display: inline" v-if="dateParamVisible">
+      <el-form-item :label="searchForm.bizName" prop="beginTimeValue">
+        <el-date-picker v-model="searchForm.beginTimeValue" :clearable="false" type="date" placeholder="选择日期" class="demo-form-date"></el-date-picker>
+      </el-form-item>
+      <el-form-item label="至" prop="endTimeValue" v-if="searchForm.endTimeValue" size="small">
+        <el-date-picker v-model="searchForm.endTimeValue" type="date" :clearable="false" style="width:200px" class="demo-form-date" placeholder="选择日期"></el-date-picker>
+      </el-form-item>
+    </div>
+    <div style="display: inline" v-if="dateOptionVisible">
+      <el-form-item label="年：" prop="yearDateValue">
+        <el-select v-model="searchForm.yearDateValue " class="demo-form-date" placeholder="年">
+          <el-option v-for="(item, index) in yearList" :key="index" :value="item.value" :label="item.text"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="月：" prop="monthDateValue">
+        <el-select v-model="searchForm.monthDateValue " class="demo-form-date" placeholder="月">
+          <el-option value="-1" label="全部"></el-option>
+          <el-option v-for="(item, index) in menthList" :key="index" :value="item.value" :label="item.text"></el-option>
+        </el-select>
+      </el-form-item>
+    </div>
+    <el-form-item v-if="optionParams.length">
       <el-popover placement="right" width="400px" trigger="click">
         <template #reference>
           <el-button type="info" plain>过滤条件</el-button>
@@ -16,28 +34,27 @@
             <span>请选择过滤条件</span>
           </el-col>
         </el-row>
-        <div v-for="item in optionParams" :key="item.colRefTab">
-          <el-form-item :label="item.colBizName">
-            <el-input v-model="item.colFlag" @input="handleInputString" placeholder="请输入过滤条件"></el-input>
+        <div v-for="(item,index) in optionParams" :key="index">
+          <el-form-item :label="item.colBizName" prop="filterParams" v-if="conditionTextType.includes(item.conditionType)">
+            <el-input v-model="item.filterParams" @input="handleInputString" placeholder="请输入过滤条件"></el-input>
           </el-form-item>
-          <el-form-item :label="item.colBizName">
-            <InputTag v-model="item.colFlag" :valueType="'string'" :add-tag-on-blur="true" :allow-duplicates="true" class="itemIput inputTag" placeholder="可用回车输入多条" />
+          <el-form-item :label="item.colBizName" prop="filterParams" v-if="item.conditionType === 12">
+            <InputTag v-model="item.filterParams" :valueType="'string'" :add-tag-on-blur="true" :allow-duplicates="true" class="itemIput inputTag" placeholder="可用回车输入多条" />
           </el-form-item>
-          <el-form-item :label="item.colBizName">
-            <el-select>
+          <el-form-item :label="item.colBizName" prop="filterParams" v-if="!item.conditionType">
+            <el-select v-model="item.filterParams" filterable clearable placeholder="请选择">
               <el-option label="测试1" value="1"></el-option>
+              <el-option label="测试12" value="21"></el-option>
+              <el-option label="测试13" value="12"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item :label="item.colBizName">
-            <el-date-picker v-model="value2" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="YYYYMMDD"></el-date-picker>
-          </el-form-item>
-          <el-form-item :label="item.colBizName">
-            <el-date-picker v-model="value2" type="date" placeholder="选择日期" value-format="YYYYMMDD"></el-date-picker>
+          <el-form-item :label="item.colBizName" prop="filterParams" v-if="conditiondataTextType.includes(item.conditionType) || conditiondataTextSingleType.includes(item.conditionType) ">
+            <el-date-picker v-model="item.filterParams" :clearable="false" type="date" placeholder="选择日期" class="demo-form-date"></el-date-picker>
           </el-form-item>
         </div>
       </el-popover>
-    </el-form-item>-->
-    <el-form-item v-model="dimParams.length">
+    </el-form-item>
+    <el-form-item v-if="dimParams.length">
       <el-popover placement="right" width="400px" trigger="click">
         <template #reference>
           <el-button type="info" plain>维度</el-button>
@@ -57,7 +74,7 @@
         </el-checkbox-group>
       </el-popover>
     </el-form-item>
-    <el-form-item>
+    <el-form-item v-if="indexParams.length">
       <el-popover placement="right" width="400px" trigger="click">
         <template #reference>
           <el-button type="info" plain>指标</el-button>
@@ -78,7 +95,7 @@
         </el-checkbox-group>
       </el-popover>
     </el-form-item>
-    <el-form-item>
+    <el-form-item v-if="orderParams.length">
       <el-popover placement="right" width="500px" trigger="click">
         <template #reference>
           <el-button type="info" plain>排序</el-button>
@@ -162,13 +179,14 @@ export default defineComponent({
   data() {
     return {
       searchForm: {
-        dateParam: [],
-        dateOption: [],
-        dim: [],
-        option: []
+        beginTimeValue: '',
+        endTimeValue: '',
+        bizName: '统计日期',
+        yearDateValue: '',
+        monthDateValue: ''
       }, // 查询条件报表数据
       dateParamVisible: true,
-      dateOptionVisible: true,
+      dateOptionVisible: false,
       value2: '',
       // columnDatas: [], // 记录表头数据
       optionParams: [], // 记录过 滤条件数据
@@ -208,7 +226,52 @@ export default defineComponent({
     // }) // 查询条件报表数据
     const columnDatas: any = ref([]) // 记录表头数据
     const dateTextConditionHTMLList: any = ref([])
+    const dateOptionConditioHTMLList: any = ref([]) // 下拉年月日期条件
     const columnArr = ref([]) // 合并列
+    const yearList = ref([
+      { value: 2008, tsxt: '2008年' },
+      { value: 2009, tsxt: '2009年' },
+      { value: 2010, tsxt: '2010年' },
+      { value: 2011, tsxt: '2011年' },
+      { value: 2012, tsxt: '2012年' },
+      { value: 2013, tsxt: '2013年' },
+      { value: 2014, tsxt: '2014年' },
+      { value: 2015, tsxt: '2015年' },
+      { value: 2016, tsxt: '2016年' },
+      { value: 2017, tsxt: '2017年' },
+      { value: 2018, tsxt: '2018年' },
+      { value: 2019, tsxt: '2019年' },
+      { value: 2020, tsxt: '2020年' },
+      { value: 2021, tsxt: '2021年' },
+      { value: 2022, tsxt: '2022年' },
+      { value: 2023, tsxt: '2023年' },
+      { value: 2024, tsxt: '2024年' },
+      { value: 2025, tsxt: '2025年' },
+      { value: 2026, tsxt: '2026年' },
+      { value: 2027, tsxt: '2027年' },
+      { value: 2028, tsxt: '2028年' },
+      { value: 2029, tsxt: '2029年' },
+      { value: 2030, tsxt: '2030年' }
+    ])
+    const menthList = ref([
+      { value: 1, tsxt: '1月' },
+      { value: 2, tsxt: '2月' },
+      { value: 3, tsxt: '3月' },
+      { value: 4, tsxt: '4月' },
+      { value: 5, tsxt: '5月' },
+      { value: 6, tsxt: '6月' },
+      { value: 7, tsxt: '7月' },
+      { value: 8, tsxt: '8月' },
+      { value: 9, tsxt: '9月' },
+      { value: 10, tsxt: '10月' },
+      { value: 11, tsxt: '11月' },
+      { value: 12, tsxt: '12月' }
+    ])
+    const conditionTextType: any = ref([3, 4, 5, 6, 9, 10, 13]) // 字符输入类型
+    const conditiondataTextType = ref([1, 7, 8, 11, 16, 17, 18, 20, 22, 23, 26]) // 两个日期类型
+    const conditiondataTextSingleType: any = ref([27, 19, 24, 14, 15]) // 一个日期类型
+    const conditiondateOptionType: any = ref([2, 21]) // 年月下拉选日期类型
+    const optionHTMLList: any = ref([]) // 备份过滤条件
     // const dateParam: any = ref([]) // 记录日期字段
     // // const dateOption = ref('') // 年月时间格式
     // const optionParams: any = ref([]) // 记录过 滤条件数据
@@ -301,6 +364,13 @@ export default defineComponent({
       columnDatas,
       tableData,
       columnArr,
+      menthList,
+      yearList,
+      conditionTextType,
+      conditiondataTextType,
+      conditiondataTextSingleType,
+      conditiondateOptionType,
+      optionHTMLList,
       // getColumns,
       getTableData,
       // dimParams,
@@ -316,6 +386,7 @@ export default defineComponent({
       moveVal,
       endVal,
       dateTextConditionHTMLList,
+      dateOptionConditioHTMLList,
       ...toRefs(pagination)
       // dateParam
       // checkedDim,
@@ -337,18 +408,19 @@ export default defineComponent({
         // dimCodeJSON: {}, // 维度入参
         // kpiCodeJSON: {}, // 指标入参
         // dateTextJSON: {}, // 统计日期
-        // dateOptionJSON: {},
-        // optionJSON: {},
-        // textJSON: {},
+        // dateOptionJSON: {}, // 下拉日期
+        // optionJSON: {}, // 过滤条件为下拉选
+        // textJSON: {},  // 过滤条件是输入框
         // orderJSON: {}, // 排序入参
         // compareTextJson: {}
       }
+      console.log('过滤条件', this.optionParams)
       // // 统计日期
-      if (this.searchForm.dateParam.length) {
-        delete this.conditionList[0].bizName
-        delete this.conditionList[0].columnName
-        delete this.conditionList[0].beginTimeKey
-        delete this.conditionList[0].beginTimeValue
+      if (this.searchForm.beginTimeValue) {
+        // delete this.conditionList[0].bizName
+        // delete this.conditionList[0].columnName
+        // delete this.conditionList[0].beginTimeKey
+        // delete this.conditionList[0].beginTimeValue
         // console.log(' this.conditionList[0]: ', this.conditionList[0])
         // // this.conditionList[0]['modelId'] = Number(this.modelId)
         //   for (let key in this.conditionList[0]) {
@@ -356,18 +428,76 @@ export default defineComponent({
         //       this.conditionList[0][key] = ''
         //     }
         //   }
+        // params.dateTextJSON = {
+        //   beginTimeKey: this.dateTextConditionHTMLList[0].beginTimeKey,
+        //   beginTimeValue: this.searchForm.beginTimeValue
+        // }
+        // if (this.dateTextConditionHTMLList[0].endTimeValue) {
+        //   params.dateTextJSON.endTimeValue = this.searchForm.endTimeValue
+        //   params.dateTextJSON.endTimeKey = this.dateTextConditionHTMLList[0].endTimeKey
+        // }
         params.dateTextJSON = {
-          // beginTimeKey: this.dateTextConditionHTMLList[0].beginTimeKey,
-
-          // beginTimeValue: this.dateTextConditionHTMLList[0].beginTimeValue,
-          // endTimeKey: this.dateTextConditionHTMLList[0].endTimeKey,
-          // endTimeValue: this.dateTextConditionHTMLList[0].endTimeValue
           beginTimeKey:
             '{"code":1,"colBizName":"统计日期","colName":"day_id","colRefTab":0,"conditionRefColName":"","conditionType":1,"databaseName":"bd_rpt","dateType":1,"foreignList":[],"isNull":"yes","modelId":3425011,"olapModelConditionTypeList":[],"relation":"and","status":"1","tabName":"fk_wk_customer_trust_day_sum"}',
           beginTimeValue: '2022-05-20',
           endTimeKey:
             '{"code":1,"colBizName":"统计日期","colName":"day_id","colRefTab":0,"conditionRefColName":"","conditionType":1,"databaseName":"bd_rpt","dateType":1,"foreignList":[],"isNull":"yes","modelId":3425011,"olapModelConditionTypeList":[],"relation":"and","status":"1","tabName":"fk_wk_customer_trust_day_sum"}',
           endTimeValue: '2022-05-20'
+        }
+      }
+      // 年月下拉日期
+      if (this.searchForm.yearDateValue) {
+        params.dateOptionJson = {
+          yearDateKey: this.dateTextConditionHTMLList[0].yearDateKey,
+          yearDateValue: this.searchForm.yearDateValue,
+          monthDateKey: this.dateTextConditionHTMLList[0].monthDateKey,
+          monthDateValue: this.searchForm.monthDateValue
+        }
+      }
+      // 过滤条件
+      if (this.optionParams.length) {
+        let filterParamsData = this.optionParams.filter(
+          item => item.filterParams !== ''
+        )
+        if (filterParamsData.length) {
+          let optionJSONData = {}
+          let textJSONData = {}
+          filterParamsData.forEach(item => {
+            if (!item.conditionType) {
+              let citem = this.optionHTMLList.filter(
+                element => element.colName === item.colName
+              )[0]
+              for (let key in citem) {
+                if (!item[key]) {
+                  citem[key] = ''
+                }
+              }
+              optionJSONData[orderDataJSON.length] = {
+                column: JSON.stringify(citem),
+                value: JSON.stringify(item.filterParams)
+              }
+            } else {
+              let citem = this.optionHTMLList.filter(
+                element => element.colName === item.colName
+              )[0]
+              for (let key in citem) {
+                if (!item[key]) {
+                  citem[key] = ''
+                }
+              }
+              textJSONData[textJSONData.length] = {
+                column: JSON.stringify(citem),
+                value: JSON.stringify(item.filterParams),
+                type: item.type
+              }
+            }
+          })
+          if (optionJSONData.length) {
+            params.optionJSON = optionJSONData
+          }
+          if (textJSONData.length) {
+            params.textJSON = optionJSONData
+          }
         }
       }
       // 排序
@@ -433,7 +563,24 @@ export default defineComponent({
         item.colBizNameData = ''
       })
       this.columnDatas = res.headRows
+      res.optionHTMLList.forEach(item => {
+        item['filterParams'] = ''
+        item['type'] = ''
+        if (this.conditiondataTextType.includes(item.conditionType)) {
+          let itemBegin = item
+          itemBegin.colBizName = itemBegin.colBizName + '开始'
+          itemBegin.type = 'from'
+          let itemEnd = item
+          itemEnd.colBizName = itemEnd.colBizName + '结束'
+          itemEnd.type = 'to'
+          this.optionParams.push(itemBegin)
+          this.optionParams.push(itemEnd)
+        } else {
+          this.optionParams.push(item)
+        }
+      })
       this.optionParams = res.optionHTMLList
+
       this.orderParams = res.orderHTMLList
       //  排序
       this.orderParams.forEach(element => {
@@ -442,7 +589,9 @@ export default defineComponent({
         }
       })
       this.conditionList = res.conditionList
+      this.searchForm.bizName = res.conditionList[0].bizName
       this.dateTextConditionHTMLList = res.dateTextConditionHTMLList
+      this.dateOptionConditioHTMLList = ref.dateOptionConditioHTMLList
       this.dimParams = res.dimHTMLList
       // 维度
       this.dimParams.forEach(element => {
@@ -451,103 +600,101 @@ export default defineComponent({
         }
       })
       this.indexParams = res.kpiHTMLList
+      // 统计日期
+      if (res.dateTextConditionHTMLList.length) {
+        this.searchForm.beginTimeValue =
+          res.dateTextConditionHTMLList[0].beginTimeValue
+        if (res.dateTextConditionHTMLList[0].endTimeValue) {
+          this.searchForm.endTimeValue =
+            res.dateTextConditionHTMLList[0].endTimeValue
+        }
+      }
+      // 下拉年月日期条件
+      if (res.dateOptionConditioHTMLList.length) {
+        this.searchForm.yearDateValue =
+          res.dateOptionConditioHTMLList[0].yearDateValue
+        this.searchForm.monthDateValue =
+          res.dateOptionConditioHTMLList[0].monthDateValue
+      }
       this.handleFilterCondition()
     },
     handleFilterCondition() {
-      let conditionTypeTwoArr = [
-        1,
-        7,
-        8,
-        11,
-        16,
-        17,
-        18,
-        20,
-        22,
-        23,
-        26,
-        27,
-        19,
-        24,
-        14,
-        15
-      ]
-      let conditionTypeOneArr = [2, 21]
       let conditionType = this.conditionList[0].conditionType
       let today = new Date()
       nextTick(() => {
-        conditionTypeTwoArr.includes(conditionType)
+        this.conditiondataTextType.includes(conditionType) ||
+        this.conditiondataTextSingleType.includes(conditionType)
           ? (this.dateParamVisible = true)
           : (this.dateParamVisible = false)
-        conditionTypeOneArr.includes(conditionType)
+        this.conditiondateOptionType.includes(conditionType)
           ? (this.dateOptionVisible = true)
           : (this.dateOptionVisible = false)
       })
-      // 昨天
-      if ([1, 7, 8].includes(conditionType)) {
-        today.setDate(today.getDate() - 1)
-        this.searchForm.dateParam = [
-          dayjs(today).format('YYYY-MM-DD'),
-          dayjs(today).format('YYYY-MM-DD')
-        ]
-      }
-      // 今天
-      if (conditionType === 23) {
-        this.searchForm.dateParam = [
-          dayjs(today).format('YYYY-MM-DD'),
-          dayjs(today).format('YYYY-MM-DD')
-        ]
-      }
-      // 上月最后一天
-      if (conditionType === 18) {
-        today.setDate(0)
-        this.searchForm.dateParam = [
-          dayjs(today).format('YYYY-MM-DD'),
-          dayjs(today).format('YYYY-MM-DD')
-        ]
-      }
-      // 上周一到周日
-      if (conditionType === 20) {
-        today = this.getFirstDayOfWeek(today)
-        this.searchForm.dateParam = [
-          dayjs(today.setDate(today.getDate() - 7)).format('YYYY-MM-DD'),
-          dayjs(today.setDate(today.getDate() - 1)).format('YYYY-MM-DD')
-        ]
-      }
-      // 最近30天
-      if (conditionType === 11) {
-        this.searchForm.dateParam = [
-          dayjs(today.setDate(today.getDate() - 30)).format('YYYY-MM-DD'),
-          dayjs(today.setDate(today.getDate() - 1)).format('YYYY-MM-DD')
-        ]
-      }
-      // 最近7天
-      if (conditionType === 16) {
-        this.searchForm.dateParam = [
-          dayjs(today.setDate(today.getDate() - 7)).format('YYYY-MM-DD'),
-          dayjs(today.setDate(today.getDate() - 1)).format('YYYY-MM-DD')
-        ]
-      }
-      // 7天前的7天
-      if (conditionType === 26) {
-        this.searchForm.dateParam = [
-          dayjs(today.setDate(today.getDate() - 14)).format('YYYY-MM-DD'),
-          dayjs(today.setDate(today.getDate() - 14)).format('YYYY-MM-DD')
-        ]
-      }
-      // 17、22 /17:比较时间段条件   22:到期时间
-      // 昨天时间  1个日期 beginTimeValue 开始时间
-      if (conditionType === 27) {
-        today.setDate(today.getDate() - 1)
-        this.searchForm.dateParam = [dayjs(today).format('YYYY-MM-DD'), '']
-      }
-      // 1个日期 beginTimeValue 开始时间
-      if (conditionType === 19) {
-        today.setDate(0)
-        this.searchForm.dateParam = [dayjs(today).format('YYYY-MM-DD'), '']
-      }
-      // 24 其它时间段条件 1个日期 beginTimeValue 开始时间
-      // 14、15 拉链表开始时间、拉链表结束时间 1个日期 beginTimeValue 开始时间
+      // // 昨天
+      // if ([1, 7, 8].includes(conditionType)) {
+      //   today.setDate(today.getDate() - 1)
+      //   this.searchForm.dateParam = [
+      //     dayjs(today).format('YYYY-MM-DD'),
+      //     dayjs(today).format('YYYY-MM-DD')
+      //   ]
+      // }
+      // // 今天
+      // if (conditionType === 23) {
+      //   this.searchForm.dateParam = [
+      //     dayjs(today).format('YYYY-MM-DD'),
+      //     dayjs(today).format('YYYY-MM-DD')
+      //   ]
+      // }
+      // // 上月最后一天
+      // if (conditionType === 18) {
+      //   today.setDate(0)
+      //   this.searchForm.dateParam = [
+      //     dayjs(today).format('YYYY-MM-DD'),
+      //     dayjs(today).format('YYYY-MM-DD')
+      //   ]
+      // }
+      // // 上周一到周日
+      // if (conditionType === 20) {
+      //   today = this.getFirstDayOfWeek(today)
+      //   this.searchForm.dateParam = [
+      //     dayjs(today.setDate(today.getDate() - 7)).format('YYYY-MM-DD'),
+      //     dayjs(today.setDate(today.getDate() - 1)).format('YYYY-MM-DD')
+      //   ]
+      // }
+      // // 最近30天
+      // if (conditionType === 11) {
+      //   this.searchForm.dateParam = [
+      //     dayjs(today.setDate(today.getDate() - 30)).format('YYYY-MM-DD'),
+      //     dayjs(today.setDate(today.getDate() - 1)).format('YYYY-MM-DD')
+      //   ]
+      // }
+      // // 最近7天
+      // if (conditionType === 16) {
+      //   this.searchForm.dateParam = [
+      //     dayjs(today.setDate(today.getDate() - 7)).format('YYYY-MM-DD'),
+      //     dayjs(today.setDate(today.getDate() - 1)).format('YYYY-MM-DD')
+      //   ]
+      // }
+      // // 7天前的7天
+      // if (conditionType === 26) {
+      //   this.searchForm.dateParam = [
+      //     dayjs(today.setDate(today.getDate() - 14)).format('YYYY-MM-DD'),
+      //     dayjs(today.setDate(today.getDate() - 14)).format('YYYY-MM-DD')
+      //   ]
+      // }
+      // // 17、22 /17:比较时间段条件   22:到期时间
+      // // 昨天时间  1个日期 beginTimeValue 开始时间
+      // if (conditionType === 27) {
+      //   today.setDate(today.getDate() - 1)
+      //   this.searchForm.dateParam = [dayjs(today).format('YYYY-MM-DD'), '']
+      // }
+      // // 1个日期 beginTimeValue 开始时间
+      // if (conditionType === 19) {
+      //   today.setDate(0)
+      //   this.searchForm.dateParam = [dayjs(today).format('YYYY-MM-DD'), '']
+      // }
+      // // 24 其它时间段条件 1个日期 beginTimeValue 开始时间
+      // // 14、15 拉链表开始时间、拉链表结束时间 1个日期 beginTimeValue 开始时间
 
       // 获取表数据
       this.searchData()
@@ -698,5 +845,8 @@ export default defineComponent({
   height: 40px;
   line-height: 40px !important;
   text-align: center;
+}
+.demo-form-date {
+  width: 130px !important;
 }
 </style>
