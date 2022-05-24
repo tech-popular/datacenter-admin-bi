@@ -53,7 +53,6 @@ const router = createRouter({
 const startTime: any = ref(new Date())
 const currentTime: any = ref('')
 const standingTime: any = ref(0)
-const pageName: any = ref([])
 const fromPage: any = ref('')
 const toPage: any = ref('')
 router.beforeEach((to, from, next) => {
@@ -74,22 +73,14 @@ router.beforeEach((to, from, next) => {
     } else if (from.params.id) {
       fromPage.value = menulistData.filter(item => item.id == from.params.id)[0]
     }
-    // console.log(' menulistData.filter(item => item.url === to.params.modelId): ', menulistData.find(item => item.url === to.params.modelId));
-    console.log('toPage: ', toPage);
     // 清空界面名
-    pageName.value = []
     // 离开界面
     // 第一步：页面跳转后记录一下当前的时间 currentTime
     currentTime.value = Date.now()
     standingTime.value = parseInt((currentTime.value - startTime.value) / 1000)
-    console.log('standingTime.value: ', standingTime.value);
-    // from.matched.forEach(routeItem => {
-    //   pageName.push(routeItem.meta.title)
-    // })
     // ------------
     // 第二步：在这里把 currentTime - startTime 的 差值 发送给后端
     // ------------
-    console.log('dayjs(startTime): ');
     if (fromPage) {
       const params = {
         // 界面
@@ -111,7 +102,6 @@ router.beforeEach((to, from, next) => {
     }
     // 第三步：每次都要初始化一下 startTime
     startTime.value = new Date()
-    pageName.value = []
   }
   next()
 })
