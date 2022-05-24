@@ -156,8 +156,7 @@ import {
   reactive,
   toRefs,
   nextTick,
-  defineAsyncComponent,
-  toRaw
+  defineAsyncComponent
 } from 'vue'
 import { useRoute, RouteLocationNormalized } from 'vue-router'
 import {
@@ -171,8 +170,6 @@ import order1 from '@/static/image/order1.gif'
 import order2 from '@/static/image/order2.gif'
 const InputTag = defineAsyncComponent(() => import('./components/InputTag.vue'))
 import dayjs from 'dayjs'
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
-import { log } from 'util'
 export default defineComponent({
   name: 'TableData',
   components: { InputTag },
@@ -229,43 +226,43 @@ export default defineComponent({
     const dateOptionConditioHTMLList: any = ref([]) // 下拉年月日期条件
     const columnArr = ref([]) // 合并列
     const yearList = ref([
-      { value: 2008, tsxt: '2008年' },
-      { value: 2009, tsxt: '2009年' },
-      { value: 2010, tsxt: '2010年' },
-      { value: 2011, tsxt: '2011年' },
-      { value: 2012, tsxt: '2012年' },
-      { value: 2013, tsxt: '2013年' },
-      { value: 2014, tsxt: '2014年' },
-      { value: 2015, tsxt: '2015年' },
-      { value: 2016, tsxt: '2016年' },
-      { value: 2017, tsxt: '2017年' },
-      { value: 2018, tsxt: '2018年' },
-      { value: 2019, tsxt: '2019年' },
-      { value: 2020, tsxt: '2020年' },
-      { value: 2021, tsxt: '2021年' },
-      { value: 2022, tsxt: '2022年' },
-      { value: 2023, tsxt: '2023年' },
-      { value: 2024, tsxt: '2024年' },
-      { value: 2025, tsxt: '2025年' },
-      { value: 2026, tsxt: '2026年' },
-      { value: 2027, tsxt: '2027年' },
-      { value: 2028, tsxt: '2028年' },
-      { value: 2029, tsxt: '2029年' },
-      { value: 2030, tsxt: '2030年' }
+      { value: 2008, text: '2008年' },
+      { value: 2009, text: '2009年' },
+      { value: 2010, text: '2010年' },
+      { value: 2011, text: '2011年' },
+      { value: 2012, text: '2012年' },
+      { value: 2013, text: '2013年' },
+      { value: 2014, text: '2014年' },
+      { value: 2015, text: '2015年' },
+      { value: 2016, text: '2016年' },
+      { value: 2017, text: '2017年' },
+      { value: 2018, text: '2018年' },
+      { value: 2019, text: '2019年' },
+      { value: 2020, text: '2020年' },
+      { value: 2021, text: '2021年' },
+      { value: 2022, text: '2022年' },
+      { value: 2023, text: '2023年' },
+      { value: 2024, text: '2024年' },
+      { value: 2025, text: '2025年' },
+      { value: 2026, text: '2026年' },
+      { value: 2027, text: '2027年' },
+      { value: 2028, text: '2028年' },
+      { value: 2029, text: '2029年' },
+      { value: 2030, text: '2030年' }
     ])
     const menthList = ref([
-      { value: 1, tsxt: '1月' },
-      { value: 2, tsxt: '2月' },
-      { value: 3, tsxt: '3月' },
-      { value: 4, tsxt: '4月' },
-      { value: 5, tsxt: '5月' },
-      { value: 6, tsxt: '6月' },
-      { value: 7, tsxt: '7月' },
-      { value: 8, tsxt: '8月' },
-      { value: 9, tsxt: '9月' },
-      { value: 10, tsxt: '10月' },
-      { value: 11, tsxt: '11月' },
-      { value: 12, tsxt: '12月' }
+      { value: 1, text: '1月' },
+      { value: 2, text: '2月' },
+      { value: 3, text: '3月' },
+      { value: 4, text: '4月' },
+      { value: 5, text: '5月' },
+      { value: 6, text: '6月' },
+      { value: 7, text: '7月' },
+      { value: 8, text: '8月' },
+      { value: 9, text: '9月' },
+      { value: 10, text: '10月' },
+      { value: 11, text: '11月' },
+      { value: 12, text: '12月' }
     ])
     const conditionTextType: any = ref([3, 4, 5, 6, 9, 10, 13]) // 字符输入类型
     const conditiondataTextType = ref([1, 7, 8, 11, 16, 17, 18, 20, 22, 23, 26]) // 两个日期类型

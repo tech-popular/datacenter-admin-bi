@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
+    "build": "vite build",
     "deploy:test": "npm run build && cross-env NODE_ENV=test node ./deploy.js",
     "serve": "vite preview"
   },
