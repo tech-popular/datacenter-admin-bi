@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { showMessage } from './status'
 import { ElMessage, ElLoading } from 'element-plus'
-import { IResponse, ILogin, ZLogin, IModelColumn, IModelSearch } from './type'
+import { IResponse, ILogin, ZLogin, IModelColumn, IModelSearch, VisitLog } from './type'
 // import base from './untils'
 let axiosInstance: AxiosInstance = axios.create({
   // baseURL: base.baseurl,
@@ -105,4 +105,8 @@ export const getAnalysisModelColumn = (modelId: string): Promise<IResponse> => {
   return axiosInstance
     .get(`/bi/olapModel/getAnalysisModelColumn/${modelId}`)
     .then((res) => res.data)
+}
+// 访问日志
+export const userVisitLog = (params: VisitLog): Promise<IResponse> => {
+  return axiosInstance.post('/bi/userVisitLog/saveUserVisitLog', { ...params }).then((res) => res)
 }

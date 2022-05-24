@@ -43,3 +43,12 @@ export interface IModelSearch {
   dataList?: Array<object>
   dimList?: Array<string>
 }
+/**访问日志埋点参数 */
+export interface VisitLog {
+  menuName: string
+  visitTimeStart?: any
+  visitTimeEnd?: any
+  menuId?: number // 
+  visitTime?: string // 停留时间
+  visitType?: number // 访问类型
+}

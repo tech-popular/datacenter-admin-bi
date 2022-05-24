@@ -73,6 +73,7 @@ export default defineComponent({
     const username: any = ref('')
     const gradeList: any = ref([])
     const gradeName: any = ref('')
+    const PCgradeMenu: any = ref([])
     // if (token) {
     //   localStorage.setItem('token', token)
     //   localStorage.setItem('userId', userId)
@@ -113,6 +114,10 @@ export default defineComponent({
         })
         gradeList.value = res.data.menulist
         gradeName.value = res.data.menulist[0].id
+        PCgradeMenu.value = []
+        fnMenuRoutes(res.data.menulist)
+        // localStorage.setItem('menulis', res.data.menulist)
+        sessionStorage.setItem('menulist', JSON.stringify(PCgradeMenu.value))
         gradeClick(gradeName.value)
         username.value = res.data.username
       }
@@ -131,6 +136,18 @@ export default defineComponent({
     } else {
       GetMenuData('')
     }
+    // 平铺存储菜单
+    const fnMenuRoutes = (menulist: any) => {
+      if (menulist.length) {
+        menulist.forEach(item => {
+          if (item.children.length) {
+            fnMenuRoutes(item.children)
+          } else {
+            PCgradeMenu.value.push(item)
+          }
+        })
+      }
+    }
     // else {
     //   // window.location.href = "http://test.tech.9fbank.com/canary/#/login?from=newbi"; //test
     //   window.location.href = "http://tech.9fbank.com/canary/#/login";
@@ -146,7 +163,9 @@ export default defineComponent({
       iconClick,
       gradeList,
       gradeClick,
-      gradeName
+      gradeName,
+      fnMenuRoutes,
+      PCgradeMenu
     }
   }
 })

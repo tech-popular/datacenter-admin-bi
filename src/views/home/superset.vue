@@ -1,7 +1,7 @@
 <template>
   <div class="iframeWrap">
-    <p class="wel">欢迎进入新BI系统</p>
-    <!-- <iframe v-else class="superset-iframe" :src="dataLink" scrolling="auto" frameborder="0" width="100%" height="100%"></iframe> -->
+    <!-- <p class="wel" v-if="!dataLink">欢迎进入新BI系统</p> -->
+    <iframe class="superset-iframe" :src="dataLink" scrolling="auto" frameborder="0" width="100%" height="100%"></iframe>
   </div>
 </template>
 
@@ -9,7 +9,7 @@
 import { computed, defineComponent } from 'vue'
 import { useStore } from '@/store/index'
 export default defineComponent({
-  name: 'Main',
+  name: 'Superset',
   data() {
     return {}
   },

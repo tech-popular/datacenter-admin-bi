@@ -35,7 +35,7 @@ export default defineComponent({
           store.commit('changeDataLink', item.url)
           store.commit('changeMenuType', item.menuType)
           router.push({
-            path: '/home'
+            path: `/superset/${item.id}`
           })
           break
         case 1:
