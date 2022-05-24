@@ -16,7 +16,7 @@ import 'vant/lib/index.css'
 
 import './styles/index.scss'
 import 'element-plus/theme-chalk/display.css'
-import dayjs from 'dayjs'
+// import dayjs from 'dayjs'
 // import VConsole from 'vconsole'
 // if (process.env.NODE_ENV != 'production') {
 //   // 开发环境 development
@@ -27,13 +27,13 @@ const app = createApp(App)
 setupRouter(app) // 引入路由
 
 setupStore(app) // 引入状态管理
-app.config.globalProperties.$dayjs = dayjs;//可以全局使用dayjs
+// app.config.globalProperties.$dayjs = dayjs;//可以全局使用dayjs
 app.use(ElementPlus, {
   locale: zhCn,
 })
 
 app.use(Vant)
-app.use(dayjs)
+// app.use(dayjs)
 // app.use(VueDND) // 拖拽排序
 router.isReady().then(() => {
   app.mount('#app')

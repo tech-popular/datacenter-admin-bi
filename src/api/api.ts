@@ -86,8 +86,8 @@ export const getReportColumns = (params: IModelColumn): Promise<IResponse> => {
 
 // 报表-查询搜索接口
 export const getReportSearchData = (
-  params: IModelSearch
-): Promise<IResponse> => {
+  params: any
+): Promise<any> => {
   return axiosInstance
     .post('/bi/olapModel/doSearchAnalysisModel', { ...params })
     .then((res) => res.data)
@@ -101,7 +101,7 @@ export const getTableauInfo = (modelId: string): Promise<IResponse> => {
 }
 
 // 新的-查询老BI报表的列名
-export const getAnalysisModelColumn = (modelId: string): Promise<IResponse> => {
+export const getAnalysisModelColumn = (modelId: string): Promise<any> => {
   return axiosInstance
     .get(`/bi/olapModel/getAnalysisModelColumn/${modelId}`)
     .then((res) => res.data)

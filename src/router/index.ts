@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import { ref } from 'vue'
+import { App, ref } from 'vue'
 // import  { ref , type } from 'vue'
 import Main from '@/components/Main/Main.vue'
 import dayjs from 'dayjs'
@@ -52,7 +52,7 @@ const router = createRouter({
 })
 const startTime: any = ref(new Date())
 const currentTime: any = ref('')
-const standingTime: any = ref(0)
+const standingTime: any = ref('')
 const fromPage: any = ref('')
 const toPage: any = ref('')
 router.beforeEach((to, from, next) => {

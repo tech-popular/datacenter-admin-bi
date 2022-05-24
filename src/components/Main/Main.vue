@@ -38,7 +38,6 @@
 import { computed, defineComponent, defineAsyncComponent, ref } from 'vue'
 // import { useRoute, useRouter } from 'vue-router'
 import { useStore } from '@/store/index'
-import { cloneDeep } from 'lodash'
 // import { useRoute } from 'vue-router'
 import leftIcon from '@/styles/img/left1.png'
 import rightIcon from '@/styles/img/right1.png'
