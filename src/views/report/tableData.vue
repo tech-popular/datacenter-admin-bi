@@ -413,144 +413,144 @@ export default defineComponent({
       }
       console.log('过滤条件', this.optionParams)
       // // 统计日期
-      if (this.searchForm.beginTimeValue) {
-        // delete this.conditionList[0].bizName
-        // delete this.conditionList[0].columnName
-        // delete this.conditionList[0].beginTimeKey
-        // delete this.conditionList[0].beginTimeValue
-        // console.log(' this.conditionList[0]: ', this.conditionList[0])
-        // // this.conditionList[0]['modelId'] = Number(this.modelId)
-        //   for (let key in this.conditionList[0]) {
-        //     if (!this.conditionList[0][key]) {
-        //       this.conditionList[0][key] = ''
-        //     }
-        //   }
-        // params.dateTextJSON = {
-        //   beginTimeKey: this.dateTextConditionHTMLList[0].beginTimeKey,
-        //   beginTimeValue: this.searchForm.beginTimeValue
-        // }
-        // if (this.dateTextConditionHTMLList[0].endTimeValue) {
-        //   params.dateTextJSON.endTimeValue = this.searchForm.endTimeValue
-        //   params.dateTextJSON.endTimeKey = this.dateTextConditionHTMLList[0].endTimeKey
-        // }
-        params.dateTextJSON = {
-          beginTimeKey:
-            '{"code":1,"colBizName":"统计日期","colName":"day_id","colRefTab":0,"conditionRefColName":"","conditionType":1,"databaseName":"bd_rpt","dateType":1,"foreignList":[],"isNull":"yes","modelId":3425011,"olapModelConditionTypeList":[],"relation":"and","status":"1","tabName":"fk_wk_customer_trust_day_sum"}',
-          beginTimeValue: '2022-05-20',
-          endTimeKey:
-            '{"code":1,"colBizName":"统计日期","colName":"day_id","colRefTab":0,"conditionRefColName":"","conditionType":1,"databaseName":"bd_rpt","dateType":1,"foreignList":[],"isNull":"yes","modelId":3425011,"olapModelConditionTypeList":[],"relation":"and","status":"1","tabName":"fk_wk_customer_trust_day_sum"}',
-          endTimeValue: '2022-05-20'
-        }
-      }
-      // 年月下拉日期
-      if (this.searchForm.yearDateValue) {
-        params.dateOptionJson = {
-          yearDateKey: this.dateTextConditionHTMLList[0].yearDateKey,
-          yearDateValue: this.searchForm.yearDateValue,
-          monthDateKey: this.dateTextConditionHTMLList[0].monthDateKey,
-          monthDateValue: this.searchForm.monthDateValue
-        }
-      }
-      // 过滤条件
-      if (this.optionParams.length) {
-        let filterParamsData = this.optionParams.filter(
-          item => item.filterParams !== ''
-        )
-        if (filterParamsData.length) {
-          let optionJSONData = {}
-          let textJSONData = {}
-          filterParamsData.forEach(item => {
-            if (!item.conditionType) {
-              let citem = this.optionHTMLList.filter(
-                element => element.colName === item.colName
-              )[0]
-              for (let key in citem) {
-                if (!item[key]) {
-                  citem[key] = ''
-                }
-              }
-              optionJSONData[orderDataJSON.length] = {
-                column: JSON.stringify(citem),
-                value: JSON.stringify(item.filterParams)
-              }
-            } else {
-              let citem = this.optionHTMLList.filter(
-                element => element.colName === item.colName
-              )[0]
-              for (let key in citem) {
-                if (!item[key]) {
-                  citem[key] = ''
-                }
-              }
-              textJSONData[textJSONData.length] = {
-                column: JSON.stringify(citem),
-                value: JSON.stringify(item.filterParams),
-                type: item.type
-              }
-            }
-          })
-          if (optionJSONData.length) {
-            params.optionJSON = optionJSONData
-          }
-          if (textJSONData.length) {
-            params.textJSON = optionJSONData
-          }
-        }
-      }
-      // 排序
-      if (this.checkedorders.length) {
-        let orderDataJSON = {}
-        let orderindex = 0
-        this.orderParams.filter(item => {
-          if (this.checkedorders.indexOf(item.colName) > -1) {
-            for (let key in item) {
-              if (!item[key]) {
-                item[key] = ''
-              }
-            }
-            orderDataJSON[orderindex] = {
-              column: JSON.stringify(item),
-              value: JSON.stringify(item.colOrderFlag)
-            }
-            orderindex = orderindex + 1
-          }
-        })
-        params.orderJSON = orderDataJSON
-      }
-      // 指标
-      if (this.checkedFields.length) {
-        let kpiCodeDataJSON = {}
-        let kpiIndex = 0
-        this.indexParams.filter(item => {
-          if (this.checkedFields.indexOf(item.colName) > -1) {
-            for (let key in item) {
-              if (!item[key]) {
-                item[key] = ''
-              }
-            }
-            kpiCodeDataJSON[kpiIndex] = JSON.stringify(item)
-            kpiIndex = kpiIndex + 1
-          }
-        })
-        params.kpiCodeJSON = kpiCodeDataJSON
-      }
-      // 维度
-      if (this.checkedDim.length) {
-        let dimCodeDataJSON = {}
-        let dimIndex = 0
-        this.dimParams.filter(item => {
-          if (this.checkedDim.indexOf(item.colName) > -1) {
-            for (let key in item) {
-              if (!item[key]) {
-                item[key] = ''
-              }
-            }
-            dimCodeDataJSON[dimIndex] = JSON.stringify(item)
-            dimIndex = dimIndex + 1
-          }
-        })
-        params.dimCodeJSON = dimCodeDataJSON
-      }
+      // if (this.searchForm.beginTimeValue) {
+      // delete this.conditionList[0].bizName
+      // delete this.conditionList[0].columnName
+      // delete this.conditionList[0].beginTimeKey
+      // delete this.conditionList[0].beginTimeValue
+      // console.log(' this.conditionList[0]: ', this.conditionList[0])
+      // // this.conditionList[0]['modelId'] = Number(this.modelId)
+      //   for (let key in this.conditionList[0]) {
+      //     if (!this.conditionList[0][key]) {
+      //       this.conditionList[0][key] = ''
+      //     }
+      //   }
+      // params.dateTextJSON = {
+      //   beginTimeKey: this.dateTextConditionHTMLList[0].beginTimeKey,
+      //   beginTimeValue: this.searchForm.beginTimeValue
+      // }
+      // if (this.dateTextConditionHTMLList[0].endTimeValue) {
+      //   params.dateTextJSON.endTimeValue = this.searchForm.endTimeValue
+      //   params.dateTextJSON.endTimeKey = this.dateTextConditionHTMLList[0].endTimeKey
+      // }
+      //   params.dateTextJSON = {
+      //     beginTimeKey:
+      //       '{"code":1,"colBizName":"统计日期","colName":"day_id","colRefTab":0,"conditionRefColName":"","conditionType":1,"databaseName":"bd_rpt","dateType":1,"foreignList":[],"isNull":"yes","modelId":3425011,"olapModelConditionTypeList":[],"relation":"and","status":"1","tabName":"fk_wk_customer_trust_day_sum"}',
+      //     beginTimeValue: '2022-05-23',
+      //     endTimeKey:
+      //       '{"code":1,"colBizName":"统计日期","colName":"day_id","colRefTab":0,"conditionRefColName":"","conditionType":1,"databaseName":"bd_rpt","dateType":1,"foreignList":[],"isNull":"yes","modelId":3425011,"olapModelConditionTypeList":[],"relation":"and","status":"1","tabName":"fk_wk_customer_trust_day_sum"}',
+      //     endTimeValue: '2022-05-23'
+      //   }
+      // }
+      // // 年月下拉日期
+      // if (this.searchForm.yearDateValue) {
+      //   params.dateOptionJson = {
+      //     yearDateKey: this.dateTextConditionHTMLList[0].yearDateKey,
+      //     yearDateValue: this.searchForm.yearDateValue,
+      //     monthDateKey: this.dateTextConditionHTMLList[0].monthDateKey,
+      //     monthDateValue: this.searchForm.monthDateValue
+      //   }
+      // }
+      // // 过滤条件
+      // if (this.optionParams.length) {
+      //   let filterParamsData = this.optionParams.filter(
+      //     item => item.filterParams !== ''
+      //   )
+      //   if (filterParamsData.length) {
+      //     let optionJSONData = {}
+      //     let textJSONData = {}
+      //     filterParamsData.forEach(item => {
+      //       if (!item.conditionType) {
+      //         let citem = this.optionHTMLList.filter(
+      //           element => element.colName === item.colName
+      //         )[0]
+      //         for (let key in citem) {
+      //           if (!item[key]) {
+      //             citem[key] = ''
+      //           }
+      //         }
+      //         optionJSONData[orderDataJSON.length] = {
+      //           column: JSON.stringify(citem),
+      //           value: JSON.stringify(item.filterParams)
+      //         }
+      //       } else {
+      //         let citem = this.optionHTMLList.filter(
+      //           element => element.colName === item.colName
+      //         )[0]
+      //         for (let key in citem) {
+      //           if (!item[key]) {
+      //             citem[key] = ''
+      //           }
+      //         }
+      //         textJSONData[textJSONData.length] = {
+      //           column: JSON.stringify(citem),
+      //           value: JSON.stringify(item.filterParams),
+      //           type: item.type
+      //         }
+      //       }
+      //     })
+      //     if (optionJSONData.length) {
+      //       params.optionJSON = optionJSONData
+      //     }
+      //     if (textJSONData.length) {
+      //       params.textJSON = optionJSONData
+      //     }
+      //   }
+      // }
+      // // 排序
+      // if (this.checkedorders.length) {
+      //   let orderDataJSON = {}
+      //   let orderindex = 0
+      //   this.orderParams.filter(item => {
+      //     if (this.checkedorders.indexOf(item.colName) > -1) {
+      //       for (let key in item) {
+      //         if (!item[key]) {
+      //           item[key] = ''
+      //         }
+      //       }
+      //       orderDataJSON[orderindex] = {
+      //         column: JSON.stringify(item),
+      //         value: JSON.stringify(item.colOrderFlag)
+      //       }
+      //       orderindex = orderindex + 1
+      //     }
+      //   })
+      //   params.orderJSON = orderDataJSON
+      // }
+      // // 指标
+      // if (this.checkedFields.length) {
+      //   let kpiCodeDataJSON = {}
+      //   let kpiIndex = 0
+      //   this.indexParams.filter(item => {
+      //     if (this.checkedFields.indexOf(item.colName) > -1) {
+      //       for (let key in item) {
+      //         if (!item[key]) {
+      //           item[key] = ''
+      //         }
+      //       }
+      //       kpiCodeDataJSON[kpiIndex] = JSON.stringify(item)
+      //       kpiIndex = kpiIndex + 1
+      //     }
+      //   })
+      //   params.kpiCodeJSON = kpiCodeDataJSON
+      // }
+      // // 维度
+      // if (this.checkedDim.length) {
+      //   let dimCodeDataJSON = {}
+      //   let dimIndex = 0
+      //   this.dimParams.filter(item => {
+      //     if (this.checkedDim.indexOf(item.colName) > -1) {
+      //       for (let key in item) {
+      //         if (!item[key]) {
+      //           item[key] = ''
+      //         }
+      //       }
+      //       dimCodeDataJSON[dimIndex] = JSON.stringify(item)
+      //       dimIndex = dimIndex + 1
+      //     }
+      //   })
+      //   params.dimCodeJSON = dimCodeDataJSON
+      // }
       this.getTableData(params)
     },
     async getColumns() {

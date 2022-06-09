@@ -6,7 +6,7 @@ if (NODE_ENV == 'development') {
   baseURL = 'http://192.168.161.219:8000/canary-admin;'
 } else if (NODE_ENV == 'production') {
   if (dd.env.platform !== 'notInDingTalk') {
-    baseURL = 'https://tech.9f.cn/canary-admin'
+    baseURL = 'http://tech.9f.cn/canary-admin'
   } else {
     baseURL = 'http://tech.9f.cn/canary-admin'
   }
