@@ -3,9 +3,11 @@ import { showMessage } from './status'
 import { ElMessage, ElLoading } from 'element-plus'
 import { IResponse, ILogin, ZLogin, IModelColumn, IModelSearch, VisitLog } from './type'
 // import base from './untils'
+let originHost = location.origin
 let axiosInstance: AxiosInstance = axios.create({
   // baseURL: base.baseurl,
-  baseURL: 'http://tech.9f.cn/canary-admin',
+  baseURL: originHost + '/canary-admin',
+  // baseURL: 'http://tech.9f.cn/canary-admin',
   // baseURL: 'http://192.168.161.219:8000/canary-admin',
   headers: {
     Accept: 'application/json',
