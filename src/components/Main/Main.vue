@@ -93,6 +93,7 @@ export default defineComponent({
       gradeList.value.forEach(element => {
         if (element.id == gradeName) {
           pcmenuData.value = element.children
+          console.log('pcmenuData: ', pcmenuData)
         }
       })
     }

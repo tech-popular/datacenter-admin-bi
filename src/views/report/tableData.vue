@@ -217,12 +217,6 @@ export default defineComponent({
       pageSize: 10,
       total: 0
     })
-    //  const searchForm = reactive({
-    //   dateParam: [],
-    //     dateOption: [],
-    //     dim: [],
-    //     option: []
-    // }) // 查询条件报表数据
     const columnDatas: any = ref([]) // 记录表头数据
     const dateTextConditionHTMLList: any = ref([])
     const dateOptionConditioHTMLList: any = ref([]) // 下拉年月日期条件
