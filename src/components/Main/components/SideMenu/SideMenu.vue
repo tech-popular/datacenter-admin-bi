@@ -6,7 +6,7 @@
     :collapseTransition="false"
     :text-color="textColor"
     :active-text-color="activeTextColor"
-    :default-active="defaultActive"
+    :default-active="defaultActive || 'home'"
   >
     <menu-item v-for="item in list" :key="item.id" :item="item" />
   </el-menu>
@@ -16,6 +16,7 @@
 import { computed, defineComponent, PropType } from 'vue'
 import MenuItem from './MenuItem.vue'
 import { useStore } from '@/store/index'
+import { useRoute } from 'vue-router'
 export interface ColumnProps {
   id: any
 }
@@ -33,12 +34,16 @@ export default defineComponent({
   },
   setup() {
     const store = useStore()
-
+    const route = useRoute()
+    const defaultActive: any = route.path
+    store.commit('updateDefaultActive', defaultActive)
     const sidebarFold: any = computed(() => {
       return store.state.sidebarFold
     })
     return {
-      sidebarFold
+      sidebarFold,
+      defaultActive,
+      route
     }
   }
 })

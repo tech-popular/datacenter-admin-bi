@@ -9,9 +9,9 @@ const dist = path.resolve(__dirname, 'dist');
 
 const testServerConfig = {
   port: 22,
-  host: '192.168.161.216',
+  host: '192.168.208.14',
   username: 'appuser',
-  password: 'OCok2ql@#2vPrDwT2',
+  password: 'f@9FVxz!5yYNXi',
   path: '/app/bi/'
 };
 

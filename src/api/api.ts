@@ -8,7 +8,7 @@ let axiosInstance: AxiosInstance = axios.create({
   // baseURL: base.baseurl,
   baseURL: originHost + '/canary-admin',
   // baseURL: 'http://tech.9f.cn/canary-admin',
-  // baseURL: 'http://192.168.161.219:8000/canary-admin',
+  // baseURL: 'http://192.168.208.14:8000/canary-admin',
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json;charset=UTF-8'

@@ -24,7 +24,7 @@
         </el-select>
       </el-form-item>
     </div>
-    <el-form-item v-if="optionParams.length">
+    <!-- <el-form-item v-if="optionParams.length">
       <el-popover placement="right" width="400px" trigger="click">
         <template #reference>
           <el-button type="info" plain>过滤条件</el-button>
@@ -53,7 +53,7 @@
           </el-form-item>
         </div>
       </el-popover>
-    </el-form-item>
+    </el-form-item>-->
     <el-form-item v-if="dimParams.length">
       <el-popover placement="right" width="400px" trigger="click">
         <template #reference>
@@ -127,6 +127,8 @@
     stripe
     height="500px"
     :header-cell-class-name="handleHeadAddClass"
+    :header-cell-style="{background:'#eeeeee',color:'#000'}"
+    :cell-style="cellStyle"
     @sort-change="onSortChange"
     :span-method="objectSpanMethod"
     highlight-current-row
@@ -401,56 +403,37 @@ export default defineComponent({
       let params: IModelSearch = {
         modelID: Number(this.modelId),
         pageNo: this.page,
-        pageRows: this.pageSize
-        // dimCodeJSON: {}, // 维度入参
-        // kpiCodeJSON: {}, // 指标入参
-        // dateTextJSON: {}, // 统计日期
-        // dateOptionJSON: {}, // 下拉日期
-        // optionJSON: {}, // 过滤条件为下拉选
-        // textJSON: {},  // 过滤条件是输入框
-        // orderJSON: {}, // 排序入参
-        // compareTextJson: {}
+        pageRows: this.pageSize,
+        dimCodeJSON: {}, // 维度入参
+        kpiCodeJSON: {}, // 指标入参
+        dateTextJSON: {}, // 统计日期
+        dateOptionJSON: {}, // 下拉日期
+        optionJSON: {}, // 过滤条件为下拉选
+        textJSON: {}, // 过滤条件是输入框
+        orderJSON: {}, // 排序入参
+        compareTextJson: {}
       }
       console.log('过滤条件', this.optionParams)
-      // // 统计日期
-      // if (this.searchForm.beginTimeValue) {
-      // delete this.conditionList[0].bizName
-      // delete this.conditionList[0].columnName
-      // delete this.conditionList[0].beginTimeKey
-      // delete this.conditionList[0].beginTimeValue
-      // console.log(' this.conditionList[0]: ', this.conditionList[0])
-      // // this.conditionList[0]['modelId'] = Number(this.modelId)
-      //   for (let key in this.conditionList[0]) {
-      //     if (!this.conditionList[0][key]) {
-      //       this.conditionList[0][key] = ''
-      //     }
-      //   }
-      // params.dateTextJSON = {
-      //   beginTimeKey: this.dateTextConditionHTMLList[0].beginTimeKey,
-      //   beginTimeValue: this.searchForm.beginTimeValue
-      // }
-      // if (this.dateTextConditionHTMLList[0].endTimeValue) {
-      //   params.dateTextJSON.endTimeValue = this.searchForm.endTimeValue
-      //   params.dateTextJSON.endTimeKey = this.dateTextConditionHTMLList[0].endTimeKey
-      // }
-      //   params.dateTextJSON = {
-      //     beginTimeKey:
-      //       '{"code":1,"colBizName":"统计日期","colName":"day_id","colRefTab":0,"conditionRefColName":"","conditionType":1,"databaseName":"bd_rpt","dateType":1,"foreignList":[],"isNull":"yes","modelId":3425011,"olapModelConditionTypeList":[],"relation":"and","status":"1","tabName":"fk_wk_customer_trust_day_sum"}',
-      //     beginTimeValue: '2022-05-23',
-      //     endTimeKey:
-      //       '{"code":1,"colBizName":"统计日期","colName":"day_id","colRefTab":0,"conditionRefColName":"","conditionType":1,"databaseName":"bd_rpt","dateType":1,"foreignList":[],"isNull":"yes","modelId":3425011,"olapModelConditionTypeList":[],"relation":"and","status":"1","tabName":"fk_wk_customer_trust_day_sum"}',
-      //     endTimeValue: '2022-05-23'
-      //   }
-      // }
-      // // 年月下拉日期
-      // if (this.searchForm.yearDateValue) {
-      //   params.dateOptionJson = {
-      //     yearDateKey: this.dateTextConditionHTMLList[0].yearDateKey,
-      //     yearDateValue: this.searchForm.yearDateValue,
-      //     monthDateKey: this.dateTextConditionHTMLList[0].monthDateKey,
-      //     monthDateValue: this.searchForm.monthDateValue
-      //   }
-      // }
+      // 统计日期
+      if (this.searchForm.beginTimeValue) {
+        params.dateTextJSON = {
+          beginTimeKey: this.dateTextConditionHTMLList[0].beginTimeKey,
+          beginTimeValue: this.searchForm.beginTimeValue
+        }
+        if (this.dateTextConditionHTMLList[0].endTimeValue) {
+          params.dateTextJSON.endTimeValue = this.searchForm.endTimeValue
+          params.dateTextJSON.endTimeKey = this.dateTextConditionHTMLList[0].endTimeKey
+        }
+      }
+      // 年月下拉日期
+      if (this.searchForm.yearDateValue) {
+        params.dateOptionJson = {
+          yearDateKey: this.dateTextConditionHTMLList[0].yearDateKey,
+          yearDateValue: this.searchForm.yearDateValue,
+          monthDateKey: this.dateTextConditionHTMLList[0].monthDateKey,
+          monthDateValue: this.searchForm.monthDateValue
+        }
+      }
       // // 过滤条件
       // if (this.optionParams.length) {
       //   let filterParamsData = this.optionParams.filter(
@@ -497,60 +480,60 @@ export default defineComponent({
       //     }
       //   }
       // }
-      // // 排序
-      // if (this.checkedorders.length) {
-      //   let orderDataJSON = {}
-      //   let orderindex = 0
-      //   this.orderParams.filter(item => {
-      //     if (this.checkedorders.indexOf(item.colName) > -1) {
-      //       for (let key in item) {
-      //         if (!item[key]) {
-      //           item[key] = ''
-      //         }
-      //       }
-      //       orderDataJSON[orderindex] = {
-      //         column: JSON.stringify(item),
-      //         value: JSON.stringify(item.colOrderFlag)
-      //       }
-      //       orderindex = orderindex + 1
-      //     }
-      //   })
-      //   params.orderJSON = orderDataJSON
-      // }
-      // // 指标
-      // if (this.checkedFields.length) {
-      //   let kpiCodeDataJSON = {}
-      //   let kpiIndex = 0
-      //   this.indexParams.filter(item => {
-      //     if (this.checkedFields.indexOf(item.colName) > -1) {
-      //       for (let key in item) {
-      //         if (!item[key]) {
-      //           item[key] = ''
-      //         }
-      //       }
-      //       kpiCodeDataJSON[kpiIndex] = JSON.stringify(item)
-      //       kpiIndex = kpiIndex + 1
-      //     }
-      //   })
-      //   params.kpiCodeJSON = kpiCodeDataJSON
-      // }
-      // // 维度
-      // if (this.checkedDim.length) {
-      //   let dimCodeDataJSON = {}
-      //   let dimIndex = 0
-      //   this.dimParams.filter(item => {
-      //     if (this.checkedDim.indexOf(item.colName) > -1) {
-      //       for (let key in item) {
-      //         if (!item[key]) {
-      //           item[key] = ''
-      //         }
-      //       }
-      //       dimCodeDataJSON[dimIndex] = JSON.stringify(item)
-      //       dimIndex = dimIndex + 1
-      //     }
-      //   })
-      //   params.dimCodeJSON = dimCodeDataJSON
-      // }
+      // 排序
+      if (this.checkedorders.length) {
+        let orderDataJSON = {}
+        let orderindex = 0
+        this.orderParams.filter(item => {
+          if (this.checkedorders.indexOf(item.colName) > -1) {
+            for (let key in item) {
+              if (!item[key]) {
+                item[key] = ''
+              }
+            }
+            orderDataJSON[orderindex] = {
+              column: JSON.stringify(item),
+              value: JSON.stringify(item.colOrderFlag)
+            }
+            orderindex = orderindex + 1
+          }
+        })
+        params.orderJSON = orderDataJSON
+      }
+      // 指标
+      if (this.checkedFields.length) {
+        let kpiCodeDataJSON = {}
+        let kpiIndex = 0
+        this.indexParams.filter(item => {
+          if (this.checkedFields.indexOf(item.colName) > -1) {
+            for (let key in item) {
+              if (!item[key]) {
+                item[key] = ''
+              }
+            }
+            kpiCodeDataJSON[kpiIndex] = JSON.stringify(item)
+            kpiIndex = kpiIndex + 1
+          }
+        })
+        params.kpiCodeJSON = kpiCodeDataJSON
+      }
+      // 维度
+      if (this.checkedDim.length) {
+        let dimCodeDataJSON = {}
+        let dimIndex = 0
+        this.dimParams.filter(item => {
+          if (this.checkedDim.indexOf(item.colName) > -1) {
+            for (let key in item) {
+              if (!item[key]) {
+                item[key] = ''
+              }
+            }
+            dimCodeDataJSON[dimIndex] = JSON.stringify(item)
+            dimIndex = dimIndex + 1
+          }
+        })
+        params.dimCodeJSON = dimCodeDataJSON
+      }
       this.getTableData(params)
     },
     async getColumns() {
@@ -595,8 +578,13 @@ export default defineComponent({
         if (element.dimDisabled == 2) {
           this.checkedDim.push(element.colName)
         }
+        this.handleCheckedDimChange(this.checkedDim)
       })
       this.indexParams = res.kpiHTMLList
+      this.indexParams.forEach(element => {
+        this.checkedFields.push(element.colName)
+      })
+      this.handleCheckedFieldChange(this.checkedFields)
       // 统计日期
       if (res.dateTextConditionHTMLList.length) {
         this.searchForm.beginTimeValue =
@@ -713,7 +701,6 @@ export default defineComponent({
       this.searchData()
     },
     onSearch() {
-      console.log(this.searchForm)
       this.searchData()
     },
     onSortChange({ order, prop }) {
@@ -739,7 +726,14 @@ export default defineComponent({
         }
       }
     },
-
+    //设置指定行、列、具体单元格颜色
+    cellStyle({ row, column, rowIndex, columnIndex }) {
+      if (columnIndex <= this.columnArr[this.columnArr.length - 1]) {
+        return 'background:#EEEEEE'
+      } else {
+        return ''
+      }
+    },
     getNodeSummaries({ columns, data }) {},
     handleHeadAddClass({ column }) {
       if (this.sortField[column.property]) {
@@ -753,7 +747,6 @@ export default defineComponent({
       this.checkFieldAll = checkedCount === this.indexParams.length
       this.isFieldIndeterminate =
         checkedCount > 0 && checkedCount < this.indexParams.length
-      console.log(this.checkedFields)
     },
     handleCheckAllChange(value: boolean) {
       if (value) {
@@ -765,14 +758,12 @@ export default defineComponent({
       }
       // this.checkedFields = value ? this.indexParams : []
       this.isFieldIndeterminate = false
-      console.log(this.checkedFields, '指标')
     },
     handleCheckedDimChange(value: string[]) {
       const checkedCount = value.length
       this.checkDimAll = checkedCount === this.dimParams.length
       this.isDimIndeterminate =
         checkedCount > 0 && checkedCount < this.dimParams.length
-      console.log(this.checkedDim)
     },
     handleCheckAllChangeDim(value: boolean) {
       if (value) {
@@ -783,7 +774,6 @@ export default defineComponent({
         this.checkedDim = []
       }
       this.isDimIndeterminate = false
-      console.log(this.checkedDim, '维度')
     },
     changeOrderFlag(order, index) {
       switch (order.colOrderFlag) {

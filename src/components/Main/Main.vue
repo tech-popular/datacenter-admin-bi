@@ -38,7 +38,6 @@
 import { computed, defineComponent, defineAsyncComponent, ref } from 'vue'
 // import { useRoute, useRouter } from 'vue-router'
 import { useStore } from '@/store/index'
-// import { useRoute } from 'vue-router'
 import leftIcon from '@/styles/img/left1.png'
 import rightIcon from '@/styles/img/right1.png'
 const SideMenu = defineAsyncComponent(() =>
@@ -63,7 +62,6 @@ export default defineComponent({
     // const route = useRoute()
     // const router = useRouter()
     const corpId = 'ding94069beefe61f4b735c2f4657eb6378f'
-    // const userId: any = route.query.userId
     // console.log('userId11: ', userId)
     // const token: any = route.query.token
     // console.log('token:222 ', token)

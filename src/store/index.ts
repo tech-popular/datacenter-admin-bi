@@ -8,6 +8,7 @@ export interface State {
   curDataLink: String
   menuType: Number
   sidebarFold: Boolean
+  defaultActive: String
 }
 
 // 定义注入类型
@@ -19,6 +20,7 @@ const store = createStore<State>({
       curDataLink: '',
       menuType: 0,
       sidebarFold: false,
+      defaultActive: ''
     }
   },
   mutations: {
@@ -32,6 +34,9 @@ const store = createStore<State>({
       console.log('sidebarFold: ', sidebarFold)
       state.sidebarFold = sidebarFold
     },
+    updateDefaultActive(state: State, defaultActive: String) {
+      state.defaultActive = defaultActive
+    }
   },
 })
 
