@@ -9,6 +9,7 @@ export interface State {
   menuType: Number
   sidebarFold: Boolean
   defaultActive: String
+  token: any
 }
 
 // 定义注入类型
@@ -20,7 +21,8 @@ const store = createStore<State>({
       curDataLink: '',
       menuType: 0,
       sidebarFold: false,
-      defaultActive: ''
+      defaultActive: '',
+      token: localStorage.getItem('token') ? localStorage.getItem('token') : ''
     }
   },
   mutations: {
@@ -36,6 +38,11 @@ const store = createStore<State>({
     },
     updateDefaultActive(state: State, defaultActive: String) {
       state.defaultActive = defaultActive
+    },
+    // 修改token，并将token存入localStorage
+    changeLogin(state: State, token: any) {
+      state.token = token
+      localStorage.setItem('token', token)
     }
   },
 })

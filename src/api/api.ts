@@ -2,6 +2,7 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { showMessage } from './status'
 import { ElMessage, ElLoading } from 'element-plus'
 import { IResponse, ILogin, ZLogin, IModelColumn, IModelSearch, VisitLog } from './type'
+import { useRouter } from 'vue-router'
 // import base from './untils'
 // let originHost = location.origin
 let axiosInstance: AxiosInstance = axios.create({
@@ -32,12 +33,15 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
     loadingInstance.close()
-    if (response.status === 200) {
-      // if (response.data && response.data.code === 401) {
-      //   // 401, token失效
-      //   console.log('401, token失效: ')
-      //   window.location.href = 'http://tech.9fbank.com/canary/#/login'
-      // }
+    console.log('response: ', response);
+    if (response.data && response.data.code === 401) {
+      const router = useRouter();
+      // 401, token失效
+      ElMessage.error({ message: '尚未登录，请登录' })
+      localStorage.removeItem('token')
+      router.push({
+        path: "/login",
+      });
       return response
     } else {
       showMessage(response.status)
