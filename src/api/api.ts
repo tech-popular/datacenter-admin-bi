@@ -2,9 +2,8 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { showMessage } from './status'
 import { ElMessage, ElLoading } from 'element-plus'
 import { IResponse, ILogin, ZLogin, IModelColumn, IModelSearch, VisitLog } from './type'
-import { useRouter } from 'vue-router'
 // import base from './untils'
-// let originHost = location.origin
+let originHost = location.origin
 let axiosInstance: AxiosInstance = axios.create({
   // baseURL: base.baseurl,
   // baseURL: originHost + '/canary-admin',
@@ -35,13 +34,11 @@ axiosInstance.interceptors.response.use(
     loadingInstance.close()
     console.log('response: ', response);
     if (response.data && response.data.code === 401) {
-      const router = useRouter();
+      console.log('useRouter(): ', useRouter());
       // 401, token失效
       ElMessage.error({ message: '尚未登录，请登录' })
       localStorage.removeItem('token')
-      router.push({
-        path: "/login",
-      });
+      window.location.href = originHost
       return response
     } else {
       showMessage(response.status)
