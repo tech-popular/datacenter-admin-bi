@@ -1,10 +1,7 @@
 <template>
   <el-form :inline="true" :model="searchForm" class="demo-form-inline" size="small">
-    <!-- <el-form-item label="统计日期：" prop="dateParam" v-if="dateParamVisible">
-      <el-date-picker v-model="searchForm.dateParam" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="YYYYMMDD"></el-date-picker>
-    </el-form-item>-->
     <div style="display: inline" v-if="dateParamVisible">
-      <el-form-item :label="searchForm.bizName" prop="beginTimeValue">
+      <el-form-item :label="searchForm.colBizName" prop="beginTimeValue">
         <el-date-picker v-model="searchForm.beginTimeValue" :clearable="false" type="date" placeholder="选择日期" class="demo-form-date"></el-date-picker>
       </el-form-item>
       <el-form-item label="至" prop="endTimeValue" v-if="searchForm.endTimeValue" size="small">
@@ -13,18 +10,18 @@
     </div>
     <div style="display: inline" v-if="dateOptionVisible">
       <el-form-item label="年：" prop="yearDateValue">
-        <el-select v-model="searchForm.yearDateValue " class="demo-form-date" placeholder="年">
+        <el-select v-model="searchForm.yearDateValue " class="demo-date-select" placeholder="年">
           <el-option v-for="(item, index) in yearList" :key="index" :value="item.value" :label="item.text"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="月：" prop="monthDateValue">
-        <el-select v-model="searchForm.monthDateValue " class="demo-form-date" placeholder="月">
+        <el-select v-model="searchForm.monthDateValue " class="demo-date-select" placeholder="月">
           <el-option value="-1" label="全部"></el-option>
           <el-option v-for="(item, index) in menthList" :key="index" :value="item.value" :label="item.text"></el-option>
         </el-select>
       </el-form-item>
     </div>
-    <!-- <el-form-item v-if="optionParams.length">
+    <el-form-item v-if="optionParams.length">
       <el-popover placement="right" width="400px" trigger="click">
         <template #reference>
           <el-button type="info" plain>过滤条件</el-button>
@@ -42,10 +39,8 @@
             <InputTag v-model="item.filterParams" :valueType="'string'" :add-tag-on-blur="true" :allow-duplicates="true" class="itemIput inputTag" placeholder="可用回车输入多条" />
           </el-form-item>
           <el-form-item :label="item.colBizName" prop="filterParams" v-if="!item.conditionType">
-            <el-select v-model="item.filterParams" filterable clearable placeholder="请选择">
-              <el-option label="测试1" value="1"></el-option>
-              <el-option label="测试12" value="21"></el-option>
-              <el-option label="测试13" value="12"></el-option>
+            <el-select :popperAppendToBody="false" v-model="item.filterParams" @focus="getOptionSelectData(item, index)" multiple filterable clearable placeholder="请选择">
+              <el-option :value="pitem" :label="pitem" v-for="(pitem, pindex) in item.optionSelectData" :key="pindex"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item :label="item.colBizName" prop="filterParams" v-if="conditiondataTextType.includes(item.conditionType) || conditiondataTextSingleType.includes(item.conditionType) ">
@@ -53,7 +48,7 @@
           </el-form-item>
         </div>
       </el-popover>
-    </el-form-item>-->
+    </el-form-item>
     <el-form-item v-if="dimParams.length">
       <el-popover placement="right" width="400px" trigger="click">
         <template #reference>
@@ -125,9 +120,9 @@
     fit
     border
     stripe
-    height="500px"
+    height="700px"
     :header-cell-class-name="handleHeadAddClass"
-    :header-cell-style="{background:'#eeeeee',color:'#000'}"
+    :header-cell-style="{background:'#eeeeee',color:'#000', border:'1px solid #ddd'}"
     :cell-style="cellStyle"
     @sort-change="onSortChange"
     :span-method="objectSpanMethod"
@@ -164,9 +159,11 @@ import { useRoute, RouteLocationNormalized } from 'vue-router'
 import {
   // getReportColumns,
   getReportSearchData,
-  getAnalysisModelColumn
+  getAnalysisModelColumn,
+  getOptionSelect
 } from '@/api/api'
 import { IResponse, IModelSearch } from '@/api/type'
+import { ElMessage, ElLoading } from 'element-plus'
 import order0 from '@/static/image/order0.gif'
 import order1 from '@/static/image/order1.gif'
 import order2 from '@/static/image/order2.gif'
@@ -180,7 +177,7 @@ export default defineComponent({
       searchForm: {
         beginTimeValue: '',
         endTimeValue: '',
-        bizName: '统计日期',
+        colBizName: '',
         yearDateValue: '',
         monthDateValue: ''
       }, // 查询条件报表数据
@@ -188,7 +185,6 @@ export default defineComponent({
       dateOptionVisible: false,
       value2: '',
       // columnDatas: [], // 记录表头数据
-      optionParams: [], // 记录过 滤条件数据
       dimParams: [], // 记录维度数据
       indexParams: [], // 记录指标数据
       orderParams: [], // 记录排序指标
@@ -267,7 +263,7 @@ export default defineComponent({
     const optionHTMLList: any = ref([]) // 备份过滤条件
     // const dateParam: any = ref([]) // 记录日期字段
     // // const dateOption = ref('') // 年月时间格式
-    // const optionParams: any = ref([]) // 记录过 滤条件数据
+    const optionParams: any = ref([]) // 记录过滤条件数据
     // const dimParams: any = ref([]) // 记录维度数据
     // const indexParams: any = ref([]) // 记录指标数据
     // const orderParams: any = ref([]) // 记录排序指标
@@ -276,12 +272,6 @@ export default defineComponent({
     // const conditionList: any = ref([]) // 日期条件list
     // const getColumns = async () => {
     //   const res: IResponse = await getAnalysisModelColumn(modelId)
-    //   console.log('res:报表 ', res)
-    //   console.log('res:DimHTMLList  ', res.dimHTMLList)
-    //   // console.log('res:KpiHTMLList  ', res.kpiHTMLList)
-    //   // console.log('res:OrderHTMLList  ', res.orderHTMLList)
-    //   // console.log('res:headRows  ', res.headRows)
-    //   console.log('res.optionHTMLList: ', res.optionHTMLList)
     //   columnDatas.value = res.headRows
     //   optionParams.value = res.optionHTMLList
     //   orderParams.value = res.orderHTMLList
@@ -351,6 +341,16 @@ export default defineComponent({
         pagination.total = res.analysisModel.portalPage.totalRows
       }
     }
+    const getOptionSelectData = async (params: any, index: number) => {
+      if (params.optionSelectData.length) return
+      const res: IResponse = await getOptionSelect(params.colRefTab)
+      if (res.code === 0) {
+        params.optionSelectData = res.data
+        optionParams[index] = params
+      } else {
+        return ElMessage.error({ message: res.msg })
+      }
+    }
 
     return {
       modelId,
@@ -367,7 +367,7 @@ export default defineComponent({
       // getColumns,
       getTableData,
       // dimParams,
-      // optionParams,
+      optionParams,
       // indexParams,
       // orderParams,
       // checkedorders,
@@ -380,7 +380,8 @@ export default defineComponent({
       endVal,
       dateTextConditionHTMLList,
       dateOptionConditioHTMLList,
-      ...toRefs(pagination)
+      ...toRefs(pagination),
+      getOptionSelectData
       // dateParam
       // checkedDim,
       // handleFilterCondition,
@@ -428,52 +429,67 @@ export default defineComponent({
           monthDateValue: this.searchForm.monthDateValue
         }
       }
-      // // 过滤条件
-      // if (this.optionParams.length) {
-      //   let filterParamsData = this.optionParams.filter(
-      //     item => item.filterParams !== ''
-      //   )
-      //   if (filterParamsData.length) {
-      //     let optionJSONData = {}
-      //     let textJSONData = {}
-      //     filterParamsData.forEach(item => {
-      //       if (!item.conditionType) {
-      //         let citem = this.optionHTMLList.filter(
-      //           element => element.colName === item.colName
-      //         )[0]
-      //         for (let key in citem) {
-      //           if (!item[key]) {
-      //             citem[key] = ''
-      //           }
-      //         }
-      //         optionJSONData[orderDataJSON.length] = {
-      //           column: JSON.stringify(citem),
-      //           value: JSON.stringify(item.filterParams)
-      //         }
-      //       } else {
-      //         let citem = this.optionHTMLList.filter(
-      //           element => element.colName === item.colName
-      //         )[0]
-      //         for (let key in citem) {
-      //           if (!item[key]) {
-      //             citem[key] = ''
-      //           }
-      //         }
-      //         textJSONData[textJSONData.length] = {
-      //           column: JSON.stringify(citem),
-      //           value: JSON.stringify(item.filterParams),
-      //           type: item.type
-      //         }
-      //       }
-      //     })
-      //     if (optionJSONData.length) {
-      //       params.optionJSON = optionJSONData
-      //     }
-      //     if (textJSONData.length) {
-      //       params.textJSON = optionJSONData
-      //     }
-      //   }
-      // }
+      // 过滤条件
+      if (this.optionParams.length) {
+        let filterParamsData = []
+        this.optionParams.filter(item => {
+          if (!item.conditionType) {
+            item.filterParams.length
+              ? filterParamsData.push(item)
+              : filterParamsData
+          } else {
+            item.filterParams ? filterParamsData.push(item) : filterParamsData
+          }
+        })
+        console.log('filterParamsData: ', filterParamsData)
+        if (filterParamsData.length) {
+          let optionJSONData = {}
+          let optionJSONDataIndex = 0
+          let textJSONData = {}
+          let textJSONDataIndex = 0
+          filterParamsData.forEach(item => {
+            if (!item.conditionType) {
+              let citem = this.optionHTMLList.filter(
+                element => element.colName === item.colName
+              )[0]
+              for (let key in citem) {
+                if (!item[key]) {
+                  citem[key] = ''
+                }
+              }
+              let filterParamsIndex = []
+              item.optionSelectData.forEach((fitem, findex) => {
+                if (item.filterParams.includes(fitem)) {
+                  filterParamsIndex.push(findex)
+                }
+              })
+              optionJSONData[optionJSONDataIndex] = {
+                column: JSON.stringify(citem),
+                value: filterParamsIndex.join(',')
+              }
+              optionJSONDataIndex = optionJSONDataIndex + 1
+            } else {
+              let citem = this.optionHTMLList.filter(
+                element => element.colName === item.colName
+              )[0]
+              for (let key in citem) {
+                if (!item[key]) {
+                  citem[key] = ''
+                }
+              }
+              textJSONData[textJSONDataIndex] = {
+                column: JSON.stringify(citem),
+                value: item.filterParams,
+                type: item.type
+              }
+              textJSONDataIndex = textJSONDataIndex + 1
+            }
+          })
+          console.log('optionJSONData: ', optionJSONData)
+          params.optionJSON = optionJSONData
+          params.textJSON = textJSONData
+        }
+      }
       // 排序
       if (this.checkedorders.length) {
         let orderDataJSON = {}
@@ -533,53 +549,66 @@ export default defineComponent({
     async getColumns() {
       const res: IResponse = await getAnalysisModelColumn(this.modelId)
       console.log('res:报表 ', res)
+      if (res.code === 500) {
+        return ElMessage.error({ message: res.msg })
+      }
       res.headRows.forEach(item => {
         item.colBizNameData = ''
       })
       this.columnDatas = res.headRows
-      res.optionHTMLList.forEach(item => {
-        item['filterParams'] = ''
-        item['type'] = ''
-        if (this.conditiondataTextType.includes(item.conditionType)) {
-          let itemBegin = item
-          itemBegin.colBizName = itemBegin.colBizName + '开始'
-          itemBegin.type = 'from'
-          let itemEnd = item
-          itemEnd.colBizName = itemEnd.colBizName + '结束'
-          itemEnd.type = 'to'
-          this.optionParams.push(itemBegin)
-          this.optionParams.push(itemEnd)
-        } else {
-          this.optionParams.push(item)
-        }
-      })
+      // 过滤条件
+      this.optionHTMLList = res.optionHTMLList
+      if (res.optionHTMLList.length) {
+        res.optionHTMLList.forEach(item => {
+          item['filterParams'] = ''
+          item['type'] = ''
+          item['optionSelectData'] = []
+          if (this.conditiondataTextType.includes(item.conditionType)) {
+            let itemBegin = item
+            itemBegin.colBizName = itemBegin.colBizName + '开始'
+            itemBegin.type = 'from'
+            let itemEnd = item
+            itemEnd.colBizName = itemEnd.colBizName + '结束'
+            itemEnd.type = 'to'
+            this.optionParams.push(itemBegin)
+            this.optionParams.push(itemEnd)
+          } else {
+            this.optionParams.push(item)
+          }
+        })
+      }
       this.optionParams = res.optionHTMLList
 
-      this.orderParams = res.orderHTMLList
       //  排序
+      this.orderParams = res.orderHTMLList
       this.orderParams.forEach(element => {
         if (element.colOrderFlag) {
           this.checkedorders.push(element.colName)
         }
       })
-      this.conditionList = res.conditionList
-      this.searchForm.bizName = res.conditionList[0].bizName
-      this.dateTextConditionHTMLList = res.dateTextConditionHTMLList
-      this.dateOptionConditioHTMLList = ref.dateOptionConditioHTMLList
-      this.dimParams = res.dimHTMLList
+
       // 维度
+      this.dimParams = res.dimHTMLList
       this.dimParams.forEach(element => {
         if (element.dimDisabled == 2) {
           this.checkedDim.push(element.colName)
         }
         this.handleCheckedDimChange(this.checkedDim)
       })
+      // 指标
       this.indexParams = res.kpiHTMLList
       this.indexParams.forEach(element => {
         this.checkedFields.push(element.colName)
       })
       this.handleCheckedFieldChange(this.checkedFields)
       // 统计日期
+      this.conditionList = res.conditionList
+      if (res.conditionList.length) {
+        this.searchForm.colBizName = res.conditionList[0].colBizName
+      }
+      console.log('this.searchForm: ', this.searchForm)
+      this.dateTextConditionHTMLList = res.dateTextConditionHTMLList
+      this.dateOptionConditioHTMLList = ref.dateOptionConditioHTMLList
       if (res.dateTextConditionHTMLList.length) {
         this.searchForm.beginTimeValue =
           res.dateTextConditionHTMLList[0].beginTimeValue
@@ -587,16 +616,35 @@ export default defineComponent({
           this.searchForm.endTimeValue =
             res.dateTextConditionHTMLList[0].endTimeValue
         }
+        this.dateParamVisible = true
+      } else {
+        this.dateParamVisible = false
       }
       // 下拉年月日期条件
       if (res.dateOptionConditioHTMLList.length) {
         this.searchForm.yearDateValue =
-          res.dateOptionConditioHTMLList[0].yearDateValue
+          res.dateTextConditionHTMLList[0].yearDateValue
         this.searchForm.monthDateValue =
-          res.dateOptionConditioHTMLList[0].monthDateValue
+          res.dateTextConditionHTMLList[0].monthDateValue
+        this.dateOptionVisible = true
+      } else {
+        this.dateOptionVisible = false
       }
-      this.handleFilterCondition()
+      // this.handleFilterCondition()
+      // 获取表数据
+      this.searchData()
     },
+    // async getOptionSelectData(params: any, index: number) {
+    //   console.log('params:3333 ', params)
+    //   const res: IResponse = await getOptionSelect(params.colRefTab)
+    //   if (res.code === 0) {
+    //     params.optionSelectData = res.data
+    //     this.optionParams[index] = params
+    //     console.log('this.optionParams: ', this.optionParams)
+    //   } else {
+    //     return ElMessage.error({ message: res.msg })
+    //   }
+    // },
     handleFilterCondition() {
       let conditionType = this.conditionList[0].conditionType
       let today = new Date()
@@ -674,9 +722,6 @@ export default defineComponent({
       // }
       // // 24 其它时间段条件 1个日期 beginTimeValue 开始时间
       // // 14、15 拉链表开始时间、拉链表结束时间 1个日期 beginTimeValue 开始时间
-
-      // 获取表数据
-      this.searchData()
     },
     getFirstDayOfWeek(date) {
       let weekday = date.getDay() || 7 //获取星期几,getDay()返回值是 0（周日） 到 6（周六） 之间的一个整数。0||7为7，即weekday的值为1-7
@@ -829,5 +874,8 @@ export default defineComponent({
 }
 .demo-form-date {
   width: 130px !important;
+}
+.demo-date-select {
+  width: 100px !important;
 }
 </style>

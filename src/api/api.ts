@@ -34,7 +34,6 @@ axiosInstance.interceptors.response.use(
     loadingInstance.close()
     console.log('response: ', response);
     if (response.data && response.data.code === 401) {
-      console.log('useRouter(): ', useRouter());
       // 401, token失效
       ElMessage.error({ message: '尚未登录，请登录' })
       localStorage.removeItem('token')
@@ -112,4 +111,10 @@ export const getAnalysisModelColumn = (modelId: string): Promise<IResponse> => {
 // 访问日志
 export const userVisitLog = (params: VisitLog): Promise<IResponse> => {
   return axiosInstance.post('/bi/userVisitLog/saveUserVisitLog', { ...params }).then((res) => res)
+}
+// 获取下拉框数据
+export const getOptionSelect = (colRefTab: string): Promise<IResponse> => {
+  return axiosInstance
+    .get(`bi/olapModel/database/${colRefTab}`)
+    .then((res) => res.data)
 }
