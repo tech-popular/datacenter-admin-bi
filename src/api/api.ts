@@ -96,9 +96,9 @@ export const getReportSearchData = (
 }
 
 // tableau查询菜单接口
-export const getTableauInfo = (modelId: string): Promise<IResponse> => {
+export const getTableauInfo = (tableauId: string): Promise<IResponse> => {
   return axiosInstance
-    .get(`/bi/tableau/info/${modelId}`)
+    .get(`/bi/tableau/info/${tableauId}`)
     .then((res) => res.data)
 }
 
