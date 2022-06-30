@@ -270,6 +270,7 @@ export default defineComponent({
     // const checkedorders: any = ref([]) // 排序勾选值
     // const checkedDim: any = ref([]) // 选中的维度
     // const conditionList: any = ref([]) // 日期条件list
+    const loading: any = ref()
     // const getColumns = async () => {
     //   const res: IResponse = await getAnalysisModelColumn(modelId)
     //   columnDatas.value = res.headRows
@@ -381,7 +382,8 @@ export default defineComponent({
       dateTextConditionHTMLList,
       dateOptionConditioHTMLList,
       ...toRefs(pagination),
-      getOptionSelectData
+      getOptionSelectData,
+      loading
       // dateParam
       // checkedDim,
       // handleFilterCondition,
@@ -389,6 +391,7 @@ export default defineComponent({
     }
   },
   mounted() {
+    this.loading = ElLoading.service({ fullscreen: true })
     // 获取表头数据
     this.getColumns()
   },
@@ -550,6 +553,7 @@ export default defineComponent({
       const res: IResponse = await getAnalysisModelColumn(this.modelId)
       console.log('res:报表 ', res)
       if (res.code === 500) {
+        this.loading.close()
         return ElMessage.error({ message: res.msg })
       }
       res.headRows.forEach(item => {
