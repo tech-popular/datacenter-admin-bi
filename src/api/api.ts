@@ -6,9 +6,9 @@ import { IResponse, ILogin, ZLogin, IModelColumn, IModelSearch, VisitLog } from 
 let originHost = location.origin
 let axiosInstance: AxiosInstance = axios.create({
   // baseURL: base.baseurl,
-  baseURL: originHost + '/canary-admin',
+  // baseURL: originHost + '/canary-admin',
   // baseURL: 'http://tech.9f.cn/canary-admin',
-  // baseURL: 'http://192.168.208.14:8000/canary-admin',
+  baseURL: 'http://192.168.208.14:8000/canary-admin',
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json;charset=UTF-8'
@@ -32,12 +32,11 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
     loadingInstance.close()
-    if (response.status === 200) {
-      // if (response.data && response.data.code === 401) {
-      //   // 401, token失效
-      //   console.log('401, token失效: ')
-      //   window.location.href = 'http://tech.9fbank.com/canary/#/login'
-      // }
+    if (response.data && response.data.code === 401) {
+      // 401, token失效
+      ElMessage.error({ message: '尚未登录，请登录' })
+      localStorage.removeItem('token')
+      window.location.href = originHost
       return response
     } else {
       showMessage(response.status)

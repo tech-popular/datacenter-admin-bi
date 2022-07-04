@@ -1,12 +1,12 @@
 <template>
   <div class="xfk-menu-item">
-    <el-sub-menu v-if="item.children.length > 0" :index="item.id + ''">
+    <el-sub-menu v-if="item.children" :index="item.id + ''">
       <template #title>
         <span>{{ item.name }}</span>
       </template>
       <menu-item v-for="children in item.children" :item="children" :key="children.id + ''" />
     </el-sub-menu>
-    <el-menu-item v-if="item.children.length == 0" @click="menuClick(item)" :index="item.id + ''">
+    <el-menu-item v-if="!item.children" @click="menuClick(item)" :index="item.id + ''">
       <i :class="[item.icon]"></i>
       <span>{{ item.name }}</span>
     </el-menu-item>
