@@ -1,22 +1,9 @@
 <template>
   <div class="bgC">
     <div class="center">
-      <el-input
-        v-model="userName"
-        type="text"
-        placeholder="用户名"
-        clearable
-        @blur="onChangeName()"
-      />
+      <el-input v-model="userName" type="text" placeholder="用户名" clearable @blur="onChangeName()" />
       <p class="Tips" v-show="usernameShow">用户名不能为空</p>
-      <el-input
-        class="topInterval"
-        v-model="passWord"
-        type="text"
-        placeholder="密码"
-        show-password
-        @blur="onChangePass()"
-      />
+      <el-input class="topInterval" v-model="passWord" type="text" placeholder="密码" show-password @blur="onChangePass()" />
       <p class="Tips" v-show="passwordShow">密码不能为空</p>
       <p class="forgetPass">请使用上网账号登陆使用</p>
       <div class="onChage" @click="signIn()">登录</div>
@@ -24,92 +11,100 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, toRefs, reactive, onMounted } from "vue";
-import { useRouter } from "vue-router";
-import { SysLogin } from "@/api/api";
-import * as dd from "dingtalk-jsapi";
+import { defineComponent, toRefs, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { SysLogin, initDimForeignTableRedis } from '@/api/api'
+import { ElMessage } from 'element-plus'
+import * as dd from 'dingtalk-jsapi'
 export default defineComponent({
-  name: "Login",
+  name: 'Login',
   setup() {
-    const router = useRouter();
+    const router = useRouter()
     const loginform = reactive({
-      userName: "",
-      passWord: "",
+      userName: '',
+      passWord: '',
       usernameShow: false,
       passwordShow: false,
-      UUid: "",
-      time: 0,
-    });
+      UUid: '',
+      time: 0
+    })
     let onChangeName = () => {
       if (loginform.userName.length <= 0) {
-        loginform.usernameShow = true;
+        loginform.usernameShow = true
       } else {
-        loginform.usernameShow = false;
+        loginform.usernameShow = false
       }
-    };
+    }
     let onChangePass = () => {
       if (loginform.passWord.length <= 0) {
-        loginform.passwordShow = true;
+        loginform.passwordShow = true
       } else {
-        loginform.passwordShow = false;
+        loginform.passwordShow = false
       }
-    };
+    }
 
     let getUUID = () => {
-      let uuid:any = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+      let uuid: any = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(
         /[xy]/g,
-        (c:any) => {
-          return (
-            c === "x" ? (Math.random() * 16) | 0 : ("r&0x3" as any) | ("0x8" as any)
-          ).toString(16);
+        (c: any) => {
+          return (c === 'x'
+            ? (Math.random() * 16) | 0
+            : ('r&0x3' as any) | ('0x8' as any)
+          ).toString(16)
         }
-      );
-      loginform.UUid = uuid;
-    };
+      )
+      loginform.UUid = uuid
+    }
     let getTime = () => {
-      let timestamp = new Date().getTime();
-      loginform.time = timestamp;
-    };
+      let timestamp = new Date().getTime()
+      loginform.time = timestamp
+    }
 
     let signIn = async () => {
       const res: any = await SysLogin({
         username: loginform.userName,
-          password: loginform.passWord,
-          t: loginform.time,
-          uuid: loginform.UUid
-      });
+        password: loginform.passWord,
+        t: loginform.time,
+        uuid: loginform.UUid
+      })
       if (res.data) {
         router.push({
-          path: "/Main",
-        });
-        localStorage.setItem("token", res.data.token);
+          path: '/Main'
+        })
+        localStorage.setItem('token', res.data.token)
+        initTableRedis()
+      } else {
+        return ElMessage.warning(res.data.msg)
       }
-    };
-
-    if (dd.env.platform !== "notInDingTalk") {
-        //钉钉内打开
-        router.push({
-          path: "/Main",
-        });
-      }
+    }
+    let initTableRedis = async () => {
+      const res: any = await initDimForeignTableRedis()
+      console.log('res:3333 ', res)
+    }
+    if (dd.env.platform !== 'notInDingTalk') {
+      //钉钉内打开
+      router.push({
+        path: '/Main'
+      })
+    }
     onMounted(() => {
-      getUUID();
-      getTime();
-    });
+      getUUID()
+      getTime()
+    })
     return {
       ...toRefs(loginform),
       onChangeName,
       onChangePass,
-      signIn,
-    };
-  },
-});
+      signIn
+    }
+  }
+})
 </script>
 <style lang="scss" scoped>
 .bgC {
   width: 100%;
   height: 100%;
-  background: url("../../static/image/bg.png");
+  background: url('../../static/image/bg.png');
   display: flex;
   align-items: center;
   justify-content: center;

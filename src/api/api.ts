@@ -111,3 +111,9 @@ export const getAnalysisModelColumn = (modelId: string): Promise<IResponse> => {
 export const userVisitLog = (params: VisitLog): Promise<IResponse> => {
   return axiosInstance.post('/bi/userVisitLog/saveUserVisitLog', { ...params }).then((res) => res)
 }
+// 初始化报表数据
+export const initDimForeignTableRedis = (): Promise<IResponse> => {
+  return axiosInstance
+    .get('/bi/initDimForeignTableRedis')
+    .then((res) => res.data)
+}
