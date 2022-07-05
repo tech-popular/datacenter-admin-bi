@@ -6,8 +6,8 @@ import { IResponse, ILogin, ZLogin, IModelColumn, IModelSearch, VisitLog } from 
 let originHost = location.origin
 let axiosInstance: AxiosInstance = axios.create({
   // baseURL: base.baseurl,
-  // baseURL: originHost + '/canary-admin',
-  baseURL: 'http://tech.9f.cn/canary-admin',
+  baseURL: originHost + '/canary-admin',
+  // baseURL: 'http://tech.9f.cn/canary-admin',
   // baseURL: 'http://192.168.208.14:8000/canary-admin',
   headers: {
     Accept: 'application/json',

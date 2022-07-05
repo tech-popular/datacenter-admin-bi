@@ -1,14 +1,14 @@
 <template>
   <div class="xfk-menu-item">
-    <el-sub-menu v-if="item.children.length > 0" :index="item.id + ''">
+    <el-sub-menu v-if="item.children" :index="item.id + ''">
       <template #title>
-        <span>{{ item.name }}</span>
+        <span class="span-ellipsis" :title="item.name">{{ item.name }}</span>
       </template>
       <menu-item v-for="children in item.children" :item="children" :key="children.id + ''" />
     </el-sub-menu>
-    <el-menu-item v-if="item.children.length == 0" @click="menuClick(item)" :index="item.id + ''">
+    <el-menu-item v-if="!item.children" @click="menuClick(item)" :index="item.id + ''">
       <i :class="[item.icon]"></i>
-      <span>{{ item.name }}</span>
+      <span class="span-ellipsis" :title="item.name">{{ item.name }}</span>
     </el-menu-item>
   </div>
 </template>
@@ -63,4 +63,12 @@ export default defineComponent({
 })
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+.span-ellipsis {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: block; // 一定要是块级元素，并且有定宽才有效果
+}
+</style>

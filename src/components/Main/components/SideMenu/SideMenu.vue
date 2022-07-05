@@ -39,7 +39,7 @@ export default defineComponent({
     const defaultRouteName: any = route.name
     const menulistData = JSON.parse(sessionStorage.getItem('menulist'))
     if (defaultRouteName === 'superset') {
-      defaultActive.value = route.params.id
+      defaultActive.value = route.params.id.toString()
       store.commit(
         'changeDataLink',
         menulistData.filter(item => item.id == route.params.id)[0].url

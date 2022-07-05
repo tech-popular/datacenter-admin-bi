@@ -136,9 +136,9 @@ export default defineComponent({
     }
     // 平铺存储菜单
     const fnMenuRoutes = (menulist: any) => {
-      if (menulist.length) {
+      if (menulist) {
         menulist.forEach(item => {
-          if (item.children.length) {
+          if (item.children) {
             fnMenuRoutes(item.children)
           } else {
             PCgradeMenu.value.push(item)

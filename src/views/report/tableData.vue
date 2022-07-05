@@ -32,18 +32,23 @@
           </el-col>
         </el-row>
         <div v-for="(item,index) in optionParams" :key="index">
-          <el-form-item :label="item.colBizName" prop="filterParams" v-if="conditionTextType.includes(item.conditionType)">
+          <el-form-item :label="item.colBizName" label-width="100px" prop="filterParams" v-if="conditionTextType.includes(item.conditionType)">
             <el-input v-model="item.filterParams" @input="handleInputString" placeholder="请输入过滤条件"></el-input>
           </el-form-item>
-          <el-form-item :label="item.colBizName" prop="filterParams" v-if="item.conditionType === 12">
+          <el-form-item :label="item.colBizName" label-width="100px" prop="filterParams" v-if="item.conditionType === 12">
             <InputTag v-model="item.filterParams" :valueType="'string'" :add-tag-on-blur="true" :allow-duplicates="true" class="itemIput inputTag" placeholder="可用回车输入多条" />
           </el-form-item>
-          <el-form-item :label="item.colBizName" prop="filterParams" v-if="!item.conditionType">
+          <el-form-item :label="item.colBizName" label-width="100px" prop="filterParams" v-if="!item.conditionType">
             <el-select :popperAppendToBody="false" v-model="item.filterParams" @focus="getOptionSelectData(item, index)" multiple filterable clearable placeholder="请选择">
               <el-option :value="pitem" :label="pitem" v-for="(pitem, pindex) in item.optionSelectData" :key="pindex"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item :label="item.colBizName" prop="filterParams" v-if="conditiondataTextType.includes(item.conditionType) || conditiondataTextSingleType.includes(item.conditionType) ">
+          <el-form-item
+            :label="item.colBizName"
+            label-width="100px"
+            prop="filterParams"
+            v-if="conditiondataTextType.includes(item.conditionType) || conditiondataTextSingleType.includes(item.conditionType) "
+          >
             <el-date-picker v-model="item.filterParams" :clearable="false" type="date" placeholder="选择日期" class="demo-form-date"></el-date-picker>
           </el-form-item>
         </div>
