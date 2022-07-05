@@ -117,3 +117,9 @@ export const initDimForeignTableRedis = (): Promise<IResponse> => {
     .get('/bi/initDimForeignTableRedis')
     .then((res) => res.data)
 }
+// 获取下拉框数据
+export const getOptionSelect = (colRefTab: string): Promise<IResponse> => {
+  return axiosInstance
+    .get(`bi/olapModel/database/${colRefTab}`)
+    .then((res) => res.data)
+}

@@ -16,6 +16,7 @@ import { useRouter } from 'vue-router'
 import { SysLogin, initDimForeignTableRedis } from '@/api/api'
 import { ElMessage } from 'element-plus'
 import * as dd from 'dingtalk-jsapi'
+import { useStore } from '@/store/index'
 export default defineComponent({
   name: 'Login',
   setup() {

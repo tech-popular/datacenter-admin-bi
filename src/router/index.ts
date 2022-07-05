@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { App, ref } from 'vue'
+import { ElMessage } from 'element-plus'
 // import  { ref , type } from 'vue'
 import Main from '@/components/Main/Main.vue'
 import dayjs from 'dayjs'
@@ -50,14 +51,24 @@ const router = createRouter({
     },
   ]
 })
+
 const startTime: any = ref(new Date())
 const currentTime: any = ref('')
 const standingTime: any = ref('')
 const fromPage: any = ref('')
 const toPage: any = ref('')
 router.beforeEach((to, from, next) => {
-  console.log('from: ', from);
-  console.log('to: ', to);
+  if (to.path === '/login') {
+    next()
+  } else {
+    let token = localStorage.getItem('token')
+    if (token === null || token === '') {
+      ElMessage.error({ message: 'token失效，请重新登录' })
+      next('/login')
+    } else {
+      next()
+    }
+  }
   // console.log('kkkk', JSON.parse(sessionStorage.getItem('menulist')))
   // 如果to存在，则说明路由发生了跳转
   if ((to.params.modelId || to.params.id) && (from.params.modelId || from.params.id)) {
