@@ -1,3 +1,4 @@
+import { State } from './index';
 import { InjectionKey } from 'vue'
 import { createStore, useStore as baseUseStore, Store } from 'vuex'
 import type { App } from 'vue'
@@ -10,6 +11,7 @@ export interface State {
   sidebarFold: Boolean
   defaultActive: String
   token: any
+  menuName: String
 }
 
 // 定义注入类型
@@ -22,7 +24,8 @@ const store = createStore<State>({
       menuType: 0,
       sidebarFold: false,
       defaultActive: '',
-      token: localStorage.getItem('token') ? localStorage.getItem('token') : ''
+      token: localStorage.getItem('token') ? localStorage.getItem('token') : '',
+      menuName: ''
     }
   },
   mutations: {
@@ -43,6 +46,10 @@ const store = createStore<State>({
     changeLogin(state: State, token: any) {
       state.token = token
       localStorage.setItem('token', token)
+    },
+    changeMenuName(state: State, menuName: string) {
+      state.menuName = menuName
+      localStorage.setItem('menuName', menuName)
     }
   },
 })

@@ -42,6 +42,11 @@ export default defineComponent({
           router.push({
             path: `/report/${item.url}`
           })
+          const menulistData = JSON.parse(sessionStorage.getItem('menulist'))
+          store.commit(
+            'changeMenuName',
+            menulistData.filter(citem => citem.id === item.id)[0].name
+          )
           break
         case 2:
           router.push({

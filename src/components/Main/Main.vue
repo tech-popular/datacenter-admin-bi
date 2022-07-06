@@ -25,6 +25,7 @@
       </el-scrollbar>
       <div class="xfk-content">
         <el-scrollbar class="xfk-view" wrapClass="xfk-content-wrap">
+          <div class="xfk-content-fullPath">{{menuName}}</div>
           <router-view :key="$route.fullPath" />
         </el-scrollbar>
       </div>
@@ -82,10 +83,16 @@ export default defineComponent({
     // }
 
     const store = useStore()
-    const sidebarFold: any = computed(() => {
+    const menuName: String = computed(() => {
+      return store.state.menuName
+        ? store.state.menuName
+        : localStorage.getItem('menuName')
+      // return localStorage.getItem('menuName')
+    })
+    const sidebarFold: Boolean = computed(() => {
       return store.state.sidebarFold
     })
-    const iconClick = (sidebarFold: any) => {
+    const iconClick = (sidebarFold: Boolean) => {
       console.log(!sidebarFold)
       store.commit('changeSidebarFold', !sidebarFold)
     }
@@ -163,7 +170,8 @@ export default defineComponent({
       gradeClick,
       gradeName,
       fnMenuRoutes,
-      PCgradeMenu
+      PCgradeMenu,
+      menuName
     }
   }
 })
@@ -213,7 +221,7 @@ export default defineComponent({
       display: flex;
       justify-content: center;
       align-items: center;
-      min-width: 200px;
+      min-width: 230px;
       height: 100%;
       padding: 0 10px;
       margin-right: 10px;
@@ -241,7 +249,7 @@ export default defineComponent({
     height: calc(100% - 60px);
     .xfk-side {
       flex-shrink: 0;
-      width: 200px;
+      width: 230px;
       height: 100%;
       overflow: hidden;
       background-color: #545c64;
@@ -263,6 +271,15 @@ export default defineComponent({
       flex-grow: 1;
       height: 100%;
       overflow: hidden;
+      .xfk-content-fullPath {
+        width: 100%;
+        background-color: #ecf0f5;
+        font-size: 14px;
+        height: 28px;
+        line-height: 28px;
+        padding-left: 20px;
+        margin-bottom: 15px;
+      }
       .xfk-tags {
         padding: 0;
         height: 40px;
