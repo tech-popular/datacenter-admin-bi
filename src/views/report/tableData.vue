@@ -125,7 +125,8 @@
     fit
     border
     stripe
-    height="700px"
+    ref="table"
+    :height="tableHeight"
     :header-cell-class-name="handleHeadAddClass"
     :header-cell-style="{background:'#eeeeee',color:'#000', border:'1px solid #ddd'}"
     :cell-style="cellStyle"
@@ -210,6 +211,7 @@ export default defineComponent({
   setup() {
     const route: RouteLocationNormalized = useRoute()
     const modelId: string = String(route.params.modelId)
+    const tableHeight: Number = 0 // 表格高度根据屏幕自适应
     const clickVal = ref<string>()
     const moveVal = ref<string>()
     const endVal = ref<string>()
@@ -267,7 +269,6 @@ export default defineComponent({
     const conditiondateOptionType: any = ref([2, 21]) // 年月下拉选日期类型
     const optionHTMLList: any = ref([]) // 备份过滤条件
     // const dateParam: any = ref([]) // 记录日期字段
-    // // const dateOption = ref('') // 年月时间格式
     const optionParams: any = ref([]) // 记录过滤条件数据
     // const dimParams: any = ref([]) // 记录维度数据
     // const indexParams: any = ref([]) // 记录指标数据
@@ -276,40 +277,6 @@ export default defineComponent({
     // const checkedDim: any = ref([]) // 选中的维度
     // const conditionList: any = ref([]) // 日期条件list
     const loading: any = ref()
-    // const getColumns = async () => {
-    //   const res: IResponse = await getAnalysisModelColumn(modelId)
-    //   columnDatas.value = res.headRows
-    //   optionParams.value = res.optionHTMLList
-    //   orderParams.value = res.orderHTMLList
-
-    //   //  排序
-    //   orderParams.value.forEach(element => {
-    //     if (element.colOrderFlag) {
-    //       checkedorders.value.push(element.colName)
-    //     }
-    //   })
-    //   // conditionList.value = res.conditionList
-    //   // searchForm.dateParam = res.DateTextConditionHTML.split(
-    //   //   '统计日期:'
-    //   // )[1].split(':')
-    //   // console.log('searchForm.dateParam: ', searchForm.dateParam)
-    //   // columnDatas.value.map(item => {
-    //   //   item.sortable = 'custom'
-    //   // })
-
-    //   // let dateItem = res.theadList.filter(item => {
-    //   //   return item.dataType === 'date'
-    //   // })
-    //   // console.log('res.dateOptionConditioHTML: ', res.dateOptionConditioHTML)
-    //   dimParams.value = res.dimHTMLList
-    //   // 维度
-    //   dimParams.value.forEach(element => {
-    //     if (element.dimDisabled == 2) {
-    //       checkedDim.value.push(element.colName)
-    //     }
-    //   })
-    //   indexParams.value = res.kpiHTMLList
-    // }
     const tableData: any = ref([])
     const getTableData = async (params: IModelSearch) => {
       const res: IResponse = await getReportSearchData(params)
@@ -344,7 +311,7 @@ export default defineComponent({
           })
           tableData.value.push(totalRowListData)
         }
-        pagination.total = res.analysisModel.portalPage.totalRows
+        pagination.total = Number(res.analysisModel.totalList[0])
       }
     }
     const getOptionSelectData = async (params: any, index: number) => {
@@ -388,7 +355,8 @@ export default defineComponent({
       dateOptionConditioHTMLList,
       ...toRefs(pagination),
       getOptionSelectData,
-      loading
+      loading,
+      tableHeight
       // dateParam
       // checkedDim,
       // handleFilterCondition,
@@ -399,6 +367,20 @@ export default defineComponent({
     this.loading = ElLoading.service({ fullscreen: true })
     // 获取表头数据
     this.getColumns()
+    this.$nextTick(() => {
+      this.tableHeight =
+        window.innerHeight - this.$refs.table.$el.offsetTop - 120
+      console.log('this.tableHeight: ', this.tableHeight)
+      console.log(' window.innerHeight: ', window.innerHeight)
+      // 监听窗口大小变化
+      let self = this
+      window.onresize = function() {
+        self.tableHeight =
+          window.innerHeight - self.$refs.table.$el.offsetTop - 120
+      }
+    })
+    //this.$refs.table.$el.offsetTop：表格距离浏览器的高度
+    //50表示你想要调整的表格距离底部的高度（你可以自己随意调整），因为我们一般都有放分页组件的，所以需要给它留一个高度
   },
   methods: {
     // 搜索数据
@@ -886,5 +868,8 @@ export default defineComponent({
 }
 .demo-date-select {
   width: 100px !important;
+}
+.el-table .el-table__cell {
+  padding: 0;
 }
 </style>
