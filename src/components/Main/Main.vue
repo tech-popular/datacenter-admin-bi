@@ -25,7 +25,7 @@
       </el-scrollbar>
       <div class="xfk-content">
         <el-scrollbar class="xfk-view" wrapClass="xfk-content-wrap">
-          <div class="xfk-content-fullPath">{{menuName}}</div>
+          <div class="xfk-content-fullPath" v-if="menuName">{{menuName}}</div>
           <router-view :key="$route.fullPath" />
         </el-scrollbar>
       </div>

@@ -34,26 +34,29 @@ export default defineComponent({
         case 0:
           store.commit('changeDataLink', item.url)
           store.commit('changeMenuType', item.menuType)
+          store.commit('changeMenuName', '')
           router.push({
             path: `/superset/${item.id}`
           })
           break
         case 1:
-          router.push({
-            path: `/report/${item.url}`
-          })
           const menulistData = JSON.parse(sessionStorage.getItem('menulist'))
           store.commit(
             'changeMenuName',
-            menulistData.filter(citem => citem.id === item.id)[0].name
+            menulistData.filter(citem => citem.id === item.id)[0].menuRelevance
           )
+          router.push({
+            path: `/report/${item.url}`
+          })
           break
         case 2:
+          store.commit('changeMenuName', '')
           router.push({
             path: `/tableau/${item.url}`
           })
           break
         default:
+          store.commit('changeMenuName', '')
           store.commit('changeDataLink', '')
           router.push({
             path: '/home'
