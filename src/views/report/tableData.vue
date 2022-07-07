@@ -267,7 +267,8 @@ export default defineComponent({
     const conditiondataTextType = ref([1, 7, 8, 11, 16, 17, 18, 20, 22, 23, 26]) // 两个日期类型
     const conditiondataTextSingleType: any = ref([27, 19, 24, 14, 15]) // 一个日期类型
     const conditiondateOptionType: any = ref([2, 21]) // 年月下拉选日期类型
-    const optionHTMLList: any = ref([]) // 备份过滤条件
+    const optionHTMLList: any = ref([]) // 备份过滤下拉条件
+    const textConditionHTMLList: any = ref([]) // 备份输入条件
     // const dateParam: any = ref([]) // 记录日期字段
     const optionParams: any = ref([]) // 记录过滤条件数据
     // const dimParams: any = ref([]) // 记录维度数据
@@ -337,6 +338,7 @@ export default defineComponent({
       conditiondataTextSingleType,
       conditiondateOptionType,
       optionHTMLList,
+      textConditionHTMLList,
       // getColumns,
       getTableData,
       // dimParams,
@@ -370,8 +372,6 @@ export default defineComponent({
     this.$nextTick(() => {
       this.tableHeight =
         window.innerHeight - this.$refs.table.$el.offsetTop - 120
-      console.log('this.tableHeight: ', this.tableHeight)
-      console.log(' window.innerHeight: ', window.innerHeight)
       // 监听窗口大小变化
       let self = this
       window.onresize = function() {
@@ -440,7 +440,7 @@ export default defineComponent({
           filterParamsData.forEach(item => {
             if (!item.conditionType) {
               let citem = this.optionHTMLList.filter(
-                element => element.colName === item.colName
+                element => element.colBizName === item.colBizName
               )[0]
               for (let key in citem) {
                 if (!item[key]) {
@@ -459,25 +459,21 @@ export default defineComponent({
               }
               optionJSONDataIndex = optionJSONDataIndex + 1
             } else {
-              let citem = this.optionHTMLList.filter(
-                element => element.colName === item.colName
-              )[0]
-              for (let key in citem) {
-                if (!item[key]) {
-                  citem[key] = ''
+              this.textConditionHTMLList.filter(element => {
+                if (Object.keys(element)[0] == item.colBizName) {
+                  textJSONData[textJSONDataIndex] = {
+                    column: element[Object.keys(element)[0]],
+                    value: item.filterParams,
+                    type: item.type
+                  }
                 }
-              }
-              textJSONData[textJSONDataIndex] = {
-                column: JSON.stringify(citem),
-                value: item.filterParams,
-                type: item.type
-              }
+              })
               textJSONDataIndex = textJSONDataIndex + 1
             }
           })
-          console.log('optionJSONData: ', optionJSONData)
           params.optionJSON = optionJSONData
           params.textJSON = textJSONData
+          console.log('params: ', params)
         }
       }
       // 排序
@@ -568,8 +564,16 @@ export default defineComponent({
           }
         })
       }
-      this.optionParams = res.optionHTMLList
-
+      this.textConditionHTMLList = res.textConditionHTMLList
+      if (res.textConditionHTMLList.length) {
+        res.textConditionHTMLList.forEach(item => {
+          let key = Object.keys(item)
+          let citem = JSON.parse(item[key])
+          citem['filterParams'] = ''
+          citem['type'] = ''
+          this.optionParams.push(citem)
+        })
+      }
       //  排序
       this.orderParams = res.orderHTMLList
       this.orderParams.forEach(element => {
@@ -625,17 +629,6 @@ export default defineComponent({
       // 获取表数据
       this.searchData()
     },
-    // async getOptionSelectData(params: any, index: number) {
-    //   console.log('params:3333 ', params)
-    //   const res: IResponse = await getOptionSelect(params.colRefTab)
-    //   if (res.code === 0) {
-    //     params.optionSelectData = res.data
-    //     this.optionParams[index] = params
-    //     console.log('this.optionParams: ', this.optionParams)
-    //   } else {
-    //     return ElMessage.error({ message: res.msg })
-    //   }
-    // },
     handleFilterCondition() {
       let conditionType = this.conditionList[0].conditionType
       let today = new Date()
@@ -648,71 +641,6 @@ export default defineComponent({
           ? (this.dateOptionVisible = true)
           : (this.dateOptionVisible = false)
       })
-      // // 昨天
-      // if ([1, 7, 8].includes(conditionType)) {
-      //   today.setDate(today.getDate() - 1)
-      //   this.searchForm.dateParam = [
-      //     dayjs(today).format('YYYY-MM-DD'),
-      //     dayjs(today).format('YYYY-MM-DD')
-      //   ]
-      // }
-      // // 今天
-      // if (conditionType === 23) {
-      //   this.searchForm.dateParam = [
-      //     dayjs(today).format('YYYY-MM-DD'),
-      //     dayjs(today).format('YYYY-MM-DD')
-      //   ]
-      // }
-      // // 上月最后一天
-      // if (conditionType === 18) {
-      //   today.setDate(0)
-      //   this.searchForm.dateParam = [
-      //     dayjs(today).format('YYYY-MM-DD'),
-      //     dayjs(today).format('YYYY-MM-DD')
-      //   ]
-      // }
-      // // 上周一到周日
-      // if (conditionType === 20) {
-      //   today = this.getFirstDayOfWeek(today)
-      //   this.searchForm.dateParam = [
-      //     dayjs(today.setDate(today.getDate() - 7)).format('YYYY-MM-DD'),
-      //     dayjs(today.setDate(today.getDate() - 1)).format('YYYY-MM-DD')
-      //   ]
-      // }
-      // // 最近30天
-      // if (conditionType === 11) {
-      //   this.searchForm.dateParam = [
-      //     dayjs(today.setDate(today.getDate() - 30)).format('YYYY-MM-DD'),
-      //     dayjs(today.setDate(today.getDate() - 1)).format('YYYY-MM-DD')
-      //   ]
-      // }
-      // // 最近7天
-      // if (conditionType === 16) {
-      //   this.searchForm.dateParam = [
-      //     dayjs(today.setDate(today.getDate() - 7)).format('YYYY-MM-DD'),
-      //     dayjs(today.setDate(today.getDate() - 1)).format('YYYY-MM-DD')
-      //   ]
-      // }
-      // // 7天前的7天
-      // if (conditionType === 26) {
-      //   this.searchForm.dateParam = [
-      //     dayjs(today.setDate(today.getDate() - 14)).format('YYYY-MM-DD'),
-      //     dayjs(today.setDate(today.getDate() - 14)).format('YYYY-MM-DD')
-      //   ]
-      // }
-      // // 17、22 /17:比较时间段条件   22:到期时间
-      // // 昨天时间  1个日期 beginTimeValue 开始时间
-      // if (conditionType === 27) {
-      //   today.setDate(today.getDate() - 1)
-      //   this.searchForm.dateParam = [dayjs(today).format('YYYY-MM-DD'), '']
-      // }
-      // // 1个日期 beginTimeValue 开始时间
-      // if (conditionType === 19) {
-      //   today.setDate(0)
-      //   this.searchForm.dateParam = [dayjs(today).format('YYYY-MM-DD'), '']
-      // }
-      // // 24 其它时间段条件 1个日期 beginTimeValue 开始时间
-      // // 14、15 拉链表开始时间、拉链表结束时间 1个日期 beginTimeValue 开始时间
     },
     getFirstDayOfWeek(date) {
       let weekday = date.getDay() || 7 //获取星期几,getDay()返回值是 0（周日） 到 6（周六） 之间的一个整数。0||7为7，即weekday的值为1-7
