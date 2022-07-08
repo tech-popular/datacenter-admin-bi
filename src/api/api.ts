@@ -2,6 +2,7 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { showMessage } from './status'
 import { ElMessage, ElLoading } from 'element-plus'
 import { IResponse, ILogin, ZLogin, IModelColumn, IModelSearch, VisitLog } from './type'
+import * as dd from 'dingtalk-jsapi'
 // import base from './untils'
 let originHost = location.origin
 let axiosInstance: AxiosInstance = axios.create({
@@ -32,11 +33,12 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
     loadingInstance.close()
-    if (response.data && response.data.code === 401) {
+    console.log('response: ', response);
+    if (response.data && response.data.code === 401 && dd.env.platform === 'notInDingTalk') {
       // 401, token失效
       ElMessage.error({ message: '尚未登录，请登录' })
       localStorage.removeItem('token')
-      window.location.href = originHost
+      window.location.href = originHost + '/bi/#/login'
       return response
     } else {
       showMessage(response.status)

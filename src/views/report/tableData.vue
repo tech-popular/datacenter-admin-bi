@@ -22,7 +22,7 @@
       </el-form-item>
     </div>
     <el-form-item v-if="optionParams.length">
-      <el-popover placement="right" width="400px" trigger="click">
+      <el-popover placement="bottom-end" width="400px" trigger="click">
         <template #reference>
           <el-button type="info" plain>过滤条件</el-button>
         </template>
@@ -55,7 +55,7 @@
       </el-popover>
     </el-form-item>
     <el-form-item v-if="dimParams.length">
-      <el-popover placement="right" width="400px" trigger="click">
+      <el-popover placement="bottom-end" width="400px" trigger="click">
         <template #reference>
           <el-button type="info" plain>维度</el-button>
         </template>
@@ -75,7 +75,7 @@
       </el-popover>
     </el-form-item>
     <el-form-item v-if="indexParams.length">
-      <el-popover placement="right" width="400px" trigger="click">
+      <el-popover placement="bottom-end" width="400px" trigger="click">
         <template #reference>
           <el-button type="info" plain>指标</el-button>
         </template>
@@ -96,7 +96,7 @@
       </el-popover>
     </el-form-item>
     <el-form-item v-if="orderParams.length">
-      <el-popover placement="right" width="500px" trigger="click">
+      <el-popover placement="bottom-end" width="500px" trigger="click">
         <template #reference>
           <el-button type="info" plain>排序</el-button>
         </template>

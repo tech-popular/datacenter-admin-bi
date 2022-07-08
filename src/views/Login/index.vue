@@ -68,14 +68,19 @@ export default defineComponent({
         t: loginform.time,
         uuid: loginform.UUid
       })
-      if (res.data) {
+      console.log('res: ', res)
+      if (res.data.code === 0) {
         router.push({
           path: '/Main'
         })
-        localStorage.setItem('token', res.data.token)
-        initTableRedis()
+        store.commit('changeMenuName', '')
+        // 将用户token保存到vuex中
+        store.commit('changeLogin', res.data.token)
       } else {
-        return ElMessage.warning(res.data.msg)
+        ElMessage.error(res.data.msg)
+        router.push({
+          path: '/'
+        })
       }
     }
     let initTableRedis = async () => {
