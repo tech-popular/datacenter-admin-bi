@@ -14,6 +14,7 @@
 import { defineComponent, toRefs, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { SysLogin } from '@/api/api'
+import { ElMessage } from 'element-plus'
 import * as dd from 'dingtalk-jsapi'
 import { useStore } from '@/store/index'
 export default defineComponent({
@@ -68,12 +69,19 @@ export default defineComponent({
         t: loginform.time,
         uuid: loginform.UUid
       })
-      if (res.data) {
+      console.log('res: ', res)
+      if (res.data.code === 0) {
         router.push({
           path: '/Main'
         })
+        store.commit('changeMenuName', '')
         // 将用户token保存到vuex中
         store.commit('changeLogin', res.data.token)
+      } else {
+        ElMessage.error(res.data.msg)
+        router.push({
+          path: '/'
+        })
       }
     }
 
