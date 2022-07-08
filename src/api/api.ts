@@ -34,7 +34,8 @@ axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
     loadingInstance.close()
     console.log('response: ', response);
-    if (response.data && response.data.code === 401 && dd.env.platform === 'notInDingTalk') {
+    if (dd.env.platform !== 'notInDingTalk') return
+    if (response.data && response.data.code === 401) {
       // 401, token失效
       ElMessage.error({ message: '尚未登录，请登录' })
       localStorage.removeItem('token')
