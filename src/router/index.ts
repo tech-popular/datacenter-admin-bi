@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { App, ref } from 'vue'
 import { ElMessage } from 'element-plus'
+import * as dd from 'dingtalk-jsapi'
 // import  { ref , type } from 'vue'
 import Main from '@/components/Main/Main.vue'
 import dayjs from 'dayjs'
@@ -58,7 +59,7 @@ const standingTime: any = ref('')
 const fromPage: any = ref('')
 const toPage: any = ref('')
 router.beforeEach((to, from, next) => {
-  if (to.path === '/login') {
+  if (to.path === '/login' || dd.env.platform !== 'notInDingTalk') {
     next()
   } else {
     let token = localStorage.getItem('token')
