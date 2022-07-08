@@ -59,17 +59,21 @@ const standingTime: any = ref('')
 const fromPage: any = ref('')
 const toPage: any = ref('')
 router.beforeEach((to, from, next) => {
-  // if (to.path === '/login' || dd.env.platform !== 'notInDingTalk') {
-  //   next()
-  // } else {
-  //   let token = localStorage.getItem('token')
-  //   if (token === null || token === '') {
-  //     ElMessage.error({ message: 'token失效，请重新登录' })
-  //     next('/login')
-  //   } else {
-  //     next()
-  //   }
-  // }
+  if (dd.env.platform !== 'notInDingTalk') {
+    next()
+  } else {
+    if (to.path === '/login') {
+      next()
+    } else {
+      let token = localStorage.getItem('token')
+      if (token === null || token === '') {
+        ElMessage.error({ message: 'token失效，请重新登录' })
+        next('/login')
+      } else {
+        next()
+      }
+    }
+  }
   // console.log('kkkk', JSON.parse(sessionStorage.getItem('menulist')))
   // 如果to存在，则说明路由发生了跳转
   if ((to.params.modelId || to.params.id) && (from.params.modelId || from.params.id)) {

@@ -21,6 +21,7 @@ export default defineComponent({
   name: 'Login',
   setup() {
     const router = useRouter()
+    const store = useStore()
     const loginform = reactive({
       userName: '',
       passWord: '',
