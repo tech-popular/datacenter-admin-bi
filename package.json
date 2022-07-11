@@ -16,6 +16,7 @@
     "element-plus": "^1.2.0-beta.1",
     "qs": "^6.10.3",
     "unplugin-vue-components": "^0.17.0",
+    "v-fit-columns": "^0.2.0",
     "vant": "^3.2.7",
     "vconsole": "^3.9.4",
     "vue": "^3.2.16",

@@ -264,7 +264,7 @@ export default defineComponent({
     .xfk-content {
       flex-grow: 1;
       height: 100%;
-      // overflow: scroll;
+      overflow-x: scroll;
       margin: 20px;
 
       .xfk-content-fullPath {
@@ -274,7 +274,7 @@ export default defineComponent({
         height: 28px;
         line-height: 28px;
         padding-left: 20px;
-        margin-bottom: 15px;
+        margin: 10px 0;
       }
       .xfk-tags {
         padding: 0;
