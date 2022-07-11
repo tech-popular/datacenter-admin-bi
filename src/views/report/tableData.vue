@@ -1,154 +1,156 @@
 <template>
-  <el-form :inline="true" :model="searchForm" class="demo-form-inline" size="small">
-    <div style="display: inline" v-if="dateParamVisible">
-      <el-form-item :label="searchForm.colBizName" prop="beginTimeValue">
-        <el-date-picker v-model="searchForm.beginTimeValue" :clearable="false" type="date" placeholder="选择日期" class="demo-form-date"></el-date-picker>
-      </el-form-item>
-      <el-form-item label="至" prop="endTimeValue" v-if="searchForm.endTimeValue" size="small">
-        <el-date-picker v-model="searchForm.endTimeValue" type="date" :clearable="false" style="width:200px" class="demo-form-date" placeholder="选择日期"></el-date-picker>
-      </el-form-item>
-    </div>
-    <div style="display: inline" v-if="dateOptionVisible">
-      <el-form-item label="年：" prop="yearDateValue">
-        <el-select v-model="searchForm.yearDateValue " class="demo-date-select" placeholder="年">
-          <el-option v-for="(item, index) in yearList" :key="index" :value="item.value" :label="item.text"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="月：" prop="monthDateValue">
-        <el-select v-model="searchForm.monthDateValue " class="demo-date-select" placeholder="月">
-          <el-option value="-1" label="全部"></el-option>
-          <el-option v-for="(item, index) in menthList" :key="index" :value="item.value" :label="item.text"></el-option>
-        </el-select>
-      </el-form-item>
-    </div>
-    <el-form-item v-if="optionParams.length">
-      <el-popover placement="bottom-end" width="400px" trigger="click">
-        <template #reference>
-          <el-button type="info" plain>过滤条件</el-button>
-        </template>
-        <el-row justify="left">
-          <el-col :span="12">
-            <span>请选择过滤条件</span>
-          </el-col>
-        </el-row>
-        <div v-for="(item,index) in optionParams" :key="index">
-          <el-form-item :label="item.colBizName" label-width="100px" prop="filterParams" v-if="conditionTextType.includes(item.conditionType)">
-            <el-input v-model="item.filterParams" @input="handleInputString" placeholder="请输入过滤条件"></el-input>
-          </el-form-item>
-          <el-form-item :label="item.colBizName" label-width="100px" prop="filterParams" v-if="item.conditionType === 12">
-            <InputTag v-model="item.filterParams" :valueType="'string'" :add-tag-on-blur="true" :allow-duplicates="true" class="itemIput inputTag" placeholder="可用回车输入多条" />
-          </el-form-item>
-          <el-form-item :label="item.colBizName" label-width="100px" prop="filterParams" v-if="!item.conditionType">
-            <el-select :popperAppendToBody="false" v-model="item.filterParams" @focus="getOptionSelectData(item, index)" multiple filterable clearable placeholder="请选择">
-              <el-option :value="pitem" :label="pitem" v-for="(pitem, pindex) in item.optionSelectData" :key="pindex"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item
-            :label="item.colBizName"
-            label-width="100px"
-            prop="filterParams"
-            v-if="conditiondataTextType.includes(item.conditionType) || conditiondataTextSingleType.includes(item.conditionType) "
-          >
-            <el-date-picker v-model="item.filterParams" :clearable="false" type="date" placeholder="选择日期" class="demo-form-date"></el-date-picker>
-          </el-form-item>
-        </div>
-      </el-popover>
-    </el-form-item>
-    <el-form-item v-if="dimParams.length">
-      <el-popover placement="bottom-end" width="400px" trigger="click">
-        <template #reference>
-          <el-button type="info" plain>维度</el-button>
-        </template>
-        <el-row justify="left">
-          <el-col :span="12">
-            <span>请选择维度</span>
-          </el-col>
-          <el-col :span="12">
-            <el-checkbox v-model="checkDimAll" :indeterminate="isDimIndeterminate" @change="handleCheckAllChangeDim">全选</el-checkbox>
-          </el-col>
-        </el-row>
-        <el-checkbox-group v-model="checkedDim" @change="handleCheckedDimChange">
-          <div v-for="item in dimParams" :key="item.tabID">
-            <el-checkbox :label="item.colName">{{ item.colBizName }}</el-checkbox>
+  <div>
+    <el-form :inline="true" :model="searchForm" class="demo-form-inline" size="small">
+      <div style="display: inline" v-if="dateParamVisible">
+        <el-form-item :label="searchForm.colBizName" prop="beginTimeValue">
+          <el-date-picker v-model="searchForm.beginTimeValue" :clearable="false" type="date" placeholder="选择日期" class="demo-form-date"></el-date-picker>
+        </el-form-item>
+        <el-form-item label="至" prop="endTimeValue" v-if="searchForm.endTimeValue" size="small">
+          <el-date-picker v-model="searchForm.endTimeValue" :clearable="false" type="date" placeholder="选择日期" class="demo-form-date"></el-date-picker>
+        </el-form-item>
+      </div>
+      <div style="display: inline" v-if="dateOptionVisible">
+        <el-form-item label="年：" prop="yearDateValue">
+          <el-select v-model="searchForm.yearDateValue " class="demo-date-select" placeholder="年">
+            <el-option v-for="(item, index) in yearList" :key="index" :value="item.value" :label="item.text"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="月：" prop="monthDateValue">
+          <el-select v-model="searchForm.monthDateValue " class="demo-date-select" placeholder="月">
+            <el-option value="-1" label="全部"></el-option>
+            <el-option v-for="(item, index) in menthList" :key="index" :value="item.value" :label="item.text"></el-option>
+          </el-select>
+        </el-form-item>
+      </div>
+      <el-form-item v-if="optionParams.length">
+        <el-popover placement="bottom-end" width="400px" trigger="click">
+          <template #reference>
+            <el-button type="info" plain>过滤条件</el-button>
+          </template>
+          <el-row justify="left">
+            <el-col :span="12">
+              <span>请选择过滤条件</span>
+            </el-col>
+          </el-row>
+          <div v-for="(item,index) in optionParams" :key="index">
+            <el-form-item :label="item.colBizName" label-width="100px" prop="filterParams" v-if="conditionTextType.includes(item.conditionType)">
+              <el-input v-model="item.filterParams" @input="handleInputString" placeholder="请输入过滤条件"></el-input>
+            </el-form-item>
+            <el-form-item :label="item.colBizName" label-width="100px" prop="filterParams" v-if="item.conditionType === 12">
+              <InputTag v-model="item.filterParams" :valueType="'string'" :add-tag-on-blur="true" :allow-duplicates="true" class="itemIput inputTag" placeholder="可用回车输入多条" />
+            </el-form-item>
+            <el-form-item :label="item.colBizName" label-width="100px" prop="filterParams" v-if="!item.conditionType">
+              <el-select :popperAppendToBody="false" v-model="item.filterParams" @focus="getOptionSelectData(item, index)" multiple filterable clearable placeholder="请选择">
+                <el-option :value="pitem" :label="pitem" v-for="(pitem, pindex) in item.optionSelectData" :key="pindex"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item
+              :label="item.colBizName"
+              label-width="100px"
+              prop="filterParams"
+              v-if="conditiondataTextType.includes(item.conditionType) || conditiondataTextSingleType.includes(item.conditionType) "
+            >
+              <el-date-picker v-model="item.filterParams" :clearable="false" type="date" placeholder="选择日期" class="demo-form-date"></el-date-picker>
+            </el-form-item>
           </div>
-        </el-checkbox-group>
-      </el-popover>
-    </el-form-item>
-    <el-form-item v-if="indexParams.length">
-      <el-popover placement="bottom-end" width="400px" trigger="click">
-        <template #reference>
-          <el-button type="info" plain>指标</el-button>
-        </template>
-        <el-row justify="left">
-          <el-col :span="12">
-            <span>请选择指标</span>
-          </el-col>
-          <el-col :span="12">
-            <el-checkbox v-model="checkFieldAll" :indeterminate="isFieldIndeterminate" @change="handleCheckAllChange">全选</el-checkbox>
-          </el-col>
-        </el-row>
+        </el-popover>
+      </el-form-item>
+      <el-form-item v-if="dimParams.length">
+        <el-popover placement="bottom-end" width="400px" trigger="click">
+          <template #reference>
+            <el-button type="info" plain>维度</el-button>
+          </template>
+          <el-row justify="left">
+            <el-col :span="12">
+              <span>请选择维度</span>
+            </el-col>
+            <el-col :span="12">
+              <el-checkbox v-model="checkDimAll" :indeterminate="isDimIndeterminate" @change="handleCheckAllChangeDim">全选</el-checkbox>
+            </el-col>
+          </el-row>
+          <el-checkbox-group v-model="checkedDim" @change="handleCheckedDimChange">
+            <div v-for="item in dimParams" :key="item.tabID">
+              <el-checkbox :label="item.colName">{{ item.colBizName }}</el-checkbox>
+            </div>
+          </el-checkbox-group>
+        </el-popover>
+      </el-form-item>
+      <el-form-item v-if="indexParams.length">
+        <el-popover placement="bottom-end" width="400px" trigger="click">
+          <template #reference>
+            <el-button type="info" plain>指标</el-button>
+          </template>
+          <el-row justify="left">
+            <el-col :span="12">
+              <span>请选择指标</span>
+            </el-col>
+            <el-col :span="12">
+              <el-checkbox v-model="checkFieldAll" :indeterminate="isFieldIndeterminate" @change="handleCheckAllChange">全选</el-checkbox>
+            </el-col>
+          </el-row>
 
-        <el-checkbox-group v-model="checkedFields" @change="handleCheckedFieldChange">
-          <div v-for="field in indexParams" :key="field.name">
-            <el-checkbox :label="field.colName">{{field.colBizName}}</el-checkbox>
-          </div>
-        </el-checkbox-group>
-      </el-popover>
-    </el-form-item>
-    <el-form-item v-if="orderParams.length">
-      <el-popover placement="bottom-end" width="500px" trigger="click">
-        <template #reference>
-          <el-button type="info" plain>排序</el-button>
-        </template>
-        <el-row justify="left">
-          <el-col :span="6">
-            <span>请选择排序</span>
-          </el-col>
-          <el-col :span="18">
-            <span style="color:red">请拖动进行排序，并选择升/降序（灰色箭头为不排序）</span>
-          </el-col>
-        </el-row>
-        <el-checkbox-group v-model="checkedorders">
-          <div v-for="(order, index) in orderParams" :key="index" draggable="true" @dragstart="dragstart(order)" @dragenter="dragenter(order)" @dragend="dragend(order)">
-            <el-checkbox :label="order.colName">{{order.colBizName}}</el-checkbox>
-            <img v-if="checkedorders.includes(order.colName)" @click="changeOrderFlag(order, index)" :src="order.colOrderFlag ? (order.colOrderFlag === 1 ? order1 : order2) : order0" />
-          </div>
-        </el-checkbox-group>
-      </el-popover>
-    </el-form-item>
-    <el-form-item>
-      <el-button type="primary" plain @click="onSearch">查询</el-button>
-    </el-form-item>
-  </el-form>
-  <el-table
-    :data="tableData"
-    fit
-    border
-    stripe
-    ref="table"
-    :height="tableHeight"
-    :header-cell-class-name="handleHeadAddClass"
-    :header-cell-style="{background:'#eeeeee',color:'#000', border:'1px solid #ddd'}"
-    :cell-style="cellStyle"
-    @sort-change="onSortChange"
-    :span-method="objectSpanMethod"
-    highlight-current-row
-    size="small"
-  >
-    <template v-for="column in columnDatas" :key="column.tabID">
-      <el-table-column :fixed="column.fixed" :prop="column.colName" :label="column.colBizName" :sortable="column.sortable" />
-    </template>
-  </el-table>
-  <div class="pagination">
-    <el-pagination
-      :current-page="page"
-      :page-sizes="[10, 20, 50, 100]"
-      :page-size="pageSize"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="total"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-    ></el-pagination>
+          <el-checkbox-group v-model="checkedFields" @change="handleCheckedFieldChange">
+            <div v-for="field in indexParams" :key="field.name">
+              <el-checkbox :label="field.colName">{{field.colBizName}}</el-checkbox>
+            </div>
+          </el-checkbox-group>
+        </el-popover>
+      </el-form-item>
+      <el-form-item v-if="orderParams.length">
+        <el-popover placement="bottom-end" width="500px" trigger="click">
+          <template #reference>
+            <el-button type="info" plain>排序</el-button>
+          </template>
+          <el-row justify="left">
+            <el-col :span="6">
+              <span>请选择排序</span>
+            </el-col>
+            <el-col :span="18">
+              <span style="color:red">请拖动进行排序，并选择升/降序（灰色箭头为不排序）</span>
+            </el-col>
+          </el-row>
+          <el-checkbox-group v-model="checkedorders">
+            <div v-for="(order, index) in orderParams" :key="index" draggable="true" @dragstart="dragstart(order)" @dragenter="dragenter(order)" @dragend="dragend(order)">
+              <el-checkbox :label="order.colName">{{order.colBizName}}</el-checkbox>
+              <img v-if="checkedorders.includes(order.colName)" @click="changeOrderFlag(order, index)" :src="order.colOrderFlag ? (order.colOrderFlag === 1 ? order1 : order2) : order0" />
+            </div>
+          </el-checkbox-group>
+        </el-popover>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" plain @click="onSearch">查询</el-button>
+      </el-form-item>
+    </el-form>
+    <el-table
+      :data="tableData"
+      fit
+      border
+      stripe
+      ref="table"
+      min-height="300"
+      :header-cell-class-name="handleHeadAddClass"
+      :header-cell-style="{background:'#eeeeee',color:'#000', border:'1px solid #ddd'}"
+      :cell-style="cellStyle"
+      @sort-change="onSortChange"
+      :span-method="objectSpanMethod"
+      highlight-current-row
+      size="small"
+    >
+      <template v-for="column in columnDatas" :key="column.tabID">
+        <el-table-column :fixed="column.fixed" :prop="column.colName" :label="column.colBizName" :sortable="column.sortable" />
+      </template>
+    </el-table>
+    <div class="pagination">
+      <el-pagination
+        :current-page="page"
+        :page-sizes="[10, 20, 50, 100]"
+        :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      ></el-pagination>
+    </div>
   </div>
 </template>
 
@@ -371,12 +373,12 @@ export default defineComponent({
     this.getColumns()
     this.$nextTick(() => {
       this.tableHeight =
-        window.innerHeight - this.$refs.table.$el.offsetTop - 120
+        window.innerHeight - this.$refs.table.$el.offsetTop - 200
       // 监听窗口大小变化
       let self = this
       window.onresize = function() {
         self.tableHeight =
-          window.innerHeight - self.$refs.table.$el.offsetTop - 120
+          window.innerHeight - self.$refs.table.$el.offsetTop - 200
       }
     })
     //this.$refs.table.$el.offsetTop：表格距离浏览器的高度
@@ -403,10 +405,14 @@ export default defineComponent({
       if (this.searchForm.beginTimeValue) {
         params.dateTextJSON = {
           beginTimeKey: this.dateTextConditionHTMLList[0].beginTimeKey,
-          beginTimeValue: this.searchForm.beginTimeValue
+          beginTimeValue: dayjs(this.searchForm.beginTimeValue).format(
+            'YYYY-MM-DD'
+          )
         }
         if (this.dateTextConditionHTMLList[0].endTimeValue) {
-          params.dateTextJSON.endTimeValue = this.searchForm.endTimeValue
+          params.dateTextJSON.endTimeValue = dayjs(
+            this.searchForm.endTimeValue
+          ).format('YYYY-MM-DD')
           params.dateTextJSON.endTimeKey = this.dateTextConditionHTMLList[0].endTimeKey
         }
       }
@@ -770,6 +776,7 @@ export default defineComponent({
 .pagination {
   text-align: right;
   margin-top: 10px;
+  background-color: #fff;
 }
 .groupclass {
   display: flex;
@@ -799,5 +806,12 @@ export default defineComponent({
 }
 .el-table .el-table__cell {
   padding: 0;
+}
+.demo-form-inline {
+  background-color: #fff;
+  height: 42px;
+  padding-left: 5px;
+  margin-bottom: 10px;
+  padding-top: 5px;
 }
 </style>

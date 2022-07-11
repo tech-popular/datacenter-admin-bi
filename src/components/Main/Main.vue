@@ -9,7 +9,7 @@
           <!-- <div class="xfk-menu-switch hidden-sm-and-up"> -->
           <!-- <i class="el-icon-s-unfold"></i> -->
           <img @click="iconClick(sidebarFold)" :src="sidebarFold ? rightIcon : leftIcon" />
-          <el-select placeholder="请选择" v-model="gradeName" @change="gradeClick(gradeName)" style="width: 140px;height: 40px; margin-left: 50px; line-height: 36px;">
+          <el-select placeholder="请选择" size="small" v-model="gradeName" @change="gradeClick(gradeName)" style="width: 140px;margin-left: 50px;">
             <el-option v-for="item in gradeList" :key="item.id" :label="item.name" :value="item.id"></el-option>
           </el-select>
         </div>
@@ -21,11 +21,11 @@
     </header>
     <div class="xfk-body hidden-xs-only">
       <el-scrollbar class="xfk-side" :class="{ 'xfk-side-col': sidebarFold }">
-        <SideMenu :list="pcmenuData" background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" />
+        <SideMenu :list="pcmenuData" background-color="#222d32" text-color="#fff" active-text-color="#ffd04b" />
       </el-scrollbar>
       <div class="xfk-content">
+        <div class="xfk-content-fullPath" v-if="menuName">{{menuName}}</div>
         <el-scrollbar class="xfk-view" wrapClass="xfk-content-wrap">
-          <div class="xfk-content-fullPath" v-if="menuName">{{menuName}}</div>
           <router-view :key="$route.fullPath" />
         </el-scrollbar>
       </div>
@@ -36,8 +36,14 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, defineAsyncComponent, ref } from 'vue'
-// import { useRoute, useRouter } from 'vue-router'
+import {
+  computed,
+  defineComponent,
+  defineAsyncComponent,
+  ref,
+  onMounted
+} from 'vue'
+import { getmark } from '@/libs/watermark'
 import { useStore } from '@/store/index'
 import leftIcon from '@/styles/img/left1.png'
 import rightIcon from '@/styles/img/right1.png'
@@ -72,17 +78,8 @@ export default defineComponent({
     const gradeList: any = ref([])
     const gradeName: any = ref('')
     const PCgradeMenu: any = ref([])
-    // if (token) {
-    //   localStorage.setItem('token', token)
-    //   localStorage.setItem('userId', userId)
-    // }
-    // if (route.query.token && localStorage.getItem('token')) {
-    //   router.push({
-    //     path: '/home'
-    //   })
-    // }
-
     const store = useStore()
+    const { watermark } = getmark()
     const menuName: String = computed(() => {
       return store.state.menuName
         ? store.state.menuName
@@ -125,6 +122,7 @@ export default defineComponent({
         sessionStorage.setItem('menulist', JSON.stringify(PCgradeMenu.value))
         gradeClick(gradeName.value)
         username.value = res.data.username
+        watermark(res.data.username) //水印名
       }
     }
     if (dd.env.platform !== 'notInDingTalk') {
@@ -153,11 +151,6 @@ export default defineComponent({
         })
       }
     }
-    // else {
-    //   // window.location.href = "http://test.tech.9fbank.com/canary/#/login?from=newbi"; //test
-    //   window.location.href = "http://tech.9fbank.com/canary/#/login";
-    // }
-    console.log('menuData', pcmenuData.value)
     return {
       menuData,
       pcmenuData,
@@ -181,21 +174,21 @@ export default defineComponent({
 .xfk-main-container {
   width: 100%;
   height: 100%;
-  overflow: hidden;
+  overflow: scroll;
   .xfk-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    height: 60px;
-    background-color: #545c64;
+    height: 48px;
+    background-color: #3c8dbc;
     .xfk-header-left {
       display: flex;
       height: 100%;
       align-items: center;
       .xfk-menu-switch {
         width: 100%;
-        height: 60px;
+        height: 48px;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -221,18 +214,19 @@ export default defineComponent({
       display: flex;
       justify-content: center;
       align-items: center;
-      min-width: 230px;
+      min-width: 208px;
       height: 100%;
       padding: 0 10px;
       margin-right: 10px;
       transition: all 0.3s;
-      background-color: #434a50;
       box-sizing: border-box;
       cursor: pointer;
       h1 {
         margin: 0;
-        font-size: 26px;
-        color: #ffd04b;
+        height: 32px;
+        line-height: 32px;
+        font-size: 18px;
+        color: hsl(0, 0%, 100%);
         text-align: center;
       }
     }
@@ -249,10 +243,10 @@ export default defineComponent({
     height: calc(100% - 60px);
     .xfk-side {
       flex-shrink: 0;
-      width: 230px;
+      width: 208px;
       height: 100%;
       overflow: hidden;
-      background-color: #545c64;
+      background-color: #222d32;
       .el-scrollbar__wrap {
         overflow-x: hidden;
       }
@@ -262,7 +256,7 @@ export default defineComponent({
       width: 10px;
       height: 100%;
       overflow: hidden;
-      background-color: #545c64;
+      background-color: #222d32;
       .el-scrollbar__wrap {
         overflow-x: hidden;
       }
@@ -270,10 +264,12 @@ export default defineComponent({
     .xfk-content {
       flex-grow: 1;
       height: 100%;
-      overflow: hidden;
+      // overflow: scroll;
+      margin: 20px;
+
       .xfk-content-fullPath {
         width: 100%;
-        background-color: #ecf0f5;
+        background-color: #fff;
         font-size: 14px;
         height: 28px;
         line-height: 28px;
@@ -288,6 +284,7 @@ export default defineComponent({
       .xfk-view {
         width: 100%;
         height: 100%;
+        background-color: #ecf0f5;
         .xfk-content-wrap {
           overflow-x: hidden;
           padding: 10px;
