@@ -98,9 +98,9 @@ export const getReportSearchData = (
 }
 
 // tableau查询菜单接口
-export const getTableauInfo = (modelId: string): Promise<IResponse> => {
+export const getTableauInfo = (tableauId: string): Promise<IResponse> => {
   return axiosInstance
-    .get(`/bi/tableau/info/${modelId}`)
+    .get(`/bi/tableau/info/${tableauId}`)
     .then((res) => res.data)
 }
 
@@ -113,6 +113,12 @@ export const getAnalysisModelColumn = (modelId: string): Promise<IResponse> => {
 // 访问日志
 export const userVisitLog = (params: VisitLog): Promise<IResponse> => {
   return axiosInstance.post('/bi/userVisitLog/saveUserVisitLog', { ...params }).then((res) => res)
+}
+// 初始化报表数据
+export const initDimForeignTableRedis = (): Promise<IResponse> => {
+  return axiosInstance
+    .get('/bi/initDimForeignTableRedis')
+    .then((res) => res.data)
 }
 // 获取下拉框数据
 export const getOptionSelect = (colRefTab: string): Promise<IResponse> => {

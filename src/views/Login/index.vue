@@ -69,14 +69,14 @@ export default defineComponent({
         t: loginform.time,
         uuid: loginform.UUid
       })
-      console.log('res: ', res)
       if (res.data.code === 0) {
+        store.commit('changeMenuName', '')
+        // 将用户token保存到vuex中
+        localStorage.setItem('token', res.data.token)
+        store.commit('changeLogin', res.data.token)
         router.push({
           path: '/Main'
         })
-        store.commit('changeMenuName', '')
-        // 将用户token保存到vuex中
-        store.commit('changeLogin', res.data.token)
       } else {
         ElMessage.error(res.data.msg)
         router.push({
