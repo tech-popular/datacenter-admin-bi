@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <el-form :inline="true" :model="searchForm" class="demo-form-inline" size="small">
+  <div class="table-data">
+    <el-form :inline="true" :model="searchForm" label-position="right" class="demo-form-inline" size="small">
       <div style="display: inline" v-if="dateParamVisible">
         <el-form-item :label="searchForm.colBizName" prop="beginTimeValue">
           <el-date-picker v-model="searchForm.beginTimeValue" :clearable="false" type="date" placeholder="选择日期" class="demo-form-date"></el-date-picker>
@@ -23,7 +23,7 @@
         </el-form-item>
       </div>
       <el-form-item v-if="optionParams.length">
-        <el-popover placement="bottom-end" width="400px" trigger="click">
+        <el-popover placement="bottom-end" width="500px" trigger="click">
           <template #reference>
             <el-button type="info" plain>过滤条件</el-button>
           </template>
@@ -33,24 +33,24 @@
             </el-col>
           </el-row>
           <div v-for="(item,index) in optionParams" :key="index">
-            <el-form-item :label="item.colBizName" label-width="100px" prop="filterParams" v-if="conditionTextType.includes(item.conditionType)">
+            <el-form-item :label="item.colBizName" label-width="150px" prop="filterParams" v-if="conditionTextType.includes(item.conditionType)">
               <el-input v-model="item.filterParams" @input="handleInputString" placeholder="请输入过滤条件"></el-input>
             </el-form-item>
-            <el-form-item :label="item.colBizName" label-width="100px" prop="filterParams" v-if="item.conditionType === 12">
+            <el-form-item :label="item.colBizName" label-width="150px" prop="filterParams" v-if="item.conditionType === 12">
               <InputTag v-model="item.filterParams" :valueType="'string'" :add-tag-on-blur="true" :allow-duplicates="true" class="itemIput inputTag" placeholder="可用回车输入多条" />
             </el-form-item>
-            <el-form-item :label="item.colBizName" label-width="100px" prop="filterParams" v-if="!item.conditionType">
+            <el-form-item :label="item.colBizName" label-width="150px" prop="filterParams" v-if="!item.conditionType">
               <el-select :popperAppendToBody="false" v-model="item.filterParams" @focus="getOptionSelectData(item, index)" multiple filterable clearable placeholder="请选择">
                 <el-option :value="pitem" :label="pitem" v-for="(pitem, pindex) in item.optionSelectData" :key="pindex"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item
               :label="item.colBizName"
-              label-width="100px"
+              label-width="150px"
               prop="filterParams"
               v-if="conditiondataTextType.includes(item.conditionType) || conditiondataTextSingleType.includes(item.conditionType) "
             >
-              <el-date-picker v-model="item.filterParams" :clearable="false" type="date" placeholder="选择日期" class="demo-form-date"></el-date-picker>
+              <el-date-picker class="option-form-date" v-model="item.filterParams" :clearable="false" type="date" placeholder="选择日期"></el-date-picker>
             </el-form-item>
           </div>
         </el-popover>
@@ -272,7 +272,8 @@ export default defineComponent({
     const conditiondataTextSingleType: any = ref([27, 19, 24, 14, 15]) // 一个日期类型
     const conditiondateOptionType: any = ref([2, 21]) // 年月下拉选日期类型
     const optionHTMLList: any = ref([]) // 备份过滤下拉条件
-    const textConditionHTMLList: any = ref([]) // 备份输入条件
+    const textConditionHTMLList: any = ref([]) // 备份过滤输入条件
+    const otherDateTextConditionHTMLList: any = ref([]) // 备份过滤日期条件
     // const dateParam: any = ref([]) // 记录日期字段
     const optionParams: any = ref([]) // 记录过滤条件数据
     // const dimParams: any = ref([]) // 记录维度数据
@@ -343,6 +344,7 @@ export default defineComponent({
       conditiondateOptionType,
       optionHTMLList,
       textConditionHTMLList,
+      otherDateTextConditionHTMLList,
       // getColumns,
       getTableData,
       // dimParams,
@@ -421,9 +423,9 @@ export default defineComponent({
       // 年月下拉日期
       if (this.searchForm.yearDateValue) {
         params.dateOptionJson = {
-          yearDateKey: this.dateTextConditionHTMLList[0].yearDateKey,
+          yearDateKey: this.dateOptionConditioHTMLList[0].yearDateKey,
           yearDateValue: this.searchForm.yearDateValue,
-          monthDateKey: this.dateTextConditionHTMLList[0].monthDateKey,
+          monthDateKey: this.dateOptionConditioHTMLList[0].monthDateKey,
           monthDateValue: this.searchForm.monthDateValue
         }
       }
@@ -472,6 +474,15 @@ export default defineComponent({
                   textJSONData[textJSONDataIndex] = {
                     column: element[Object.keys(element)[0]],
                     value: item.filterParams,
+                    type: item.type
+                  }
+                }
+              })
+              this.otherDateTextConditionHTMLList.filter(element => {
+                if (Object.keys(element)[0] == item.colBizName) {
+                  textJSONData[textJSONDataIndex] = {
+                    column: element[Object.keys(element)[0]],
+                    value: dayjs(item.filterParams).format('YYYY-MM-DD'),
                     type: item.type
                   }
                 }
@@ -558,20 +569,33 @@ export default defineComponent({
           item['filterParams'] = ''
           item['type'] = ''
           item['optionSelectData'] = []
-          if (this.conditiondataTextType.includes(item.conditionType)) {
-            let itemBegin = item
-            itemBegin.colBizName = itemBegin.colBizName + '开始'
-            itemBegin.type = 'from'
-            let itemEnd = item
+          this.optionParams.push(item)
+        })
+      }
+      // 时间过滤条件
+      if (res.otherDateTextConditionHTMLList.length) {
+        res.otherDateTextConditionHTMLList.forEach(item => {
+          item['filterParams'] = ''
+          item['type'] = ''
+          let itemBegin = JSON.parse(item.beginTimeKey)
+          itemBegin.colBizName = itemBegin.colBizName + '开始'
+          itemBegin.type = 'from'
+          this.otherDateTextConditionHTMLList.push({
+            [itemBegin.colBizName]: item.beginTimeKey
+          })
+          this.optionParams.push(itemBegin)
+          if (item.endTimeKey) {
+            let itemEnd = JSON.parse(item.endTimeKey)
             itemEnd.colBizName = itemEnd.colBizName + '结束'
             itemEnd.type = 'to'
-            this.optionParams.push(itemBegin)
+            this.otherDateTextConditionHTMLList.push({
+              [itemEnd.colBizName]: item.endTimeKey
+            })
             this.optionParams.push(itemEnd)
-          } else {
-            this.optionParams.push(item)
           }
         })
       }
+      // 输入过滤条件
       this.textConditionHTMLList = res.textConditionHTMLList
       if (res.textConditionHTMLList.length) {
         res.textConditionHTMLList.forEach(item => {
@@ -611,12 +635,11 @@ export default defineComponent({
       // }
       console.log('this.searchForm: ', this.searchForm)
       this.dateTextConditionHTMLList = res.dateTextConditionHTMLList
-      this.dateOptionConditioHTMLList = ref.dateOptionConditioHTMLList
+      this.dateOptionConditioHTMLList = res.dateOptionConditioHTMLList
       if (res.dateTextConditionHTMLList.length) {
         let beginTimeKeyData = JSON.parse(
           res.dateTextConditionHTMLList[0].beginTimeKey
         )
-        console.log('beginTimeKeyData: ', beginTimeKeyData)
         this.searchForm.colBizName = beginTimeKeyData.colBizName
         this.searchForm.conditionType = beginTimeKeyData.conditionType
         this.searchForm.beginTimeValue =
@@ -788,6 +811,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+.table-data {
+  font-size: 12px;
+}
 .pagination {
   text-align: right;
   margin-top: 10px;
@@ -818,6 +844,9 @@ export default defineComponent({
 }
 .demo-date-select {
   width: 100px !important;
+}
+.option-form-date {
+  width: 260px !important;
 }
 .el-table .el-table__cell {
   padding: 0;
