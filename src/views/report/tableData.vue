@@ -17,7 +17,7 @@
         </el-form-item>
         <el-form-item label="月：" prop="monthDateValue">
           <el-select v-model="searchForm.monthDateValue " class="demo-date-select" placeholder="月">
-            <el-option value="-1" label="全部"></el-option>
+            <el-option value="" label="全部"></el-option>
             <el-option v-for="(item, index) in menthList" :key="index" :value="item.value" :label="item.text"></el-option>
           </el-select>
         </el-form-item>
