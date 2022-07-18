@@ -1,17 +1,17 @@
 <template>
   <div class="table-data">
-    <el-form :inline="true" :model="searchForm" label-position="right" class="demo-form-inline" size="small">
+    <el-form :inline="true" style="display: flex" :model="searchForm" label-position="right" class="demo-form-inline" size="small">
       <div style="display: inline" v-if="dateParamVisible">
-        <div v-for="(item, index) in dataSearchForm" :key="index">
+        <el-form-item v-for="(item, index) in dataSearchForm" :key="index">
           <el-form-item :label="item.colBizName" prop="beginTimeValue">
-            <el-date-picker v-model="item.beginTimeValue" :clearable="false" type="date" placeholder="选择日期" class="demo-form-date"></el-date-picker>
+            <el-date-picker v-model="item.beginTimeValue" :clearable="false" @change="changeBeginTimeValue(item, index)" type="date" placeholder="选择日期" class="demo-form-date"></el-date-picker>
           </el-form-item>
           <el-form-item label="至" prop="endTimeValue" v-if="conditiondataTextType.includes(item.conditionType)" size="small">
-            <el-date-picker v-model="item.endTimeValue" :clearable="false" type="date" placeholder="选择日期" class="demo-form-date"></el-date-picker>
+            <el-date-picker v-model="item.endTimeValue" @change="changeEndTimeValue(item, index)" :clearable="false" type="date" placeholder="选择日期" class="demo-form-date"></el-date-picker>
           </el-form-item>
-        </div>
+        </el-form-item>
       </div>
-      <div style="display: inline" v-if="dateOptionVisible">
+      <el-form-item style="display: inline" v-if="dateOptionVisible">
         <el-form-item label="年：" prop="yearDateValue">
           <el-select v-model="searchForm.yearDateValue " class="demo-date-select" placeholder="年">
             <el-option v-for="(item, index) in yearList" :key="index" :value="item.value" :label="item.text"></el-option>
@@ -23,7 +23,7 @@
             <el-option v-for="(item, index) in menthList" :key="index" :value="item.value" :label="item.text"></el-option>
           </el-select>
         </el-form-item>
-      </div>
+      </el-form-item>
       <el-form-item v-if="optionParams.length">
         <el-popover placement="bottom-end" width="500px" trigger="click">
           <template #reference>
@@ -57,14 +57,14 @@
           </div>
         </el-popover>
       </el-form-item>
-      <el-form-item v-if="dimParams.length">
+      <el-form-item v-if="dimParams.length || indexParams.length">
         <el-popover placement="bottom-end" width="400px" trigger="click">
           <template #reference>
-            <el-button type="info" plain>维度</el-button>
+            <el-button type="info" plain>展示列</el-button>
           </template>
           <el-row justify="left">
             <el-col :span="12">
-              <span>请选择维度</span>
+              <span>请选择展示列</span>
             </el-col>
             <el-col :span="12">
               <el-checkbox v-model="checkDimAll" :indeterminate="isDimIndeterminate" @change="handleCheckAllChangeDim">全选</el-checkbox>
@@ -75,9 +75,17 @@
               <el-checkbox :label="item.colName">{{ item.colBizName }}</el-checkbox>
             </div>
           </el-checkbox-group>
+          <!-- <el-col :span="12">
+            <el-checkbox v-model="checkFieldAll" :indeterminate="isFieldIndeterminate" @change="handleCheckAllChange">全选</el-checkbox>
+          </el-col>-->
+          <el-checkbox-group v-model="checkedFields" @change="handleCheckedFieldChange">
+            <div v-for="field in indexParams" :key="field.name">
+              <el-checkbox :label="field.colName">{{field.colBizName}}</el-checkbox>
+            </div>
+          </el-checkbox-group>
         </el-popover>
       </el-form-item>
-      <el-form-item v-if="indexParams.length">
+      <!-- <el-form-item v-if="indexParams.length">
         <el-popover placement="bottom-end" width="400px" trigger="click">
           <template #reference>
             <el-button type="info" plain>指标</el-button>
@@ -97,8 +105,8 @@
             </div>
           </el-checkbox-group>
         </el-popover>
-      </el-form-item>
-      <el-form-item v-if="orderParams.length">
+      </el-form-item>-->
+      <!-- <el-form-item v-if="orderParams.length">
         <el-popover placement="bottom-end" width="500px" trigger="click">
           <template #reference>
             <el-button type="info" plain>排序</el-button>
@@ -118,7 +126,7 @@
             </div>
           </el-checkbox-group>
         </el-popover>
-      </el-form-item>
+      </el-form-item>-->
       <el-form-item>
         <el-button type="primary" plain @click="onSearch">查询</el-button>
       </el-form-item>
@@ -132,16 +140,25 @@
       min-height="300"
       max-height="700"
       :header-cell-class-name="handleHeadAddClass"
-      :header-cell-style="{background:'#eeeeee',color:'#000', border:'1px solid #ddd'}"
+      :header-cell-style="{background:'#eeeeee',color:'#000', border:'1px solid #ddd', margin:'0 20px' }"
       :cell-style="cellStyle"
       @sort-change="onSortChange"
       :span-method="objectSpanMethod"
       highlight-current-row
       size="small"
     >
-      <template v-for="column in columnDatas" :key="column.tabID">
-        <el-table-column :fixed="column.fixed" show-overflow-tooltip :prop="column.colName" :label="column.colBizName" :sortable="column.sortable" />
-      </template>
+      <!-- <template v-for="column in columnDatas" :key="column.tabID"> -->
+      <el-table-column
+        v-for="column in columnDatas"
+        :min-width="flexColumnWidth(column.colBizName)"
+        :key="column.tabID"
+        :fixed="column.fixed"
+        show-overflow-tooltip
+        :prop="column.colName"
+        :label="column.colBizName"
+        :sortable="column.sortable"
+      />
+      <!-- </template> -->
     </el-table>
     <div class="pagination">
       <el-pagination
@@ -195,7 +212,6 @@ export default defineComponent({
       // columnDatas: [], // 记录表头数据
       dimParams: [], // 记录维度数据
       indexParams: [], // 记录指标数据
-      checkedorders: [], // 排序勾选值
       checkedDim: [], // 选中的维度
       sortField: {}, // 记录排序的字段
       // 指标
@@ -272,10 +288,11 @@ export default defineComponent({
     const otherDateTextConditionHTMLList: any = ref([]) // 备份过滤日期条件
     const dataSearchForm: any = ref([]) // 日期条件
     const optionParams: any = ref([]) // 记录过滤条件数据
+    const orderParams: any = ref([]) // 记录排序指标
+    const showColumns: any = ref([]) // 记录展示列数据
+
     // const dimParams: any = ref([]) // 记录维度数据
     // const indexParams: any = ref([]) // 记录指标数据
-    const orderParams: any = ref([]) // 记录排序指标
-    // const checkedorders: any = ref([]) // 排序勾选值
     // const checkedDim: any = ref([]) // 选中的维度
     const loading: any = ref()
     const tableData: any = ref([])
@@ -308,16 +325,18 @@ export default defineComponent({
                   item['fixed'] = false
                 }
               }
-              orderParams.value.filter(orderitem => {
-                if (item.colBizName === orderitem.colBizName) {
-                  item['sortable'] = true
-                }
-              })
             })
           })
-          console.log('columnDatas.value: ', columnDatas.value)
           tableData.value.push(totalRowListData)
         }
+        // 给表头添加排序功能
+        columnDatas.value.forEach((item, index) => {
+          orderParams.value.filter(orderitem => {
+            if (item.colBizName === orderitem.colBizName) {
+              item['sortable'] = true
+            }
+          })
+        })
         pagination.total = Number(res.analysisModel.totalList[0])
       }
     }
@@ -331,7 +350,91 @@ export default defineComponent({
         return ElMessage.error({ message: res.msg })
       }
     }
+    /**
+     * 日期比较大小
+     * compareDateString大于dateString，返回1；
+     * 等于返回0；
+     * compareDateString小于dateString，返回-1
+     * @param dateString 日期
+     * @param compareDateString 比较的日期
+     */
 
+    let dateCompare = (dateString, compareDateString) => {
+      let dateTime = dayjs(dateString).format('YYYY-MM-DD')
+      dateTime = dayjs(dateTime)
+      let compareDateTime = dayjs(compareDateString).format('YYYY-MM-DD')
+      if (dateTime.diff(compareDateTime, 'day') >= 0) {
+        return 1
+      } else {
+        return -1
+      }
+    }
+    let changeBeginTimeValue = (item, index) => {
+      // let
+      if (index > 0) {
+        if (
+          dateCompare(
+            item.beginTimeValue,
+            dataSearchForm.value[0].beginTimeValue
+          ) === 1 &&
+          dateCompare(
+            item.beginTimeValue,
+            dataSearchForm.value[0].endTimeValue
+          ) === -1
+        ) {
+          dataSearchForm.value[index].beginTimeValue = item.beginTimeValue
+        } else if (
+          dateCompare(
+            item.beginTimeValue,
+            dataSearchForm.value[0].beginTimeValue
+          ) === -1
+        ) {
+          dataSearchForm.value[index].beginTimeValue =
+            dataSearchForm.value[0].beginTimeValue
+        } else if (
+          dateCompare(
+            item.beginTimeValue,
+            dataSearchForm.value[0].endTimeValue
+          ) === 1
+        ) {
+          dataSearchForm.value[0].beginTimeValue = item.beginTimeValue
+          dataSearchForm.value[0].endTimeValue = item.beginTimeValue
+          dataSearchForm.value[index].endTimeValue = item.beginTimeValue
+        }
+      }
+    }
+    let changeEndTimeValue = (item, index) => {
+      if (index > 0) {
+        if (
+          dateCompare(
+            item.endTimeValue,
+            dataSearchForm.value[0].beginTimeValue
+          ) === -1
+        ) {
+          dataSearchForm.value[0].beginTimeValue = item.endTimeValue
+          dataSearchForm.value[0].endTimeValue = item.endTimeValue
+          dataSearchForm.value[index].beginTimeValue = item.endTimeValue
+        } else if (
+          dateCompare(
+            item.endTimeValue,
+            dataSearchForm.value[0].beginTimeValue
+          ) === 1 &&
+          dateCompare(
+            item.endTimeValue,
+            dataSearchForm.value[0].endTimeValue
+          ) === -1
+        ) {
+          dataSearchForm.value[index].endTimeValue = item.endTimeValue
+        } else if (
+          dateCompare(
+            item.endTimeValue,
+            dataSearchForm.value[0].endTimeValue
+          ) === 1
+        ) {
+          dataSearchForm.value[0].endTimeValue = item.endTimeValue
+        }
+      }
+    }
     return {
       modelId,
       columnDatas,
@@ -352,7 +455,6 @@ export default defineComponent({
       optionParams,
       // indexParams,
       orderParams,
-      // checkedorders,
       order0,
       order1,
       order2,
@@ -365,7 +467,9 @@ export default defineComponent({
       ...toRefs(pagination),
       getOptionSelectData,
       loading,
-      tableHeight
+      tableHeight,
+      changeBeginTimeValue,
+      changeEndTimeValue
       // dateParam
       // checkedDim,
     }
@@ -404,18 +508,18 @@ export default defineComponent({
       }
       console.log('过滤条件', this.optionParams)
       // 统计日期
-      if (this.searchForm.beginTimeValue) {
+      if (this.dataSearchForm.length) {
         params.dateTextJSON = {
-          beginTimeKey: this.dateTextConditionHTMLList[0].beginTimeKey,
-          beginTimeValue: dayjs(this.searchForm.beginTimeValue).format(
+          beginTimeKey: this.dataSearchForm[0].beginTimeKey,
+          beginTimeValue: dayjs(this.dataSearchForm[0].beginTimeValue).format(
             'YYYY-MM-DD'
           )
         }
         if (this.dateTextConditionHTMLList[0].endTimeValue) {
           params.dateTextJSON.endTimeValue = dayjs(
-            this.searchForm.endTimeValue
+            this.dataSearchForm[0].endTimeValue
           ).format('YYYY-MM-DD')
-          params.dateTextJSON.endTimeKey = this.dateTextConditionHTMLList[0].endTimeKey
+          params.dateTextJSON.endTimeKey = this.dataSearchForm[0].endTimeKey
         }
       }
       // 年月下拉日期
@@ -494,11 +598,11 @@ export default defineComponent({
         }
       }
       // 排序
-      if (this.checkedorders.length) {
+      if (this.orderParams.length) {
         let orderDataJSON = {}
         let orderindex = 0
         this.orderParams.filter(item => {
-          if (this.checkedorders.indexOf(item.colName) > -1) {
+          if (Object.keys(this.sortField).indexOf(item.colName) > -1) {
             for (let key in item) {
               if (!item[key]) {
                 item[key] = ''
@@ -506,7 +610,7 @@ export default defineComponent({
             }
             orderDataJSON[orderindex] = {
               column: JSON.stringify(item),
-              value: JSON.stringify(item.colOrderFlag)
+              value: this.sortField[item.colName] === 'ascending' ? '1' : '2'
             }
             orderindex = orderindex + 1
           }
@@ -556,9 +660,6 @@ export default defineComponent({
         this.loading.close()
         return ElMessage.error({ message: res.msg })
       }
-      res.headRows.forEach(item => {
-        item.colBizNameData = ''
-      })
       this.columnDatas = res.headRows
       // 过滤条件
       this.optionHTMLList = res.optionHTMLList
@@ -608,12 +709,14 @@ export default defineComponent({
       this.orderParams = res.orderHTMLList
       this.orderParams.forEach(element => {
         if (element.colOrderFlag) {
-          this.checkedorders.push(element.colName)
+          this.sortField[element.colName] =
+            element.colOrderFlag === 1 ? 'ascending' : 'descending'
         }
       })
 
       // 维度
       this.dimParams = res.dimHTMLList
+      this.indexParams = res.kpiHTMLList
       this.dimParams.forEach(element => {
         if (element.dimDisabled == 2) {
           this.checkedDim.push(element.colName)
@@ -621,7 +724,6 @@ export default defineComponent({
         this.handleCheckedDimChange(this.checkedDim)
       })
       // 指标
-      this.indexParams = res.kpiHTMLList
       this.indexParams.forEach(element => {
         this.checkedFields.push(element.colName)
       })
@@ -629,27 +731,20 @@ export default defineComponent({
       // 统计日期
       console.log('this.searchForm: ', this.searchForm)
       this.dateTextConditionHTMLList = res.dateTextConditionHTMLList
+      this.dataSearchForm = []
       this.dateOptionConditioHTMLList = res.dateOptionConditioHTMLList
       if (res.dateTextConditionHTMLList.length) {
         res.dateTextConditionHTMLList.forEach(item => {
           let beginTimeKeyData = JSON.parse(item.beginTimeKey)
-          let conditionParams = {
+          this.dataSearchForm.push({
             beginTimeValue: item.beginTimeValue,
             endTimeValue: item.endTimeValue ? item.endTimeValue : '',
             beginTimeKey: item.beginTimeKey,
             endTimeKey: item.endTimeKey ? item.endTimeKey : '',
             colBizName: beginTimeKeyData.colBizName,
             conditionType: beginTimeKeyData.conditionType
-          }
+          })
         })
-        // this.searchForm.colBizName = beginTimeKeyData.colBizName
-        // this.searchForm.conditionType = beginTimeKeyData.conditionType
-        // this.searchForm.beginTimeValue =
-        //   res.dateTextConditionHTMLList[0].beginTimeValue
-        // if (res.dateTextConditionHTMLList[0].endTimeValue) {
-        //   this.searchForm.endTimeValue =
-        //     res.dateTextConditionHTMLList[0].endTimeValue
-        // }
         this.dateParamVisible = true
       } else {
         this.dateParamVisible = false
@@ -772,6 +867,7 @@ export default defineComponent({
       } else {
         this.checkedDim = []
       }
+      this.handleCheckAllChange(value)
       this.isDimIndeterminate = false
     },
     changeOrderFlag(order, index) {
@@ -802,6 +898,24 @@ export default defineComponent({
       let addIndex = this.orderParams.indexOf(moveObj) //要移动后的位置
       this.orderParams.splice(index, 1)
       this.orderParams.splice(addIndex, 0, item)
+    },
+
+    flexColumnWidth(str) {
+      // 以下分配的单位长度可根据实际需求进行调整
+      let flexWidth = 0
+      for (const char of str) {
+        if ((char >= 'A' && char <= 'Z') || (char >= 'a' && char <= 'z')) {
+          // 如果是英文字符，为字符分配8个单位宽度
+          flexWidth += 20
+        } else if (char >= '\u4e00' && char <= '\u9fa5') {
+          // 如果是中文字符，为字符分配15个单位宽度
+          flexWidth += 22
+        } else {
+          // 其他种类字符，为字符分配8个单位宽度
+          flexWidth += 20
+        }
+      }
+      return flexWidth + 'px'
     }
   }
 })
@@ -836,6 +950,10 @@ export default defineComponent({
   line-height: 40px !important;
   text-align: center;
 }
+.table-head {
+  font-size: 12px !important; //设置固定的字体大小
+}
+
 .demo-form-date {
   width: 130px !important;
 }
