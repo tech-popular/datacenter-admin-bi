@@ -2,12 +2,14 @@
   <div class="table-data">
     <el-form :inline="true" :model="searchForm" label-position="right" class="demo-form-inline" size="small">
       <div style="display: inline" v-if="dateParamVisible">
-        <el-form-item :label="searchForm.colBizName" prop="beginTimeValue">
-          <el-date-picker v-model="searchForm.beginTimeValue" :clearable="false" type="date" placeholder="选择日期" class="demo-form-date"></el-date-picker>
-        </el-form-item>
-        <el-form-item label="至" prop="endTimeValue" v-if="conditiondataTextType.includes(searchForm.conditionType)" size="small">
-          <el-date-picker v-model="searchForm.endTimeValue" :clearable="false" type="date" placeholder="选择日期" class="demo-form-date"></el-date-picker>
-        </el-form-item>
+        <div v-for="(item, index) in dataSearchForm" :key="index">
+          <el-form-item :label="item.colBizName" prop="beginTimeValue">
+            <el-date-picker v-model="item.beginTimeValue" :clearable="false" type="date" placeholder="选择日期" class="demo-form-date"></el-date-picker>
+          </el-form-item>
+          <el-form-item label="至" prop="endTimeValue" v-if="conditiondataTextType.includes(item.conditionType)" size="small">
+            <el-date-picker v-model="item.endTimeValue" :clearable="false" type="date" placeholder="选择日期" class="demo-form-date"></el-date-picker>
+          </el-form-item>
+        </div>
       </div>
       <div style="display: inline" v-if="dateOptionVisible">
         <el-form-item label="年：" prop="yearDateValue">
@@ -17,7 +19,7 @@
         </el-form-item>
         <el-form-item label="月：" prop="monthDateValue">
           <el-select v-model="searchForm.monthDateValue " class="demo-date-select" placeholder="月">
-            <el-option value="" label="全部"></el-option>
+            <el-option value label="全部"></el-option>
             <el-option v-for="(item, index) in menthList" :key="index" :value="item.value" :label="item.text"></el-option>
           </el-select>
         </el-form-item>
@@ -184,12 +186,8 @@ export default defineComponent({
   data() {
     return {
       searchForm: {
-        beginTimeValue: '',
-        endTimeValue: '',
-        colBizName: '',
         yearDateValue: '',
-        monthDateValue: '',
-        conditionType: 0
+        monthDateValue: ''
       }, // 查询条件报表数据
       dateParamVisible: true,
       dateOptionVisible: false,
@@ -197,10 +195,8 @@ export default defineComponent({
       // columnDatas: [], // 记录表头数据
       dimParams: [], // 记录维度数据
       indexParams: [], // 记录指标数据
-      orderParams: [], // 记录排序指标
       checkedorders: [], // 排序勾选值
       checkedDim: [], // 选中的维度
-      conditionList: [], // 日期条件list
       sortField: {}, // 记录排序的字段
       // 指标
       checkedFields: [], // 选中的指标
@@ -274,14 +270,13 @@ export default defineComponent({
     const optionHTMLList: any = ref([]) // 备份过滤下拉条件
     const textConditionHTMLList: any = ref([]) // 备份过滤输入条件
     const otherDateTextConditionHTMLList: any = ref([]) // 备份过滤日期条件
-    // const dateParam: any = ref([]) // 记录日期字段
+    const dataSearchForm: any = ref([]) // 日期条件
     const optionParams: any = ref([]) // 记录过滤条件数据
     // const dimParams: any = ref([]) // 记录维度数据
     // const indexParams: any = ref([]) // 记录指标数据
-    // const orderParams: any = ref([]) // 记录排序指标
+    const orderParams: any = ref([]) // 记录排序指标
     // const checkedorders: any = ref([]) // 排序勾选值
     // const checkedDim: any = ref([]) // 选中的维度
-    // const conditionList: any = ref([]) // 日期条件list
     const loading: any = ref()
     const tableData: any = ref([])
     const getTableData = async (params: IModelSearch) => {
@@ -313,8 +308,14 @@ export default defineComponent({
                   item['fixed'] = false
                 }
               }
+              orderParams.value.filter(orderitem => {
+                if (item.colBizName === orderitem.colBizName) {
+                  item['sortable'] = true
+                }
+              })
             })
           })
+          console.log('columnDatas.value: ', columnDatas.value)
           tableData.value.push(totalRowListData)
         }
         pagination.total = Number(res.analysisModel.totalList[0])
@@ -345,12 +346,12 @@ export default defineComponent({
       optionHTMLList,
       textConditionHTMLList,
       otherDateTextConditionHTMLList,
-      // getColumns,
+      dataSearchForm,
       getTableData,
       // dimParams,
       optionParams,
       // indexParams,
-      // orderParams,
+      orderParams,
       // checkedorders,
       order0,
       order1,
@@ -367,8 +368,6 @@ export default defineComponent({
       tableHeight
       // dateParam
       // checkedDim,
-      // handleFilterCondition,
-      // conditionList
     }
   },
   mounted() {
@@ -628,25 +627,29 @@ export default defineComponent({
       })
       this.handleCheckedFieldChange(this.checkedFields)
       // 统计日期
-      this.conditionList = res.conditionList
-      // if (res.conditionList.length) {
-      //   this.searchForm.colBizName = res.conditionList[0].colBizName
-      // }
       console.log('this.searchForm: ', this.searchForm)
       this.dateTextConditionHTMLList = res.dateTextConditionHTMLList
       this.dateOptionConditioHTMLList = res.dateOptionConditioHTMLList
       if (res.dateTextConditionHTMLList.length) {
-        let beginTimeKeyData = JSON.parse(
-          res.dateTextConditionHTMLList[0].beginTimeKey
-        )
-        this.searchForm.colBizName = beginTimeKeyData.colBizName
-        this.searchForm.conditionType = beginTimeKeyData.conditionType
-        this.searchForm.beginTimeValue =
-          res.dateTextConditionHTMLList[0].beginTimeValue
-        if (res.dateTextConditionHTMLList[0].endTimeValue) {
-          this.searchForm.endTimeValue =
-            res.dateTextConditionHTMLList[0].endTimeValue
-        }
+        res.dateTextConditionHTMLList.forEach(item => {
+          let beginTimeKeyData = JSON.parse(item.beginTimeKey)
+          let conditionParams = {
+            beginTimeValue: item.beginTimeValue,
+            endTimeValue: item.endTimeValue ? item.endTimeValue : '',
+            beginTimeKey: item.beginTimeKey,
+            endTimeKey: item.endTimeKey ? item.endTimeKey : '',
+            colBizName: beginTimeKeyData.colBizName,
+            conditionType: beginTimeKeyData.conditionType
+          }
+        })
+        // this.searchForm.colBizName = beginTimeKeyData.colBizName
+        // this.searchForm.conditionType = beginTimeKeyData.conditionType
+        // this.searchForm.beginTimeValue =
+        //   res.dateTextConditionHTMLList[0].beginTimeValue
+        // if (res.dateTextConditionHTMLList[0].endTimeValue) {
+        //   this.searchForm.endTimeValue =
+        //     res.dateTextConditionHTMLList[0].endTimeValue
+        // }
         this.dateParamVisible = true
       } else {
         this.dateParamVisible = false
@@ -664,23 +667,22 @@ export default defineComponent({
       } else {
         this.dateOptionVisible = false
       }
-      // this.handleFilterCondition()
       // 获取表数据
       this.searchData()
     },
-    handleFilterCondition() {
-      let conditionType = this.conditionList[0].conditionType
-      let today = new Date()
-      nextTick(() => {
-        this.conditiondataTextType.includes(conditionType) ||
-        this.conditiondataTextSingleType.includes(conditionType)
-          ? (this.dateParamVisible = true)
-          : (this.dateParamVisible = false)
-        this.conditiondateOptionType.includes(conditionType)
-          ? (this.dateOptionVisible = true)
-          : (this.dateOptionVisible = false)
-      })
-    },
+    // handleFilterCondition() {
+    //   let conditionType = this.conditionList[0].conditionType
+    //   let today = new Date()
+    //   nextTick(() => {
+    //     this.conditiondataTextType.includes(conditionType) ||
+    //     this.conditiondataTextSingleType.includes(conditionType)
+    //       ? (this.dateParamVisible = true)
+    //       : (this.dateParamVisible = false)
+    //     this.conditiondateOptionType.includes(conditionType)
+    //       ? (this.dateOptionVisible = true)
+    //       : (this.dateOptionVisible = false)
+    //   })
+    // },
     getFirstDayOfWeek(date) {
       let weekday = date.getDay() || 7 //获取星期几,getDay()返回值是 0（周日） 到 6（周六） 之间的一个整数。0||7为7，即weekday的值为1-7
       date.setDate(date.getDate() - weekday + 1) //往前算（weekday-1）天，年份、月份会自动变化
@@ -726,7 +728,7 @@ export default defineComponent({
     //设置指定行、列、具体单元格颜色
     cellStyle({ row, column, rowIndex, columnIndex }) {
       if (columnIndex <= this.columnArr[this.columnArr.length - 1]) {
-        return 'background:#EEEEEE'
+        return 'background:#EEEEEE, border: 1px sold #000'
       } else {
         return ''
       }

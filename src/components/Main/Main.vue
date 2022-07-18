@@ -214,7 +214,7 @@ export default defineComponent({
       display: flex;
       justify-content: center;
       align-items: center;
-      min-width: 208px;
+      min-width: 260px;
       height: 100%;
       padding: 0 10px;
       margin-right: 10px;
@@ -243,7 +243,7 @@ export default defineComponent({
     height: calc(100% - 60px);
     .xfk-side {
       flex-shrink: 0;
-      width: 208px;
+      width: 260px;
       height: 100%;
       overflow: hidden;
       background-color: #222d32;

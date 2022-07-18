@@ -29,7 +29,7 @@ export const getmark = () => {
 		div.id = id;
 		div.style.pointerEvents = "none";
 		div.style.top = "30px";
-		div.style.left = "208px";
+		div.style.left = "260px";
 		div.style.position = "fixed";
 		div.style.zIndex = "100000";
 		div.style.width = document.documentElement.clientWidth + "px";
