@@ -7,6 +7,7 @@
     :text-color="textColor"
     :active-text-color="activeTextColor"
     :default-active="defaultActive || 'home'"
+    :unique-opened="true"
   >
     <menu-item v-for="item in list" :key="item.id" :item="item" />
   </el-menu>

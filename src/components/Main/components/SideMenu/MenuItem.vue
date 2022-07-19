@@ -2,7 +2,7 @@
   <div class="xfk-menu-item">
     <el-sub-menu v-if="item.children" :index="item.id + ''">
       <template #title>
-        <span class="span-ellipsis" :title="item.name">{{ item.name }}</span>
+        <span class="span-ellipsis" :title="item.name" :style="{'font-size': (18 - item.grade-1) + 'px', 'color':textColor[item.grade] }">{{ item.name }}</span>
       </template>
       <menu-item v-for="children in item.children" :item="children" :key="children.id + ''" />
     </el-sub-menu>
@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from '@/store/index'
 export default defineComponent({
@@ -28,6 +28,14 @@ export default defineComponent({
   setup() {
     const router = useRouter()
     const store = useStore()
+    const textColor = ref([
+      '#ffffff',
+      '#ffffff',
+      '#ffffff',
+      '#e3abb3',
+      '#9d7796',
+      '#936fcd'
+    ])
     const menuClick = (item: any) => {
       console.log(item)
       switch (item.menuType) {
@@ -65,7 +73,8 @@ export default defineComponent({
     }
 
     return {
-      menuClick
+      menuClick,
+      textColor
     }
   }
 })
@@ -78,5 +87,13 @@ export default defineComponent({
   white-space: nowrap;
   text-overflow: ellipsis;
   display: block; // 一定要是块级元素，并且有定宽才有效果
+}
+.el-menu-item {
+  padding-left: 20px !important;
+  font-size: 12px;
+  color: #b7ebeb;
+}
+.el-sub-menu__title {
+  padding-left: 20px !important;
 }
 </style>
