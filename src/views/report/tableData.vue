@@ -337,7 +337,7 @@ export default defineComponent({
             }
           })
         })
-        pagination.total = Number(res.analysisModel.totalList[0])
+        pagination.total = Number(res.analysisModel.portalPage.totalRows)
       }
     }
     const getOptionSelectData = async (params: any, index: number) => {
