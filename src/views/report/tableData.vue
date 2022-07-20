@@ -140,7 +140,7 @@
       min-height="300"
       max-height="700"
       :header-cell-class-name="handleHeadAddClass"
-      :header-cell-style="{background:'#eeeeee',color:'#000', border:'1px solid #ddd', margin:'0 20px' }"
+      :header-cell-style="{background:'#eeeeee',color:'#000', border:'1px solid #ddd' }"
       :cell-style="cellStyle"
       @sort-change="onSortChange"
       :span-method="objectSpanMethod"
@@ -215,7 +215,7 @@ export default defineComponent({
       checkedDim: [], // 选中的维度
       sortField: {}, // 记录排序的字段
       // 指标
-      checkedFields: [], // 选中的指标
+      // checkedFields: [], // 选中的指标
       checkFieldAll: false, // 全选状态
       isFieldIndeterminate: false, // 全选状态
       // 维度
@@ -290,7 +290,7 @@ export default defineComponent({
     const optionParams: any = ref([]) // 记录过滤条件数据
     const orderParams: any = ref([]) // 记录排序指标
     const showColumns: any = ref([]) // 记录展示列数据
-
+    const checkedFields: any = ref([]) // 选中的指标
     // const dimParams: any = ref([]) // 记录维度数据
     // const indexParams: any = ref([]) // 记录指标数据
     // const checkedDim: any = ref([]) // 选中的维度
@@ -328,6 +328,23 @@ export default defineComponent({
             })
           })
           tableData.value.push(totalRowListData)
+        }
+        if (res.analysisModel.totalList.length) {
+          const totalListData = {}
+          let totalListIndex = 0
+          columnDatas.value.forEach((item, index) => {
+            if (checkedFields.value.indexOf(item.colName) > -1) {
+              totalListIndex = totalListIndex + 1
+              totalListData[item.colName] =
+                res.analysisModel.totalList[totalListIndex]
+              item['fixed'] = false
+            } else {
+              totalListData[item.colName] = 'TOTAL'
+              item['fixed'] = true
+            }
+          })
+          console.log('totalListData: ', totalListData)
+          tableData.value.push(totalListData)
         }
         // 给表头添加排序功能
         columnDatas.value.forEach((item, index) => {
@@ -453,7 +470,7 @@ export default defineComponent({
       getTableData,
       // dimParams,
       optionParams,
-      // indexParams,
+      checkedFields,
       orderParams,
       order0,
       order1,
@@ -823,7 +840,7 @@ export default defineComponent({
     //设置指定行、列、具体单元格颜色
     cellStyle({ row, column, rowIndex, columnIndex }) {
       if (columnIndex <= this.columnArr[this.columnArr.length - 1]) {
-        return 'background:#EEEEEE, border: 1px sold #000'
+        return 'background-color:#eeeeee; border: 1px solid #ddddddd'
       } else {
         return ''
       }
@@ -909,7 +926,7 @@ export default defineComponent({
           flexWidth += 20
         } else if (char >= '\u4e00' && char <= '\u9fa5') {
           // 如果是中文字符，为字符分配15个单位宽度
-          flexWidth += 22
+          flexWidth += 20
         } else {
           // 其他种类字符，为字符分配8个单位宽度
           flexWidth += 20
@@ -949,9 +966,6 @@ export default defineComponent({
   height: 40px;
   line-height: 40px !important;
   text-align: center;
-}
-.table-head {
-  font-size: 12px !important; //设置固定的字体大小
 }
 
 .demo-form-date {
