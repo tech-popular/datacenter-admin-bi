@@ -21,7 +21,7 @@
     </header>
     <div class="xfk-body hidden-xs-only">
       <el-scrollbar class="xfk-side" :class="{ 'xfk-side-col': sidebarFold }">
-        <SideMenu :list="pcmenuData" v-if="pcmenuData.length > 0" background-color="#222d32" text-color="#fff" active-text-color="#ffd04b" />
+        <SideMenu :list="pcmenuData" v-if="pcmenuData.length > 0" background-color="#222d32" text-color="#fff" active-text-color="#fff" />
       </el-scrollbar>
       <div class="xfk-content">
         <div class="xfk-content-fullPath" v-if="menuName">{{menuName}}</div>

@@ -99,6 +99,7 @@ export default defineComponent({
 }
 .el-sub-menu__title:hover {
   background-color: #b3aebb !important;
+  color: #ffffff !important;
 }
 .span-ellipsis-title {
   width: 100%;
