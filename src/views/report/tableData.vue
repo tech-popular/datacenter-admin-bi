@@ -210,9 +210,9 @@ export default defineComponent({
       dateOptionVisible: false,
       value2: '',
       // columnDatas: [], // 记录表头数据
-      dimParams: [], // 记录维度数据
+      // dimParams: [], // 记录维度数据
       indexParams: [], // 记录指标数据
-      checkedDim: [], // 选中的维度
+      // checkedDim: [], // 选中的维度
       sortField: {}, // 记录排序的字段
       // 指标
       // checkedFields: [], // 选中的指标
@@ -291,9 +291,9 @@ export default defineComponent({
     const orderParams: any = ref([]) // 记录排序指标
     const showColumns: any = ref([]) // 记录展示列数据
     const checkedFields: any = ref([]) // 选中的指标
-    // const dimParams: any = ref([]) // 记录维度数据
+    const dimParams: any = ref([]) // 记录维度数据
     // const indexParams: any = ref([]) // 记录指标数据
-    // const checkedDim: any = ref([]) // 选中的维度
+    const checkedDim: any = ref([]) // 选中的维度
     const loading: any = ref()
     const tableData: any = ref([])
     const getTableData = async (params: IModelSearch) => {
@@ -301,7 +301,6 @@ export default defineComponent({
       columnArr.value = []
       tableData.value = []
       if (res.code === 0) {
-        console.log('res: ', res)
         res.analysisModel.rowList.forEach(citem => {
           const rowListData = {}
           columnDatas.value = []
@@ -315,12 +314,18 @@ export default defineComponent({
         })
         if (res.analysisModel.totalRow) {
           const totalRowListData = {}
+          const fixedIndex = 0
           res.analysisModel.totalRow.fieldValueList.forEach((citem, cindex) => {
             columnDatas.value.forEach((item, index) => {
               if (cindex === index) {
                 totalRowListData[item.colName] = citem.value
                 if (citem.value === 'TOTAL') {
-                  item['fixed'] = true
+                  if (checkedDim.value.length && checkedDim.value.length > 10) {
+                    fixedIndex = fixedIndex + 1
+                  }
+                  if (fixedIndex < 6) {
+                    item['fixed'] = true
+                  }
                 } else {
                   item['fixed'] = false
                 }
@@ -329,9 +334,13 @@ export default defineComponent({
           })
           tableData.value.push(totalRowListData)
         }
-        if (res.analysisModel.totalList.length) {
+        if (
+          res.analysisModel.totalList.length &&
+          res.analysisModel.totalList.length > 1
+        ) {
           const totalListData = {}
           let totalListIndex = 0
+          let fixedIndex = 0
           columnDatas.value.forEach((item, index) => {
             if (checkedFields.value.indexOf(item.colName) > -1) {
               totalListIndex = totalListIndex + 1
@@ -339,11 +348,16 @@ export default defineComponent({
                 res.analysisModel.totalList[totalListIndex]
               item['fixed'] = false
             } else {
+              if (checkedDim.value.length && checkedDim.value.length > 10) {
+                fixedIndex = fixedIndex + 1
+              }
               totalListData[item.colName] = 'TOTAL'
-              item['fixed'] = true
+
+              if (fixedIndex < 6) {
+                item['fixed'] = true
+              }
             }
           })
-          console.log('totalListData: ', totalListData)
           tableData.value.push(totalListData)
         }
         // 给表头添加排序功能
@@ -468,7 +482,7 @@ export default defineComponent({
       otherDateTextConditionHTMLList,
       dataSearchForm,
       getTableData,
-      // dimParams,
+      dimParams,
       optionParams,
       checkedFields,
       orderParams,
@@ -486,9 +500,9 @@ export default defineComponent({
       loading,
       tableHeight,
       changeBeginTimeValue,
-      changeEndTimeValue
+      changeEndTimeValue,
       // dateParam
-      // checkedDim,
+      checkedDim
     }
   },
   mounted() {
@@ -523,7 +537,6 @@ export default defineComponent({
         orderJSON: {}, // 排序入参
         compareTextJson: {}
       }
-      console.log('过滤条件', this.optionParams)
       // 统计日期
       if (this.dataSearchForm.length) {
         params.dateTextJSON = {
@@ -560,7 +573,6 @@ export default defineComponent({
             item.filterParams ? filterParamsData.push(item) : filterParamsData
           }
         })
-        console.log('filterParamsData: ', filterParamsData)
         if (filterParamsData.length) {
           let optionJSONData = {}
           let optionJSONDataIndex = 0
@@ -611,7 +623,6 @@ export default defineComponent({
           })
           params.optionJSON = optionJSONData
           params.textJSON = textJSONData
-          console.log('params: ', params)
         }
       }
       // 排序
@@ -672,7 +683,6 @@ export default defineComponent({
     },
     async getColumns() {
       const res: IResponse = await getAnalysisModelColumn(this.modelId)
-      console.log('res:报表 ', res)
       if (res.code === 500) {
         this.loading.close()
         return ElMessage.error({ message: res.msg })
@@ -746,7 +756,6 @@ export default defineComponent({
       })
       this.handleCheckedFieldChange(this.checkedFields)
       // 统计日期
-      console.log('this.searchForm: ', this.searchForm)
       this.dateTextConditionHTMLList = res.dateTextConditionHTMLList
       this.dataSearchForm = []
       this.dateOptionConditioHTMLList = res.dateOptionConditioHTMLList
@@ -816,10 +825,12 @@ export default defineComponent({
     },
     onSortChange({ order, prop }) {
       this.sortField[prop] = order
-      console.log(this.sortField)
     },
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-      if (column.fixed && !this.columnArr.includes(columnIndex)) {
+      if (
+        this.checkedDim.includes(column.property) &&
+        !this.columnArr.includes(columnIndex)
+      ) {
         this.columnArr.push(columnIndex)
       }
       this.columnArr.sort(function(a, b) {
@@ -840,7 +851,7 @@ export default defineComponent({
     //设置指定行、列、具体单元格颜色
     cellStyle({ row, column, rowIndex, columnIndex }) {
       if (columnIndex <= this.columnArr[this.columnArr.length - 1]) {
-        return 'background-color:#eeeeee; border: 1px solid #ddddddd'
+        return 'background-color:#eeeeee; border: 1px solid #dddddd'
       } else {
         return ''
       }
@@ -929,7 +940,7 @@ export default defineComponent({
           flexWidth += 20
         } else {
           // 其他种类字符，为字符分配8个单位宽度
-          flexWidth += 20
+          flexWidth += 8
         }
       }
       return flexWidth + 'px'
@@ -940,7 +951,7 @@ export default defineComponent({
 
 <style lang="scss">
 .table-data {
-  font-size: 12px;
+  font-size: 8px;
 }
 .pagination {
   text-align: right;
@@ -986,5 +997,8 @@ export default defineComponent({
   padding-left: 5px;
   margin-bottom: 10px;
   padding-top: 5px;
+}
+.el-table .cell.el-tooltip {
+  width: 100% !important;
 }
 </style>
