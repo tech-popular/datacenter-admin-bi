@@ -31,12 +31,12 @@ export default defineComponent({
     const textColor = ref(['#222d32', '#514e55', '#655e72', '#7b708c'])
     const hoverColor = ref(['#4cb352', '#5bc2d3', '#ffc23f', 'pink', '#872822'])
     const menuClick = (item: any) => {
-      console.log(item)
       switch (item.menuType) {
         case 0:
           store.commit('changeDataLink', item.url)
           store.commit('changeMenuType', item.menuType)
           store.commit('changeMenuName', '')
+          store.commit('changePrincipal', '')
           router.push({
             path: `/superset/${item.id}`
           })
@@ -47,18 +47,24 @@ export default defineComponent({
             'changeMenuName',
             menulistData.filter(citem => citem.id === item.id)[0].menuRelevance
           )
+          store.commit(
+            'changePrincipal',
+            menulistData.filter(citem => citem.id === item.id)[0].principal
+          )
           router.push({
             path: `/report/${item.url}`
           })
           break
         case 2:
           store.commit('changeMenuName', '')
+          store.commit('changePrincipal', '')
           router.push({
             path: `/tableau/${item.url}`
           })
           break
         default:
           store.commit('changeMenuName', '')
+          store.commit('changePrincipal', '')
           store.commit('changeDataLink', '')
           router.push({
             path: '/home'

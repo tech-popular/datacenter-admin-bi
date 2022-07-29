@@ -12,6 +12,7 @@ export interface State {
   defaultActive: String
   token: any
   menuName: String
+  principal: String
 }
 
 // 定义注入类型
@@ -25,7 +26,8 @@ const store = createStore<State>({
       sidebarFold: false,
       defaultActive: '',
       token: localStorage.getItem('token') ? localStorage.getItem('token') : '',
-      menuName: ''
+      menuName: '',
+      principal: ''
     }
   },
   mutations: {
@@ -50,6 +52,11 @@ const store = createStore<State>({
     changeMenuName(state: State, menuName: string) {
       state.menuName = menuName
       localStorage.setItem('menuName', menuName)
+    },
+    changePrincipal(state: State, principal: string) {
+      console.log('principal: ', Boolean(principal));
+      state.principal = principal
+      localStorage.setItem('principal', principal)
     }
   },
 })

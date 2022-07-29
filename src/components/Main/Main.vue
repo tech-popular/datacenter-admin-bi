@@ -24,7 +24,10 @@
         <SideMenu :list="pcmenuData" v-if="pcmenuData.length > 0" background-color="#222d32" text-color="#fff" active-text-color="#fff" />
       </el-scrollbar>
       <div class="xfk-content">
-        <div class="xfk-content-fullPath" v-if="menuName">{{menuName}}</div>
+        <div class="xfk-content-fullPath" v-if="menuName">
+          <span>{{menuName}}</span>
+          <span class="xfk-content-principal">报表负责人：{{principal}}</span>
+        </div>
         <el-scrollbar class="xfk-view" wrapClass="xfk-content-wrap">
           <router-view :key="$route.fullPath" />
         </el-scrollbar>
@@ -85,6 +88,11 @@ export default defineComponent({
         ? store.state.menuName
         : localStorage.getItem('menuName')
       // return localStorage.getItem('menuName')
+    })
+    const principal: String = computed(() => {
+      return store.state.principal
+        ? store.state.principal
+        : localStorage.getItem('principal')
     })
     const sidebarFold: Boolean = computed(() => {
       return store.state.sidebarFold
@@ -164,7 +172,8 @@ export default defineComponent({
       gradeName,
       fnMenuRoutes,
       PCgradeMenu,
-      menuName
+      menuName,
+      principal
     }
   }
 })
@@ -275,6 +284,10 @@ export default defineComponent({
         line-height: 28px;
         padding-left: 20px;
         margin: 10px 0;
+        .xfk-content-principal {
+          float: right;
+          padding-right: 70px;
+        }
       }
       .xfk-tags {
         padding: 0;
