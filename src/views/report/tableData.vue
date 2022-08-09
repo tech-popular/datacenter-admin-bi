@@ -296,6 +296,8 @@ export default defineComponent({
     const checkedDim: any = ref([]) // 选中的维度
     const loading: any = ref()
     const tableData: any = ref([])
+    const totalList: any = ref([]) // 查询报表数据的totalList
+    const totalRow: any = ref([]) // 查询报表数据的totalRow
     const getTableData = async (params: IModelSearch) => {
       const res: IResponse = await getReportSearchData(params)
       columnArr.value = []
@@ -304,6 +306,8 @@ export default defineComponent({
         res.analysisModel.rowList.forEach(citem => {
           const rowListData = {}
           columnDatas.value = []
+          totalList.value = res.analysisModel.totalList
+          totalRow.value = res.analysisModel.totalRow
           citem.fieldValueList.forEach(item => {
             rowListData[item.column.colName] = item.value
             if (!columnDatas.value.includes(item.column)) {
@@ -334,9 +338,21 @@ export default defineComponent({
           })
           tableData.value.push(totalRowListData)
         }
-        if (
+        // 判断totalList的值是否有效
+        const totalListValue: Boolean = false
+         if (
           res.analysisModel.totalList.length &&
           res.analysisModel.totalList.length > 1
+        ) {
+          res.analysisModel.totalList.forEach((item, index) => {
+            if (index > 1 && item) {
+              totalListValue.value = true
+            }
+          })
+        }
+        if (
+          res.analysisModel.totalList.length &&
+          res.analysisModel.totalList.length > 1 && totalListValue.value
         ) {
           const totalListData = {}
           let totalListIndex = 0
@@ -352,7 +368,6 @@ export default defineComponent({
                 fixedIndex = fixedIndex + 1
               }
               totalListData[item.colName] = 'TOTAL'
-
               if (fixedIndex < 6) {
                 item['fixed'] = true
               }
@@ -502,7 +517,9 @@ export default defineComponent({
       changeBeginTimeValue,
       changeEndTimeValue,
       // dateParam
-      checkedDim
+      checkedDim,
+      totalList,
+      totalRow
     }
   },
   mounted() {
@@ -840,7 +857,10 @@ export default defineComponent({
          */
         return a - b
       }) //括号里不写回调函数则默认按照字母逐位升序排列
-      if (rowIndex === this.tableData.length - 1) {
+      if (
+        rowIndex === this.tableData.length - 1 &&
+        (this.totalList.length > 1 || this.totalRow)
+      ) {
         if (columnIndex === this.columnArr[this.columnArr.length - 1]) {
           return [1, this.columnArr.length]
         } else if (columnIndex < this.columnArr[this.columnArr.length - 1]) {

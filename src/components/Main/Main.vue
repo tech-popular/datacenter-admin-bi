@@ -249,7 +249,8 @@ export default defineComponent({
   .xfk-body {
     display: flex;
     width: 100%;
-    height: calc(100% - 60px);
+    // height: calc(100% - 20px);
+    height: 100%;
     .xfk-side {
       flex-shrink: 0;
       width: 260px;
