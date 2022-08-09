@@ -318,7 +318,7 @@ export default defineComponent({
         })
         if (res.analysisModel.totalRow) {
           const totalRowListData = {}
-          const fixedIndex = 0
+          let fixedIndex = 0
           res.analysisModel.totalRow.fieldValueList.forEach((citem, cindex) => {
             columnDatas.value.forEach((item, index) => {
               if (cindex === index) {
