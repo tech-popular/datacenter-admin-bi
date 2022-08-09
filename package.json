@@ -8,7 +8,9 @@
     "serve": "vite preview"
   },
   "dependencies": {
+    "@johnsoncodehk/html2pug": "^1.0.0",
     "@types/lodash": "^4.14.180",
+    "@volar/pug-language-service": "^0.39.5",
     "awe-dnd": "^0.3.4",
     "axios": "^0.24.0",
     "dayjs": "^1.11.0",
