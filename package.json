@@ -8,22 +8,13 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "@johnsoncodehk/html2pug": "^1.0.0",
-    "@types/lodash": "^4.14.180",
-    "@volar/pug-language-service": "^0.39.5",
-    "awe-dnd": "^0.3.4",
     "axios": "^0.24.0",
     "dayjs": "^1.11.0",
     "dingtalk-jsapi": "^2.13.53",
     "element-plus": "^2.2.12",
-    "qs": "^6.10.3",
-    "unplugin-vue-components": "^0.17.0",
-    "v-fit-columns": "^0.2.0",
     "vant": "^3.2.7",
-    "vconsole": "^3.9.4",
     "vue": "^3.2.16",
     "vue-router": "^4.0.12",
-    "vuedraggable": "^2.24.3",
     "vuex": "^4.0.2"
   },
   "devDependencies": {
