@@ -1,7 +1,7 @@
 <template>
   <div class="table-data">
-    <el-form :inline="true" style="display: flex" :model="searchForm" label-position="right" class="demo-form-inline" size="small">
-      <div style="display: inline" v-if="dateParamVisible">
+    <el-form :inline="true" :model="searchForm" label-position="right" class="demo-form-inline" size="small">
+      <div class="elform-inline" v-if="dateParamVisible">
         <el-form-item v-for="(item, index) in dataSearchForm" :key="index">
           <el-form-item :label="item.colBizName" prop="beginTimeValue">
             <el-date-picker v-model="item.beginTimeValue" :clearable="false" @change="changeBeginTimeValue(item, index)" type="date" placeholder="选择日期" class="demo-form-date"></el-date-picker>
@@ -11,7 +11,7 @@
           </el-form-item>
         </el-form-item>
       </div>
-      <el-form-item style="display: inline" v-if="dateOptionVisible">
+      <el-form-item class="elform-inline" v-if="dateOptionVisible">
         <el-form-item label="年：" prop="yearDateValue">
           <el-select v-model="searchForm.yearDateValue " class="demo-date-select" placeholder="年">
             <el-option v-for="(item, index) in yearList" :key="index" :value="item.value" :label="item.text"></el-option>
@@ -25,11 +25,11 @@
         </el-form-item>
       </el-form-item>
       <el-form-item v-if="optionParams.length">
-        <el-popover placement="bottom-end" width="500px" trigger="click">
+        <el-popover placement="bottom-start" :width="500" trigger="click">
           <template #reference>
             <el-button type="info" plain>过滤条件</el-button>
           </template>
-          <el-row justify="left">
+          <el-row justify="start">
             <el-col :span="12">
               <span>请选择过滤条件</span>
             </el-col>
@@ -58,11 +58,11 @@
         </el-popover>
       </el-form-item>
       <el-form-item v-if="dimParams.length || indexParams.length">
-        <el-popover placement="bottom-end" width="400px" trigger="click">
+        <el-popover placement="bottom-end" :width="400" trigger="click">
           <template #reference>
             <el-button type="info" plain>展示列</el-button>
           </template>
-          <el-row justify="left">
+          <el-row justify="start">
             <el-col :span="12">
               <span>请选择展示列</span>
             </el-col>
@@ -75,9 +75,6 @@
               <el-checkbox :label="item.colName">{{ item.colBizName }}</el-checkbox>
             </div>
           </el-checkbox-group>
-          <!-- <el-col :span="12">
-            <el-checkbox v-model="checkFieldAll" :indeterminate="isFieldIndeterminate" @change="handleCheckAllChange">全选</el-checkbox>
-          </el-col>-->
           <el-checkbox-group v-model="checkedFields" @change="handleCheckedFieldChange">
             <div v-for="field in indexParams" :key="field.name">
               <el-checkbox :label="field.colName">{{field.colBizName}}</el-checkbox>
@@ -85,60 +82,21 @@
           </el-checkbox-group>
         </el-popover>
       </el-form-item>
-      <!-- <el-form-item v-if="indexParams.length">
-        <el-popover placement="bottom-end" width="400px" trigger="click">
-          <template #reference>
-            <el-button type="info" plain>指标</el-button>
-          </template>
-          <el-row justify="left">
-            <el-col :span="12">
-              <span>请选择指标</span>
-            </el-col>
-            <el-col :span="12">
-              <el-checkbox v-model="checkFieldAll" :indeterminate="isFieldIndeterminate" @change="handleCheckAllChange">全选</el-checkbox>
-            </el-col>
-          </el-row>
-
-          <el-checkbox-group v-model="checkedFields" @change="handleCheckedFieldChange">
-            <div v-for="field in indexParams" :key="field.name">
-              <el-checkbox :label="field.colName">{{field.colBizName}}</el-checkbox>
-            </div>
-          </el-checkbox-group>
-        </el-popover>
-      </el-form-item>-->
-      <!-- <el-form-item v-if="orderParams.length">
-        <el-popover placement="bottom-end" width="500px" trigger="click">
-          <template #reference>
-            <el-button type="info" plain>排序</el-button>
-          </template>
-          <el-row justify="left">
-            <el-col :span="6">
-              <span>请选择排序</span>
-            </el-col>
-            <el-col :span="18">
-              <span style="color:red">请拖动进行排序，并选择升/降序（灰色箭头为不排序）</span>
-            </el-col>
-          </el-row>
-          <el-checkbox-group v-model="checkedorders">
-            <div v-for="(order, index) in orderParams" :key="index" draggable="true" @dragstart="dragstart(order)" @dragenter="dragenter(order)" @dragend="dragend(order)">
-              <el-checkbox :label="order.colName">{{order.colBizName}}</el-checkbox>
-              <img v-if="checkedorders.includes(order.colName)" @click="changeOrderFlag(order, index)" :src="order.colOrderFlag ? (order.colOrderFlag === 1 ? order1 : order2) : order0" />
-            </div>
-          </el-checkbox-group>
-        </el-popover>
-      </el-form-item>-->
       <el-form-item>
         <el-button type="primary" plain @click="onSearch">查询</el-button>
       </el-form-item>
     </el-form>
+
     <el-table
       :data="tableData"
       fit
       border
       stripe
-      ref="table"
-      min-height="300"
-      max-height="700"
+      width="auto"
+      ref="tableRef"
+      min-height="300px"
+      max-height="700px"
+      sortable="custom"
       :header-cell-class-name="handleHeadAddClass"
       :header-cell-style="{background:'#eeeeee',color:'#000', border:'1px solid #ddd' }"
       :cell-style="cellStyle"
@@ -146,19 +104,19 @@
       :span-method="objectSpanMethod"
       highlight-current-row
       size="small"
+      :header-align="center"
     >
-      <!-- <template v-for="column in columnDatas" :key="column.tabID"> -->
-      <el-table-column
-        v-for="column in columnDatas"
-        :min-width="flexColumnWidth(column.colBizName)"
-        :key="column.tabID"
-        :fixed="column.fixed"
-        show-overflow-tooltip
-        :prop="column.colName"
-        :label="column.colBizName"
-        :sortable="column.sortable"
-      />
-      <!-- </template> -->
+      <template v-for="(column, index) in columnDatas" :key="column.modelId">
+        <el-table-column
+          :min-width="flexColumnWidth(column.colBizName)"
+          :fixed="column.fixed"
+          show-overflow-tooltip
+          align="center"
+          :prop="column.colName"
+          :label="column.colBizName"
+          :sortable="column.sortable"
+        />
+      </template>
     </el-table>
     <div class="pagination">
       <el-pagination
@@ -197,6 +155,7 @@ import order1 from '@/static/image/order1.gif'
 import order2 from '@/static/image/order2.gif'
 const InputTag = defineAsyncComponent(() => import('./components/InputTag.vue'))
 import dayjs from 'dayjs'
+import { th } from 'element-plus/lib/locale'
 export default defineComponent({
   name: 'TableData',
   components: { InputTag },
@@ -227,7 +186,6 @@ export default defineComponent({
   setup() {
     const route: RouteLocationNormalized = useRoute()
     const modelId: string = String(route.params.modelId)
-    const tableHeight: Number = 0 // 表格高度根据屏幕自适应
     const clickVal = ref<string>()
     const moveVal = ref<string>()
     const endVal = ref<string>()
@@ -298,6 +256,13 @@ export default defineComponent({
     const tableData: any = ref([])
     const totalList: any = ref([]) // 查询报表数据的totalList
     const totalRow: any = ref([]) // 查询报表数据的totalRow
+    const tableRef = ref(null)
+    //或者
+    //泛型默认值语法<T = any>
+    // type Ref<T = any> = {
+    // value : T
+    // }
+    // const tableRef: Ref<div | null> = ref(null);
     const getTableData = async (params: IModelSearch) => {
       const res: IResponse = await getReportSearchData(params)
       columnArr.value = []
@@ -323,15 +288,14 @@ export default defineComponent({
             columnDatas.value.forEach((item, index) => {
               if (cindex === index) {
                 totalRowListData[item.colName] = citem.value
+                item['fixed'] = false
                 if (citem.value === 'TOTAL') {
                   if (checkedDim.value.length && checkedDim.value.length > 10) {
                     fixedIndex = fixedIndex + 1
                   }
                   if (fixedIndex < 6) {
-                    item['fixed'] = true
+                    // item['fixed'] = 'left'
                   }
-                } else {
-                  item['fixed'] = false
                 }
               }
             })
@@ -339,37 +303,38 @@ export default defineComponent({
           tableData.value.push(totalRowListData)
         }
         // 判断totalList的值是否有效
-        const totalListValue: Boolean = false
-         if (
+        let totalListValue: Boolean = false
+        if (
           res.analysisModel.totalList.length &&
           res.analysisModel.totalList.length > 1
         ) {
           res.analysisModel.totalList.forEach((item, index) => {
-            if (index > 1 && item) {
-              totalListValue.value = true
+            if (index > 0 && item) {
+              totalListValue = true
             }
           })
         }
         if (
           res.analysisModel.totalList.length &&
-          res.analysisModel.totalList.length > 1 && totalListValue.value
+          res.analysisModel.totalList.length > 1 &&
+          totalListValue
         ) {
           const totalListData = {}
           let totalListIndex = 0
           let fixedIndex = 0
           columnDatas.value.forEach((item, index) => {
+            item['fixed'] = false
             if (checkedFields.value.indexOf(item.colName) > -1) {
               totalListIndex = totalListIndex + 1
               totalListData[item.colName] =
                 res.analysisModel.totalList[totalListIndex]
-              item['fixed'] = false
             } else {
               if (checkedDim.value.length && checkedDim.value.length > 10) {
                 fixedIndex = fixedIndex + 1
               }
               totalListData[item.colName] = 'TOTAL'
               if (fixedIndex < 6) {
-                item['fixed'] = true
+                // item['fixed'] = 'left'
               }
             }
           })
@@ -379,11 +344,52 @@ export default defineComponent({
         columnDatas.value.forEach((item, index) => {
           orderParams.value.filter(orderitem => {
             if (item.colBizName === orderitem.colBizName) {
-              item['sortable'] = true
+              item['sortable'] = 'custom'
             }
           })
         })
         pagination.total = Number(res.analysisModel.portalPage.totalRows)
+      }
+    }
+
+    const objectSpanMethod = ({ row, column, rowIndex, columnIndex }) => {
+      if (
+        checkedDim.value.includes(column.property) &&
+        !columnArr.value.includes(columnIndex)
+      ) {
+        columnArr.value.push(columnIndex)
+      }
+      columnArr.value.sort(function(a, b) {
+        /*
+         * return b-a; —> 降序排序
+         * return a-b; —> 升序排列
+         */
+        return a - b
+      }) //括号里不写回调函数则默认按照字母逐位升序排列
+      if (
+        rowIndex === tableData.value.length - 1 &&
+        (totalList.value.length > 1 || totalRow.value)
+      ) {
+        if (columnIndex === columnArr.value[columnArr.value.length - 1]) {
+          return {
+            rowspan: 1,
+            colspan: columnArr.value.length
+          }
+        } else if (columnIndex < columnArr.value[columnArr.value.length - 1]) {
+          return {
+            rowspan: 0,
+            colspan: 0
+          }
+        }
+      }
+    }
+    //设置指定行、列、具体单元格颜色
+    const cellStyle = ({ row, column, rowIndex, columnIndex }) => {
+      if (columnIndex <= columnArr.value[columnArr.value.length - 1]) {
+        return {
+          backgroundColor: ' #eeeeee',
+          border: ' 1px solid #dddddd'
+        }
       }
     }
     const getOptionSelectData = async (params: any, index: number) => {
@@ -513,31 +519,21 @@ export default defineComponent({
       ...toRefs(pagination),
       getOptionSelectData,
       loading,
-      tableHeight,
       changeBeginTimeValue,
       changeEndTimeValue,
       // dateParam
       checkedDim,
       totalList,
-      totalRow
+      totalRow,
+      tableRef,
+      cellStyle,
+      objectSpanMethod
     }
   },
   mounted() {
     this.loading = ElLoading.service({ fullscreen: true })
     // 获取表头数据
     this.getColumns()
-    this.$nextTick(() => {
-      this.tableHeight =
-        window.innerHeight - this.$refs.table.$el.offsetTop - 200
-      // 监听窗口大小变化
-      let self = this
-      window.onresize = function() {
-        self.tableHeight =
-          window.innerHeight - self.$refs.table.$el.offsetTop - 200
-      }
-    })
-    //this.$refs.table.$el.offsetTop：表格距离浏览器的高度
-    //50表示你想要调整的表格距离底部的高度（你可以自己随意调整），因为我们一般都有放分页组件的，所以需要给它留一个高度
   },
   methods: {
     // 搜索数据
@@ -808,26 +804,6 @@ export default defineComponent({
       // 获取表数据
       this.searchData()
     },
-    // handleFilterCondition() {
-    //   let conditionType = this.conditionList[0].conditionType
-    //   let today = new Date()
-    //   nextTick(() => {
-    //     this.conditiondataTextType.includes(conditionType) ||
-    //     this.conditiondataTextSingleType.includes(conditionType)
-    //       ? (this.dateParamVisible = true)
-    //       : (this.dateParamVisible = false)
-    //     this.conditiondateOptionType.includes(conditionType)
-    //       ? (this.dateOptionVisible = true)
-    //       : (this.dateOptionVisible = false)
-    //   })
-    // },
-    getFirstDayOfWeek(date) {
-      let weekday = date.getDay() || 7 //获取星期几,getDay()返回值是 0（周日） 到 6（周六） 之间的一个整数。0||7为7，即weekday的值为1-7
-      date.setDate(date.getDate() - weekday + 1) //往前算（weekday-1）天，年份、月份会自动变化
-      return date
-    },
-    //  3、4、5、6 //3:字符串等于// 4：数字等于 //5:大于 //6:小于 colBizName OlapModelCondition
-    //  10 输入值：1,5  1 <= x <= 5
     handleInputString(value) {},
     handleSizeChange(val: number) {
       this.pageSize = val
@@ -842,39 +818,6 @@ export default defineComponent({
     },
     onSortChange({ order, prop }) {
       this.sortField[prop] = order
-    },
-    objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-      if (
-        this.checkedDim.includes(column.property) &&
-        !this.columnArr.includes(columnIndex)
-      ) {
-        this.columnArr.push(columnIndex)
-      }
-      this.columnArr.sort(function(a, b) {
-        /*
-         * return b-a; —> 降序排序
-         * return a-b; —> 升序排列
-         */
-        return a - b
-      }) //括号里不写回调函数则默认按照字母逐位升序排列
-      if (
-        rowIndex === this.tableData.length - 1 &&
-        (this.totalList.length > 1 || this.totalRow)
-      ) {
-        if (columnIndex === this.columnArr[this.columnArr.length - 1]) {
-          return [1, this.columnArr.length]
-        } else if (columnIndex < this.columnArr[this.columnArr.length - 1]) {
-          return [0, 0]
-        }
-      }
-    },
-    //设置指定行、列、具体单元格颜色
-    cellStyle({ row, column, rowIndex, columnIndex }) {
-      if (columnIndex <= this.columnArr[this.columnArr.length - 1]) {
-        return 'background-color:#eeeeee; border: 1px solid #dddddd'
-      } else {
-        return ''
-      }
     },
     getNodeSummaries({ columns, data }) {},
     handleHeadAddClass({ column }) {
@@ -950,26 +893,52 @@ export default defineComponent({
 
     flexColumnWidth(str) {
       // 以下分配的单位长度可根据实际需求进行调整
+      this.getTextWidth(str)
       let flexWidth = 0
       for (const char of str) {
         if ((char >= 'A' && char <= 'Z') || (char >= 'a' && char <= 'z')) {
           // 如果是英文字符，为字符分配8个单位宽度
-          flexWidth += 20
+          if (str.length < 10) {
+            flexWidth = this.getTextWidth(str) + 35
+          } else {
+            flexWidth = this.getTextWidth(str) + 24
+          }
         } else if (char >= '\u4e00' && char <= '\u9fa5') {
           // 如果是中文字符，为字符分配15个单位宽度
-          flexWidth += 20
+          if (str.length < 8) {
+            flexWidth = this.getTextWidth(str) + 35
+          } else {
+            flexWidth = this.getTextWidth(str) + 24
+          }
         } else {
           // 其他种类字符，为字符分配8个单位宽度
-          flexWidth += 8
+          if (str.length < 15) {
+            flexWidth = this.getTextWidth(str) + 35
+          } else {
+            flexWidth = this.getTextWidth(str) + 24
+          }
         }
       }
       return flexWidth + 'px'
+    },
+    getTextWidth(str, fontSize) {
+      let result = 0
+      let ele = document.createElement('div')
+      ele.style.position = 'absolute'
+      ele.style.whiteSpace = 'nowrap'
+      ele.style.fontSize = fontSize
+      ele.style.opacity = 0
+      ele.innerText = str
+      document.body.append(ele)
+      result = ele.getBoundingClientRect().width
+      document.body.removeChild(ele)
+      return result
     }
   }
 })
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .table-data {
   font-size: 8px;
 }
@@ -977,6 +946,8 @@ export default defineComponent({
   text-align: right;
   margin-top: 10px;
   background-color: #fff;
+  display: flex;
+  justify-content: end;
 }
 .groupclass {
   display: flex;
@@ -1000,7 +971,7 @@ export default defineComponent({
 }
 
 .demo-form-date {
-  width: 130px !important;
+  width: 120px !important;
 }
 .demo-date-select {
   width: 100px !important;
@@ -1016,9 +987,20 @@ export default defineComponent({
   height: 42px;
   padding-left: 5px;
   margin-bottom: 10px;
-  padding-top: 5px;
+  padding-top: 10px;
+  display: flex;
+  align-items: center;
+}
+.elform-inline {
+  display: inline;
 }
 .el-table .cell.el-tooltip {
   width: 100% !important;
+}
+.date-form-item {
+  margin-right: 15px !important;
+}
+::v-deep.el-table-fixed-column--left {
+  left: 0 !important;
 }
 </style>

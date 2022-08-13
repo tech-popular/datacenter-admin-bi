@@ -24,7 +24,7 @@
         <SideMenu :list="pcmenuData" v-if="pcmenuData.length > 0" background-color="#222d32" text-color="#fff" active-text-color="#fff" />
       </el-scrollbar>
       <div class="xfk-content">
-        <div class="xfk-content-fullPath" v-if="menuName">
+        <div class="xfk-content-fullPath" v-show="menuName">
           <span>{{menuName}}</span>
           <span class="xfk-content-principal">报表负责人：{{principal}}</span>
         </div>
@@ -305,7 +305,7 @@ export default defineComponent({
           box-sizing: border-box;
         }
         .el-scrollbar__view {
-          width: 100%;
+          width: auto;
           height: 100%;
         }
       }
