@@ -71,7 +71,6 @@ export default defineComponent({
 
   setup() {
     const route = useRoute()
-    console.log('route: ', route.params.id || route.params.modelId)
     // const router = useRouter()
     const corpId = 'ding94069beefe61f4b735c2f4657eb6378f'
     // const routerParams: any = route.query.token
@@ -83,7 +82,6 @@ export default defineComponent({
     const PCgradeMenu: any = ref([])
     const store = useStore()
     const { watermark } = getmark()
-    console.log('userId11: ', store.state.defaultActive)
     const menuName: String = computed(() => {
       return store.state.menuName
         ? store.state.menuName
@@ -143,7 +141,6 @@ export default defineComponent({
           corpId: corpId,
           onSuccess: info => {
             GetMenuData(info.code)
-            console.log('info.code', info.code)
           }
         })
       })

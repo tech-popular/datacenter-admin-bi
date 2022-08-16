@@ -3,7 +3,7 @@
     <el-form :inline="true" :model="searchForm" label-position="right" class="demo-form-inline" size="small">
       <div class="elform-inline" v-if="dateParamVisible">
         <el-form-item v-for="(item, index) in dataSearchForm" :key="index">
-          <el-form-item :label="item.colBizName" prop="beginTimeValue">
+          <el-form-item :label="item.colBizName" prop="beginTimeValue" style="margin-right: 10px">
             <el-date-picker v-model="item.beginTimeValue" :shortcuts="shortcuts" clearable @change="changeBeginTimeValue(item, index)" type="date" placeholder="选择日期" class="demo-form-date"></el-date-picker>
           </el-form-item>
           <el-form-item label="至" prop="endTimeValue" v-if="conditiondataTextType.includes(item.conditionType)" size="small">
