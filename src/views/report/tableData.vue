@@ -616,10 +616,6 @@ export default defineComponent({
     this.loading = ElLoading.service({ fullscreen: true })
     // 监听浏览器窗口变化，动态计算表格高度，
     // 250是表格外其它布局占的高度，这个数值根据自己实际情况修改
-    this.$nextTick(() => {
-      // window.innerHeight 浏览器窗口的可见高度，下面的 200 是除了table最大高度的剩余空间。
-      // this.tableHeight = window.innerHeight - 250
-    })
     window.addEventListener('resize', () => {
       this.tableHeight = window.innerHeight - 250
     })
