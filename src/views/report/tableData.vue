@@ -104,8 +104,7 @@
       stripe
       width="auto"
       ref="tableRef"
-      min-height="300px"
-      max-height="700px"
+      :max-height="tableHeight"
       sortable="custom"
       :header-cell-class-name="handleHeadAddClass"
       :header-cell-style="{background:'#eeeeee',color:'#000', border:'1px solid #ddd' }"
@@ -149,7 +148,8 @@ import {
   reactive,
   toRefs,
   nextTick,
-  defineAsyncComponent
+  defineAsyncComponent,
+  computed
 } from 'vue'
 import { useRoute, RouteLocationNormalized } from 'vue-router'
 import {
@@ -289,6 +289,25 @@ export default defineComponent({
     const totalList: any = ref([]) // 查询报表数据的totalList
     const totalRow: any = ref([]) // 查询报表数据的totalRow
     const tableRef = ref(null)
+    const tableHeight: Number = 500
+    // const tableHeight: Nummber = computed(() => {
+    //   if (document.body.clientHeight && document.documentElement.clientHeight) {
+    //     console.log(
+    //       'document.documentElement.clientHeight: ',
+    //       document.documentElement.clientHeight
+    //     )
+    //     console.log('document.body.clientHeight: ', document.body.clientHeight)
+    //     return
+    //     document.body.clientHeight < document.documentElement.clientHeight
+    //       ? document.body.clientHeight - 250
+    //       : document.documentElement.clientHeight - 250
+    //   } else {
+    //     return
+    //     document.body.clientHeight > document.documentElement.clientHeight
+    //       ? document.body.clientHeight - 250
+    //       : document.documentElement.clientHeight - 250
+    //   }
+    // })
     //或者
     //泛型默认值语法<T = any>
     // type Ref<T = any> = {
@@ -589,11 +608,22 @@ export default defineComponent({
       tableRef,
       cellStyle,
       objectSpanMethod,
-      shortcuts // 日期快捷选择
+      shortcuts, // 日期快捷选择
+      tableHeight // 窗口高度调节报表高度
     }
   },
   mounted() {
     this.loading = ElLoading.service({ fullscreen: true })
+    // 监听浏览器窗口变化，动态计算表格高度，
+    // 250是表格外其它布局占的高度，这个数值根据自己实际情况修改
+    this.$nextTick(() => {
+      // window.innerHeight 浏览器窗口的可见高度，下面的 200 是除了table最大高度的剩余空间。
+      // this.tableHeight = window.innerHeight - 250
+    })
+    window.addEventListener('resize', () => {
+      this.tableHeight = window.innerHeight - 250
+    })
+    console.log('this.tableHeight: ', this.tableHeight)
     // 获取表头数据
     this.getColumns()
   },
@@ -1018,6 +1048,7 @@ export default defineComponent({
 <style lang="scss">
 .table-data {
   font-size: 8px;
+  overflow: hidden;
 }
 .pagination {
   text-align: right;

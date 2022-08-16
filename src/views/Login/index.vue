@@ -17,6 +17,7 @@ import { SysLogin, initDimForeignTableRedis } from '@/api/api'
 import { ElMessage } from 'element-plus'
 import * as dd from 'dingtalk-jsapi'
 import { useStore } from '@/store/index'
+import { getmark } from '@/libs/watermark'
 export default defineComponent({
   name: 'Login',
   setup() {
@@ -30,6 +31,8 @@ export default defineComponent({
       UUid: '',
       time: 0
     })
+    const { watermark } = getmark()
+    watermark('') //登录页无水印名
     let onChangeName = () => {
       if (loginform.userName.length <= 0) {
         loginform.usernameShow = true

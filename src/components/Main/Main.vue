@@ -125,11 +125,13 @@ export default defineComponent({
         fnMenuRoutes(res.data.menulist)
         // localStorage.setItem('menulis', res.data.menulist)
         sessionStorage.setItem('menulist', JSON.stringify(PCgradeMenu.value))
-        gradeName.value =
-          route.params.id || route.params.modelId
-            ? findFirstMenu(PCgradeMenu.value)
-            : res.data.menulist[0].id
-        gradeClick(gradeName.value)
+        if (res.data.menulist.length) {
+          gradeName.value =
+            route.params.id || route.params.modelId
+              ? findFirstMenu(PCgradeMenu.value)
+              : res.data.menulist[0].id
+          gradeClick(gradeName.value)
+        }
         username.value = res.data.username
         watermark(res.data.username) //水印名
       }
@@ -161,14 +163,18 @@ export default defineComponent({
     }
     // 查找默认一级菜单
     const findFirstMenu = (pcmenulist: any) => {
-      if (route.params.id || route.params.modelId) {
-        let menuParentList: String = pcmenulist.filter(
-          item => item.url === route.params.modelId || route.params.id
+      let menuParentList: String = ''
+      if (route.params.id) {
+        menuParentList = pcmenulist.filter(
+          item => item.url === route.params.id
         )[0].menuParentList
-        let firstParentId = menuParentList.split(',')[0]
-        console.log('menuParentList.split(', '): ', menuParentList.split(','))
-        return Number(firstParentId)
+      } else {
+        menuParentList = pcmenulist.filter(
+          item => item.url === route.params.modelId
+        )[0].menuParentList
       }
+      let firstParentId = menuParentList ? menuParentList.split(',')[0] : ''
+      return Number(firstParentId)
     }
     return {
       menuData,
@@ -194,7 +200,7 @@ export default defineComponent({
 .xfk-main-container {
   width: 100%;
   height: 100%;
-  overflow: scroll;
+  overflow: hidden;
   .xfk-header {
     display: flex;
     justify-content: space-between;
@@ -284,8 +290,8 @@ export default defineComponent({
     }
     .xfk-content {
       flex-grow: 1;
-      height: 100%;
-      overflow-x: scroll;
+      height: 90%;
+      overflow: hidden;
       margin: 20px;
 
       .xfk-content-fullPath {
