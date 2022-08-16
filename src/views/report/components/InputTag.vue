@@ -1,27 +1,22 @@
 <template>
-  <div
-    :class="{'read-only': readOnly,'vue-input-tag-wrapper--active': isInputActive}"
-    class="vue-input-tag-wrapper"
-  >
-    <div
-      @click="focusNewTag()"
-    >
+  <div :class="{'read-only': readOnly,'vue-input-tag-wrapper--active': isInputActive}" class="vue-input-tag-wrapper">
+    <div @click="focusNewTag()">
       <span style="position:absolute;top:5px;left:10px;color:#c1c1c1" v-if="!innerTags.length && !isInputActive">{{placeholder}}</span>
       <span v-for="(tag, index) in innerTags" :key="index" class="input-tag">
         <span>{{ tag }}</span>
         <i class="el-icon-error remove" v-if="!readOnly" @click.prevent.stop="remove(index)"></i>
       </span>
       <input
-        v-if                     = "!readOnly && !isLimit"
-        ref                      = "inputtag"
-        type                     = "text"
-        v-model                  = "newTag"
-        v-on:keydown.delete.stop = "removeLastTag"
-        v-on:keydown             = "addNew"
-        v-on:blur                = "handleInputBlur"
-        v-on:focus               = "handleInputFocus"
-        v-on:input               = "handleInputInput"
-        class                    = "new-tag"
+        v-if="!readOnly && !isLimit"
+        ref="inputtag"
+        type="text"
+        v-model="newTag"
+        v-on:keydown.delete.stop="removeLastTag"
+        v-on:keydown="addNew"
+        v-on:blur="handleInputBlur"
+        v-on:focus="handleInputFocus"
+        v-on:input="handleInputInput"
+        class="new-tag"
       />
     </div>
     <ul class="example-list" v-if="isListShow">
@@ -30,8 +25,9 @@
     </ul>
   </div>
 </template>
-<script>
-export default {
+<script lang="ts">
+import { defineComponent, ref, watch, computed} from 'vue'
+export default defineComponent({
   name: 'InputTag',
   props: {
     value: {
@@ -47,7 +43,7 @@ export default {
       default: false
     },
     validate: {
-      type: [String , Function , Object],
+      type: [String, Function, Object],
       default: ''
     },
     valueType: { // 输入的内容类型number string
@@ -80,34 +76,62 @@ export default {
       type: Number,
       default: 9999
     },
+    indexNum: {
+      type: Number,
+      default: 0
+    },
+    indexColName: {
+      type: String,
+      default: 'string'
+    },
     tagTips: {
       type: Array,
       default: () => []
     }
   },
+  setup(props, context) {
+    // console.log('props: ', props);
+    const newTag: any = ref('')
+    const innerTags: any = ref([])
+    const isInputActive: Boolean = false
+    innerTags.value = props.value
+    const isListShow: Boolean = false
+    const isLimit: Boolean = computed(() => {
+      return props.limit > 0 && Number(props.limit) === innerTags.value.length
+    })
+    function toFatherNum() {
+      // context.emit('update:tags', innerTags.value, props.indexNum, props.indexColName)
+      // context.emit('input', innerTags.value, props.indexNum, props.indexColName)
+      context.emit('change', innerTags.value, props.indexNum, props.indexColName)
+    }
 
+    // function toFatherObject() {
+    //   context.emit('eventIsObject', { keyName: 'I am value' })
+    // }
+    return{
+      newTag,
+      isInputActive,
+      isListShow,
+      isLimit,
+      toFatherNum,
+      innerTags
+      // toFatherObject,
+    }
+  },
   data () {
     return {
-      newTag: '',
-      innerTags: [...this.value],
-      isInputActive: false,
-      isListShow: false
+      // newTag: '',
+      // innerTags: [...this.value],
+      // isInputActive: false,
+      // isListShow: false
     }
   },
-  mounted () {
-    console.log(this.innerTags)
-  },
-  computed: {
-    isLimit: function () {
-      return this.limit > 0 && Number(this.limit) === this.innerTags.length
-    }
-  },
-
-  watch: {
-    value () {
-      this.innerTags = [...this.value]
-    }
-  },
+  // watch: {
+  //   value () {
+  //     this.innerTags = [...this.value]
+  //     console.log('this.innerTags: ', this.innerTags);
+  //   }
+  // },
 
   methods: {
     focusNewTag () {
@@ -189,7 +213,8 @@ export default {
         this.newTag = ''
         this.tagChange()
         e && e.preventDefault()
-        this.$emit('change')
+        console.log('this.innerTags222: ', this.innerTags);
+        this.toFatherNum()
       }
     },
 
@@ -207,12 +232,10 @@ export default {
     },
 
     tagChange () {
-      this.$emit('update:tags', this.innerTags)
-      this.$emit('input', this.innerTags)
-      this.$emit('change')
+      this.toFatherNum()
     }
   }
-}
+})
 </script>
 <style>
 .vue-input-tag-wrapper {
@@ -268,10 +291,10 @@ export default {
   cursor: default;
 }
 .vue-input-tag-wrapper .new-tag::-webkit-input-placeholder {
-  color: #C0C4CC;
+  color: #c0c4cc;
 }
 .vue-input-tag-wrapper .new-tag:-ms-input-placeholder {
-  color: #C0C4CC;
+  color: #c0c4cc;
 }
 .vue-input-tag-wrapper .input-tag {
   border-radius: 4px;
@@ -290,8 +313,8 @@ export default {
   width: 100%;
   z-index: 999;
   background: #fff;
-  -webkit-box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
-  box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+  -webkit-box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 .example-list::before {
   content: '';

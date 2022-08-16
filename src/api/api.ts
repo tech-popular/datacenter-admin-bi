@@ -72,7 +72,7 @@ axiosInstance.interceptors.response.use(
 
 export const PcLogin = (params: ILogin): Promise<IResponse> => {
   return axiosInstance
-    .get('/bi/biSysMenu/getUserMenuList', { params })
+    .get('bi/biSysMenu/getUserLoginMenuList', { params })
     .then((res) => res.data)
 }
 export const DdLogin = (params: ILogin): Promise<IResponse> => {

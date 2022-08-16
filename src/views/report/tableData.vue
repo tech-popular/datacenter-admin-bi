@@ -4,10 +4,10 @@
       <div class="elform-inline" v-if="dateParamVisible">
         <el-form-item v-for="(item, index) in dataSearchForm" :key="index">
           <el-form-item :label="item.colBizName" prop="beginTimeValue">
-            <el-date-picker v-model="item.beginTimeValue" :clearable="false" @change="changeBeginTimeValue(item, index)" type="date" placeholder="选择日期" class="demo-form-date"></el-date-picker>
+            <el-date-picker v-model="item.beginTimeValue" :shortcuts="shortcuts" clearable @change="changeBeginTimeValue(item, index)" type="date" placeholder="选择日期" class="demo-form-date"></el-date-picker>
           </el-form-item>
           <el-form-item label="至" prop="endTimeValue" v-if="conditiondataTextType.includes(item.conditionType)" size="small">
-            <el-date-picker v-model="item.endTimeValue" @change="changeEndTimeValue(item, index)" :clearable="false" type="date" placeholder="选择日期" class="demo-form-date"></el-date-picker>
+            <el-date-picker v-model="item.endTimeValue" :shortcuts="shortcuts" @change="changeEndTimeValue(item, index)" clearable type="date" placeholder="选择日期" class="demo-form-date"></el-date-picker>
           </el-form-item>
         </el-form-item>
       </div>
@@ -39,7 +39,17 @@
               <el-input v-model="item.filterParams" @input="handleInputString" placeholder="请输入过滤条件"></el-input>
             </el-form-item>
             <el-form-item :label="item.colBizName" label-width="150px" prop="filterParams" v-if="item.conditionType === 12">
-              <InputTag v-model="item.filterParams" :valueType="'string'" :add-tag-on-blur="true" :allow-duplicates="true" class="itemIput inputTag" placeholder="可用回车输入多条" />
+              <InputTag
+                v-model="item.filterParams"
+                @change="inputTagChange"
+                :indexNum="index"
+                :indexColName="item.colName"
+                :valueType="'string'"
+                :add-tag-on-blur="true"
+                :allow-duplicates="true"
+                class="itemIput inputTag"
+                placeholder="可用回车输入多条"
+              />
             </el-form-item>
             <el-form-item :label="item.colBizName" label-width="150px" prop="filterParams" v-if="!item.conditionType">
               <el-select :popperAppendToBody="false" v-model="item.filterParams" @focus="getOptionSelectData(item, index)" multiple filterable clearable placeholder="请选择">
@@ -237,6 +247,28 @@ export default defineComponent({
       { value: '11', text: '11月' },
       { value: '12', text: '12月' }
     ])
+    const shortcuts = [
+      {
+        text: 'Today',
+        value: new Date()
+      },
+      {
+        text: 'Yesterday',
+        value: () => {
+          const date = new Date()
+          date.setTime(date.getTime() - 3600 * 1000 * 24)
+          return date
+        }
+      },
+      {
+        text: 'A week ago',
+        value: () => {
+          const date = new Date()
+          date.setTime(date.getTime() - 3600 * 1000 * 24 * 7)
+          return date
+        }
+      }
+    ]
     const conditionTextType: any = ref([3, 4, 5, 6, 9, 10, 13]) // 字符输入类型
     const conditiondataTextType = ref([1, 7, 8, 11, 16, 17, 18, 20, 22, 23, 26]) // 两个日期类型
     const conditiondataTextSingleType: any = ref([27, 19, 24, 14, 15]) // 一个日期类型
@@ -284,18 +316,24 @@ export default defineComponent({
         if (res.analysisModel.totalRow) {
           const totalRowListData = {}
           let fixedIndex = 0
+          let totalNumber = 0
           res.analysisModel.totalRow.fieldValueList.forEach((citem, cindex) => {
             columnDatas.value.forEach((item, index) => {
               if (cindex === index) {
-                totalRowListData[item.colName] = citem.value
                 item['fixed'] = false
                 if (citem.value === 'TOTAL') {
-                  if (checkedDim.value.length && checkedDim.value.length > 10) {
+                  if (checkedDim.value.length && checkedDim.value.length > 7) {
                     fixedIndex = fixedIndex + 1
                   }
+                  totalNumber === 0
+                    ? (totalRowListData[item.colName] = 'TOTAL')
+                    : (totalRowListData[item.colName] = '')
+                  totalNumber = totalNumber + 1
                   if (fixedIndex < 6) {
-                    // item['fixed'] = 'left'
+                    item['fixed'] = 'left'
                   }
+                } else {
+                  totalRowListData[item.colName] = citem.value
                 }
               }
             })
@@ -322,6 +360,7 @@ export default defineComponent({
           const totalListData = {}
           let totalListIndex = 0
           let fixedIndex = 0
+          let totalNumber = 0
           columnDatas.value.forEach((item, index) => {
             item['fixed'] = false
             if (checkedFields.value.indexOf(item.colName) > -1) {
@@ -329,15 +368,19 @@ export default defineComponent({
               totalListData[item.colName] =
                 res.analysisModel.totalList[totalListIndex]
             } else {
-              if (checkedDim.value.length && checkedDim.value.length > 10) {
+              if (checkedDim.value.length && checkedDim.value.length > 7) {
                 fixedIndex = fixedIndex + 1
               }
-              totalListData[item.colName] = 'TOTAL'
+              totalNumber === 0
+                ? (totalListData[item.colName] = 'TOTAL')
+                : (totalListData[item.colName] = '')
+              totalNumber = totalNumber + 1
               if (fixedIndex < 6) {
-                // item['fixed'] = 'left'
+                item['fixed'] = 'left'
               }
             }
           })
+
           tableData.value.push(totalListData)
         }
         // 给表头添加排序功能
@@ -366,25 +409,43 @@ export default defineComponent({
          */
         return a - b
       }) //括号里不写回调函数则默认按照字母逐位升序排列
+      // if (
+      //   rowIndex === tableData.value.length - 1 &&
+      //   (totalList.value.length > 1 || totalRow.value)
+      // ) {
+      //   if (columnIndex === columnArr.value[columnArr.value.length - 1]) {
+      //     cellStyle({ row, column, rowIndex, columnIndex })
+      // return {
+      //   rowspan: 1,
+      //   colspan: columnArr.value.length
+      // }
+      //   } else if (columnIndex < columnArr.value[columnArr.value.length - 1]) {
+      //     return {
+      //       rowspan: 0,
+      //       colspan: 0
+      //     }
+      //   }
+      // }
+    }
+    //设置指定行、列、具体单元格颜色
+    const cellStyle = ({ row, column, rowIndex, columnIndex }) => {
       if (
         rowIndex === tableData.value.length - 1 &&
         (totalList.value.length > 1 || totalRow.value)
       ) {
         if (columnIndex === columnArr.value[columnArr.value.length - 1]) {
           return {
-            rowspan: 1,
-            colspan: columnArr.value.length
+            backgroundColor: ' #eeeeee',
+            borderLeft: ' 0px solid #dddddd',
+            borderRight: ' 1px solid #dddddd'
           }
         } else if (columnIndex < columnArr.value[columnArr.value.length - 1]) {
           return {
-            rowspan: 0,
-            colspan: 0
+            backgroundColor: ' #eeeeee',
+            border: ' 0px solid #dddddd'
           }
         }
       }
-    }
-    //设置指定行、列、具体单元格颜色
-    const cellStyle = ({ row, column, rowIndex, columnIndex }) => {
       if (columnIndex <= columnArr.value[columnArr.value.length - 1]) {
         return {
           backgroundColor: ' #eeeeee',
@@ -527,7 +588,8 @@ export default defineComponent({
       totalRow,
       tableRef,
       cellStyle,
-      objectSpanMethod
+      objectSpanMethod,
+      shortcuts // 日期快捷选择
     }
   },
   mounted() {
@@ -582,10 +644,15 @@ export default defineComponent({
             item.filterParams.length
               ? filterParamsData.push(item)
               : filterParamsData
+          } else if (item.conditionType === 12) {
+            item.filterParams.length
+              ? filterParamsData.push(item)
+              : filterParamsData
           } else {
             item.filterParams ? filterParamsData.push(item) : filterParamsData
           }
         })
+        console.log('filterParamsData: ', filterParamsData)
         if (filterParamsData.length) {
           let optionJSONData = {}
           let optionJSONDataIndex = 0
@@ -617,7 +684,10 @@ export default defineComponent({
                 if (Object.keys(element)[0] == item.colBizName) {
                   textJSONData[textJSONDataIndex] = {
                     column: element[Object.keys(element)[0]],
-                    value: item.filterParams,
+                    value:
+                      item.conditionType === 12
+                        ? item.filterParams.join(',')
+                        : item.filterParams,
                     type: item.type
                   }
                 }
@@ -740,7 +810,9 @@ export default defineComponent({
         res.textConditionHTMLList.forEach(item => {
           let key = Object.keys(item)
           let citem = JSON.parse(item[key])
-          citem['filterParams'] = ''
+          citem.conditionType === 12
+            ? (citem['filterParams'] = [])
+            : (citem['filterParams'] = '')
           citem['type'] = ''
           this.optionParams.push(citem)
         })
@@ -890,7 +962,12 @@ export default defineComponent({
       this.orderParams.splice(index, 1)
       this.orderParams.splice(addIndex, 0, item)
     },
-
+    // 多个查询条件输入时重置数据
+    inputTagChange(value, index, colName) {
+      if (this.optionParams[index].colName === colName) {
+        this.optionParams[index].filterParams = value
+      }
+    },
     flexColumnWidth(str) {
       // 以下分配的单位长度可根据实际需求进行调整
       this.getTextWidth(str)
@@ -938,7 +1015,7 @@ export default defineComponent({
 })
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .table-data {
   font-size: 8px;
 }
@@ -1000,7 +1077,7 @@ export default defineComponent({
 .date-form-item {
   margin-right: 15px !important;
 }
-::v-deep.el-table-fixed-column--left {
+.el-table.el-table-fixed-column--left.is-last-column.el-table__cell {
   left: 0 !important;
 }
 </style>

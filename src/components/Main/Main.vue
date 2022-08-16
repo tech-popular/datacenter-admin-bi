@@ -46,6 +46,7 @@ import {
   ref,
   onMounted
 } from 'vue'
+import { useRoute } from 'vue-router'
 import { getmark } from '@/libs/watermark'
 import { useStore } from '@/store/index'
 import leftIcon from '@/styles/img/left1.png'
@@ -69,12 +70,11 @@ export default defineComponent({
   },
 
   setup() {
-    // const route = useRoute()
+    const route = useRoute()
+    console.log('route: ', route.params.id || route.params.modelId)
     // const router = useRouter()
     const corpId = 'ding94069beefe61f4b735c2f4657eb6378f'
-    // console.log('userId11: ', userId)
-    // const token: any = route.query.token
-    // console.log('token:222 ', token)
+    // const routerParams: any = route.query.token
     const menuData: any = ref([])
     const pcmenuData: any = ref([])
     const username: any = ref('')
@@ -83,27 +83,27 @@ export default defineComponent({
     const PCgradeMenu: any = ref([])
     const store = useStore()
     const { watermark } = getmark()
+    console.log('userId11: ', store.state.defaultActive)
     const menuName: String = computed(() => {
       return store.state.menuName
         ? store.state.menuName
-        : localStorage.getItem('menuName')
-      // return localStorage.getItem('menuName')
+        : sessionStorage.getItem('menuName')
+      // return sessionStorage.getItem('menuName')
     })
     const principal: String = computed(() => {
       return store.state.principal
         ? store.state.principal
-        : localStorage.getItem('principal')
+        : sessionStorage.getItem('principal')
     })
     const sidebarFold: Boolean = computed(() => {
       return store.state.sidebarFold
     })
     const iconClick = (sidebarFold: Boolean) => {
-      console.log(!sidebarFold)
       store.commit('changeSidebarFold', !sidebarFold)
     }
-    const gradeClick = (gradeName: any) => {
+    const gradeClick = (gradeNameId: any) => {
       gradeList.value.forEach(element => {
-        if (element.id == gradeName) {
+        if (element.id == gradeNameId) {
           pcmenuData.value = element.children
           console.log('pcmenuData: ', pcmenuData)
         }
@@ -123,11 +123,14 @@ export default defineComponent({
           // userId: 315
         })
         gradeList.value = res.data.menulist
-        gradeName.value = res.data.menulist[0].id
         PCgradeMenu.value = []
         fnMenuRoutes(res.data.menulist)
         // localStorage.setItem('menulis', res.data.menulist)
         sessionStorage.setItem('menulist', JSON.stringify(PCgradeMenu.value))
+        gradeName.value =
+          route.params.id || route.params.modelId
+            ? findFirstMenu(PCgradeMenu.value)
+            : res.data.menulist[0].id
         gradeClick(gradeName.value)
         username.value = res.data.username
         watermark(res.data.username) //水印名
@@ -157,6 +160,17 @@ export default defineComponent({
             PCgradeMenu.value.push(item)
           }
         })
+      }
+    }
+    // 查找默认一级菜单
+    const findFirstMenu = (pcmenulist: any) => {
+      if (route.params.id || route.params.modelId) {
+        let menuParentList: String = pcmenulist.filter(
+          item => item.url === route.params.modelId || route.params.id
+        )[0].menuParentList
+        let firstParentId = menuParentList.split(',')[0]
+        console.log('menuParentList.split(', '): ', menuParentList.split(','))
+        return Number(firstParentId)
       }
     }
     return {

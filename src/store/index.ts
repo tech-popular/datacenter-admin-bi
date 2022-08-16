@@ -51,12 +51,11 @@ const store = createStore<State>({
     },
     changeMenuName(state: State, menuName: string) {
       state.menuName = menuName
-      localStorage.setItem('menuName', menuName)
+      sessionStorage.setItem('menuName', menuName)
     },
     changePrincipal(state: State, principal: string) {
-      console.log('principal: ', Boolean(principal));
-      state.principal = principal
-      localStorage.setItem('principal', principal)
+      state.principal = Boolean(principal) ? principal : ''
+      sessionStorage.setItem('principal', Boolean(principal) ? principal : '')
     }
   },
 })

@@ -6,16 +6,15 @@ import App from './App.vue'
 
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
-
+import 'element-plus/theme-chalk/index.css'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 
 import Vant from 'vant'
 import 'vant/lib/index.css'
 
-// import VueDND from 'awe-dnd'
-
 import './styles/index.scss'
 import 'element-plus/theme-chalk/display.css'
+// import 'element-plus/theme-chalk/el-scrollbar.css'
 // import dayjs from 'dayjs'
 // if (process.env.NODE_ENV != 'production') {
 //   // 开发环境 development
@@ -32,7 +31,6 @@ app.use(ElementPlus, {
 
 app.use(Vant)
 // app.use(dayjs)
-// app.use(VueDND) // 拖拽排序
 router.isReady().then(() => {
   app.mount('#app')
 })
