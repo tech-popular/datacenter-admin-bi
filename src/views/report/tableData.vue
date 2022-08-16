@@ -68,7 +68,7 @@
         </el-popover>
       </el-form-item>
       <el-form-item v-if="dimParams.length || indexParams.length">
-        <el-popover placement="bottom-end" :width="400" trigger="click">
+        <el-popover placement="bottom-end" :width="400" trigger="click"  popper-class="el_popover_class">
           <template #reference>
             <el-button type="info" plain>展示列</el-button>
           </template>
@@ -1106,5 +1106,13 @@ export default defineComponent({
 }
 .el-table.el-table-fixed-column--left.is-last-column.el-table__cell {
   left: 0 !important;
+}
+.el_popover_class{
+    max-height: 500px !important;
+    overflow-y: auto !important;
+}
+// 这个是我不想要滚动条,去掉滚动条的css代码,你们要的话可以不写
+.el_popover_class::-webkit-scrollbar {
+    display: none !important;
 }
 </style>
