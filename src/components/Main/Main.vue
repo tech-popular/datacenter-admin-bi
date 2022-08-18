@@ -16,7 +16,15 @@
       </div>
       <div class="xfk-header-handle">
         欢迎，
-        <span>{{ username }}</span>！
+        <el-dropdown :show-timeout="0" placement="bottom">
+          <span class="el-dropdown-link">{{ username }}</span>
+          <template #dropdown>
+            <el-dropdown-menu slot="dropdown">
+              <!-- <el-dropdown-item @click.native="updatePasswordHandle()">修改密码</el-dropdown-item> -->
+              <el-dropdown-item @click.native="logoutHandle()">退出</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
       </div>
     </header>
     <div class="xfk-body hidden-xs-only">
@@ -46,7 +54,7 @@ import {
   ref,
   onMounted
 } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { getmark } from '@/libs/watermark'
 import { useStore } from '@/store/index'
 import leftIcon from '@/styles/img/left1.png'
@@ -58,7 +66,8 @@ const MobileMenu = defineAsyncComponent(() =>
   import('./components/MobileMenu/MobileMenu.vue')
 )
 import * as dd from 'dingtalk-jsapi'
-import { PcLogin, DdLogin } from '@/api/api'
+import { PcLogin, DdLogin, logout } from '@/api/api'
+import { ElMessageBox, ElMessage } from 'element-plus'
 export default defineComponent({
   name: 'Main',
   components: { SideMenu, MobileMenu },
@@ -71,7 +80,7 @@ export default defineComponent({
 
   setup() {
     const route = useRoute()
-    // const router = useRouter()
+    const router = useRouter()
     const corpId = 'ding94069beefe61f4b735c2f4657eb6378f'
     // const routerParams: any = route.query.token
     const menuData: any = ref([])
@@ -163,10 +172,11 @@ export default defineComponent({
     }
     // 查找默认一级菜单
     const findFirstMenu = (pcmenulist: any) => {
+      console.log('route.params: ', route.params)
       let menuParentList: String = ''
       if (route.params.id) {
         menuParentList = pcmenulist.filter(
-          item => item.url === route.params.id
+          item => item.id === Number(route.params.id)
         )[0].menuParentList
       } else {
         menuParentList = pcmenulist.filter(
@@ -175,6 +185,31 @@ export default defineComponent({
       }
       let firstParentId = menuParentList ? menuParentList.split(',')[0] : ''
       return Number(firstParentId)
+    }
+    // 退出
+    const logoutHandle = () => {
+      ElMessageBox.confirm(`确定进行[退出]操作?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          loginOutFun()
+        })
+        .catch(() => {})
+    }
+    let loginOutFun = async () => {
+      let res: any = await logout()
+      if (res.data && res.data.code === 0) {
+        router.push({
+          path: '/login'
+        })
+      } else {
+        ElMessage({
+          type: 'info',
+          message: res.data.msg
+        })
+      }
     }
     return {
       menuData,
@@ -190,7 +225,8 @@ export default defineComponent({
       fnMenuRoutes,
       PCgradeMenu,
       menuName,
-      principal
+      principal, // 报表负责人
+      logoutHandle // 退出登陆
     }
   }
 })
@@ -261,6 +297,11 @@ export default defineComponent({
       align-items: center;
       padding: 0 10px;
       color: #ffffff;
+      margin-right: 40px;
+      .el-dropdown-link {
+        color: #ffffff;
+        font-size: 18px;
+      }
     }
   }
   .xfk-body {

@@ -1,5 +1,5 @@
 <template>
-  <div class="table-data">
+  <div class="table-data" v-loading="loading">
     <el-form :inline="true" :model="searchForm" label-position="right" class="demo-form-inline" size="small">
       <div class="elform-inline" v-if="dateParamVisible">
         <el-form-item v-for="(item, index) in dataSearchForm" :key="index">
@@ -52,7 +52,7 @@
               />
             </el-form-item>
             <el-form-item :label="item.colBizName" label-width="150px" prop="filterParams" v-if="!item.conditionType">
-              <el-select :popperAppendToBody="false" v-model="item.filterParams" @focus="getOptionSelectData(item, index)" multiple filterable clearable placeholder="请选择">
+              <el-select :teleported="false" v-model="item.filterParams" @focus="getOptionSelectData(item, index)" multiple filterable clearable placeholder="请选择">
                 <el-option :value="pitem" :label="pitem" v-for="(pitem, pindex) in item.optionSelectData" :key="pindex"></el-option>
               </el-select>
             </el-form-item>
@@ -68,7 +68,7 @@
         </el-popover>
       </el-form-item>
       <el-form-item v-if="dimParams.length || indexParams.length">
-        <el-popover placement="bottom-end" :width="400" trigger="click"  popper-class="el_popover_class">
+        <el-popover placement="bottom-end" :width="400" trigger="click" popper-class="el_popover_class">
           <template #reference>
             <el-button type="info" plain>展示列</el-button>
           </template>
@@ -290,24 +290,6 @@ export default defineComponent({
     const totalRow: any = ref([]) // 查询报表数据的totalRow
     const tableRef = ref(null)
     const tableHeight: Number = 500
-    // const tableHeight: Nummber = computed(() => {
-    //   if (document.body.clientHeight && document.documentElement.clientHeight) {
-    //     console.log(
-    //       'document.documentElement.clientHeight: ',
-    //       document.documentElement.clientHeight
-    //     )
-    //     console.log('document.body.clientHeight: ', document.body.clientHeight)
-    //     return
-    //     document.body.clientHeight < document.documentElement.clientHeight
-    //       ? document.body.clientHeight - 250
-    //       : document.documentElement.clientHeight - 250
-    //   } else {
-    //     return
-    //     document.body.clientHeight > document.documentElement.clientHeight
-    //       ? document.body.clientHeight - 250
-    //       : document.documentElement.clientHeight - 250
-    //   }
-    // })
     //或者
     //泛型默认值语法<T = any>
     // type Ref<T = any> = {
@@ -1107,12 +1089,12 @@ export default defineComponent({
 .el-table.el-table-fixed-column--left.is-last-column.el-table__cell {
   left: 0 !important;
 }
-.el_popover_class{
-    max-height: 500px !important;
-    overflow-y: auto !important;
+.el_popover_class {
+  max-height: 500px !important;
+  overflow-y: auto !important;
 }
 // 这个是我不想要滚动条,去掉滚动条的css代码,你们要的话可以不写
 .el_popover_class::-webkit-scrollbar {
-    display: none !important;
+  display: none !important;
 }
 </style>
