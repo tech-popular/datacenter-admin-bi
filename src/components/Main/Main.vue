@@ -312,11 +312,14 @@ export default defineComponent({
     .xfk-side {
       flex-shrink: 0;
       width: 260px;
-      height: 100%;
+      height: 95%;
       overflow: hidden;
       background-color: #222d32;
       .el-scrollbar__wrap {
         overflow-x: hidden;
+        .el-scrollbar__view {
+          padding-bottom: 20px;
+        }
       }
     }
     .xfk-side-col {

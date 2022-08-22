@@ -17,12 +17,12 @@ let axiosInstance: AxiosInstance = axios.create({
   },
 })
 
-let loadingInstance
+// let loadingInstance
 // axios实例拦截请求
 axiosInstance.interceptors.request.use(
   (config: AxiosRequestConfig) => {
-    loadingInstance = ElLoading.service({ fullscreen: true })
-      ; (config.headers as any).token = localStorage.getItem('token')
+    // loadingInstance = ElLoading.service({ fullscreen: false })
+    ; (config.headers as any).token = localStorage.getItem('token')
     return config
   },
   (error: any) => {
@@ -32,7 +32,7 @@ axiosInstance.interceptors.request.use(
 // axios实例拦截响应
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
-    loadingInstance.close()
+    // loadingInstance.close()
     if (dd.env.platform !== 'notInDingTalk') {
       showMessage(response.status)
       return response
@@ -52,7 +52,7 @@ axiosInstance.interceptors.response.use(
   },
   // 请求失败
   (error: any) => {
-    loadingInstance.close()
+    // loadingInstance.close()
     const { response } = error
     if (response) {
       // 请求已发出，但是不在2xx的范围
@@ -127,7 +127,7 @@ export const initDimForeignTableRedis = (): Promise<IResponse> => {
 // 获取下拉框数据
 export const getOptionSelect = (colRefTab: string): Promise<IResponse> => {
   return axiosInstance
-    .get(`bi/olapModel/database/${colRefTab}`)
+    .get(`bi/olapModel/initBdRptDropDown/${colRefTab}`)
     .then((res) => res.data)
 }
 // 退出

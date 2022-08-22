@@ -53,7 +53,7 @@
             </el-form-item>
             <el-form-item :label="item.colBizName" label-width="150px" prop="filterParams" v-if="!item.conditionType">
               <el-select :teleported="false" v-model="item.filterParams" @focus="getOptionSelectData(item, index)" multiple filterable clearable placeholder="请选择">
-                <el-option :value="pitem" :label="pitem" v-for="(pitem, pindex) in item.optionSelectData" :key="pindex"></el-option>
+                <el-option :value="pitem.column1" :label="pitem.column2" v-for="(pitem, pindex) in item.optionSelectData" :key="pindex"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item
@@ -96,8 +96,9 @@
         <el-button type="primary" plain @click="onSearch">查询</el-button>
       </el-form-item>
     </el-form>
-
     <el-table
+      v-loading="tableloading"
+      element-loading-text="数据查询中，请稍等..."
       :data="tableData"
       fit
       border
@@ -114,6 +115,7 @@
       highlight-current-row
       size="small"
       :header-align="center"
+      scrollbar-always-on
     >
       <template v-for="(column, index) in columnDatas" :key="column.modelId">
         <el-table-column
@@ -159,13 +161,13 @@ import {
   getOptionSelect
 } from '@/api/api'
 import { IResponse, IModelSearch } from '@/api/type'
-import { ElMessage, ElLoading } from 'element-plus'
+import { ElMessage, ElLoading, ElMessageBox } from 'element-plus'
 import order0 from '@/static/image/order0.gif'
 import order1 from '@/static/image/order1.gif'
 import order2 from '@/static/image/order2.gif'
 const InputTag = defineAsyncComponent(() => import('./components/InputTag.vue'))
 import dayjs from 'dayjs'
-import { th } from 'element-plus/lib/locale'
+// import { th } from 'element-plus/lib/locale'
 export default defineComponent({
   name: 'TableData',
   components: { InputTag },
@@ -289,7 +291,8 @@ export default defineComponent({
     const totalList: any = ref([]) // 查询报表数据的totalList
     const totalRow: any = ref([]) // 查询报表数据的totalRow
     const tableRef = ref(null)
-    const tableHeight: Number = 500
+    let tableHeight: Number = window.innerHeight - 260
+    const tableloading = ref(false)
     //或者
     //泛型默认值语法<T = any>
     // type Ref<T = any> = {
@@ -297,6 +300,7 @@ export default defineComponent({
     // }
     // const tableRef: Ref<div | null> = ref(null);
     const getTableData = async (params: IModelSearch) => {
+      tableloading.value = true
       const res: IResponse = await getReportSearchData(params)
       columnArr.value = []
       tableData.value = []
@@ -393,6 +397,19 @@ export default defineComponent({
           })
         })
         pagination.total = Number(res.analysisModel.portalPage.totalRows)
+        tableloading.value = false
+      } else {
+        ElMessageBox.confirm(`${res.msg},'请稍后再试'`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+          .then(() => {
+            tableloading.value = false
+          })
+          .catch(() => {
+            tableloading.value = false
+          })
       }
     }
 
@@ -591,17 +608,18 @@ export default defineComponent({
       cellStyle,
       objectSpanMethod,
       shortcuts, // 日期快捷选择
-      tableHeight // 窗口高度调节报表高度
+      tableHeight, // 窗口高度调节报表高度
+      tableloading // 表格的loading
     }
   },
   mounted() {
-    this.loading = ElLoading.service({ fullscreen: true })
+    this.loading = true
+    // this.loading = ElLoading.service({ fullscreen: true })
     // 监听浏览器窗口变化，动态计算表格高度，
     // 250是表格外其它布局占的高度，这个数值根据自己实际情况修改
     window.addEventListener('resize', () => {
       this.tableHeight = window.innerHeight - 250
     })
-    console.log('this.tableHeight: ', this.tableHeight)
     // 获取表头数据
     this.getColumns()
   },
@@ -676,15 +694,15 @@ export default defineComponent({
                   citem[key] = ''
                 }
               }
-              let filterParamsIndex = []
-              item.optionSelectData.forEach((fitem, findex) => {
-                if (item.filterParams.includes(fitem)) {
-                  filterParamsIndex.push(findex)
-                }
-              })
+              // let filterParamsIndex = []
+              // item.optionSelectData.forEach((fitem, findex) => {
+              //   if (item.filterParams.includes(fitem.column1)) {
+              //     filterParamsIndex.push(findex)
+              //   }
+              // })
               optionJSONData[optionJSONDataIndex] = {
                 column: JSON.stringify(citem),
-                value: filterParamsIndex.join(',')
+                value: item.filterParams.join(',')
               }
               optionJSONDataIndex = optionJSONDataIndex + 1
             } else {
@@ -775,7 +793,7 @@ export default defineComponent({
     async getColumns() {
       const res: IResponse = await getAnalysisModelColumn(this.modelId)
       if (res.code === 500) {
-        this.loading.close()
+        this.loading = false
         return ElMessage.error({ message: res.msg })
       }
       this.columnDatas = res.headRows
@@ -881,6 +899,7 @@ export default defineComponent({
       } else {
         this.dateOptionVisible = false
       }
+      this.loading = false
       // 获取表数据
       this.searchData()
     },
@@ -1096,5 +1115,8 @@ export default defineComponent({
 // 这个是我不想要滚动条,去掉滚动条的css代码,你们要的话可以不写
 .el_popover_class::-webkit-scrollbar {
   display: none !important;
+}
+.el-scrollbar__bar.is-horizontal {
+  height: 8px !important;
 }
 </style>
