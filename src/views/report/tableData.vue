@@ -620,7 +620,6 @@ export default defineComponent({
     window.addEventListener('resize', () => {
       this.tableHeight = window.innerHeight - 250
     })
-    console.log('import.meta.env.VITE_APP_BASE_API',import.meta.env.VITE_APP_BASE_API,import.meta.env.VITE_APP_TITLE)
     // 获取表头数据
     this.getColumns()
   },
