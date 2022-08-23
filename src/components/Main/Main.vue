@@ -129,12 +129,12 @@ export default defineComponent({
         let res: any = await PcLogin({
           // userId: 315
         })
-        gradeList.value = res.data.menulist
         PCgradeMenu.value = []
         fnMenuRoutes(res.data.menulist)
         // localStorage.setItem('menulis', res.data.menulist)
         sessionStorage.setItem('menulist', JSON.stringify(PCgradeMenu.value))
         if (res.data.menulist.length) {
+          gradeList.value = res.data.menulist
           gradeName.value =
             route.params.id || route.params.modelId
               ? findFirstMenu(PCgradeMenu.value)

@@ -105,9 +105,14 @@ export const getReportSearchData = (
 export const getTableauInfo = (tableauId: string): Promise<IResponse> => {
   return axiosInstance
     .get(`/bi/tableau/info/${tableauId}`)
+    // .get('bi/tableau/tableauPage')
     .then((res) => res.data)
 }
-
+export const getTableauPage = (): Promise<IResponse> => {
+  return axiosInstance
+    .get('bi/tableau/tableauPage')
+    .then((res) => res.data)
+}
 // 新的-查询老BI报表的列名
 export const getAnalysisModelColumn = (modelId: string): Promise<IResponse> => {
   return axiosInstance

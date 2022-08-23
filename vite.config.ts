@@ -1,10 +1,27 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { createHtmlPlugin } from 'vite-plugin-html'
+// import { injectHtml, minifyHtml } from 'vite-plugin-html'
 import path from 'path'
 const resolve = (dir: string) => path.join(__dirname, dir)
 
 export default defineConfig({
-	plugins: [vue()],
+	plugins: [
+		vue(),
+		createHtmlPlugin({
+			inject: {
+				data: {
+					title: 'BI报表',
+					htmlWebpackPlugin: {
+						options: {
+							isVite: true,
+							shotcut: './src/static/image/favicon.ico',
+						}
+					},
+				},
+			},
+		})
+	],
 	base: "./",
 	resolve: {
 		alias: {
