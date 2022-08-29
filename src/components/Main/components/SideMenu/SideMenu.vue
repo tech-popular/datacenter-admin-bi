@@ -45,13 +45,12 @@ export default defineComponent({
         'changeDataLink',
         menulistData.filter(item => item.id == route.params.id)[0].url
       )
-    } else if (
-      defaultRouteName === 'report' ||
-      defaultRouteName === 'tableau'
-    ) {
+    } else if (defaultRouteName === 'report') {
       defaultActive.value = menulistData
         .filter(item => item.url === route.params.modelId)[0]
         .id.toString()
+    } else if (defaultRouteName === 'tableau') {
+      defaultActive.value = route.params.id.toString()
     }
     store.commit('updateDefaultActive', defaultActive)
     const sidebarFold: any = computed(() => {

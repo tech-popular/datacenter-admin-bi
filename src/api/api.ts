@@ -102,15 +102,15 @@ export const getReportSearchData = (
 }
 
 // tableau查询菜单接口
-export const getTableauInfo = (tableauId: string): Promise<IResponse> => {
+// export const getTableauInfo = (tableauId: string): Promise<IResponse> => {
+//   return axiosInstance
+//     .get(`/bi/tableau/info/${tableauId}`)
+//     // .get('bi/tableau/tableauPage')
+//     .then((res) => res.data)
+// }
+export const getTableauPage = (params: any): Promise<IResponse> => {
   return axiosInstance
-    .get(`/bi/tableau/info/${tableauId}`)
-    // .get('bi/tableau/tableauPage')
-    .then((res) => res.data)
-}
-export const getTableauPage = (): Promise<IResponse> => {
-  return axiosInstance
-    .get('bi/tableau/tableauPage')
+    .get('/bi/tableau/tableauPage', { params })
     .then((res) => res.data)
 }
 // 新的-查询老BI报表的列名

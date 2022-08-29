@@ -39,7 +39,7 @@ const router = createRouter({
           component: () => import('@/views/report/tableData.vue'),
         },
         {
-          path: '/tableau/:modelId',
+          path: '/tableau/:id',
           name: 'tableau',
           component: () => import('@/views/report/tableau.vue'),
         },

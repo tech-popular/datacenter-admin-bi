@@ -59,7 +59,7 @@ export default defineComponent({
           store.commit('changeMenuName', '')
           store.commit('changePrincipal', '')
           router.push({
-            path: `/tableau/${item.url}`
+            path: `/tableau/${item.id}`
           })
           break
         default:

@@ -14,29 +14,22 @@ export default defineComponent({
     const route: RouteLocationNormalized = useRoute()
     const menulistData = JSON.parse(sessionStorage.getItem('menulist'))
     const dataLink = ref('')
-    // const modelId: string = String(route.params.modelId)
-    if (route.params.modelId == 999) {
-      getTableauPage().then(res => {
-        if (res.code === 0) {
-          dataLink.value = String(res.url)
-        } else {
-          return ElMessage(res.msg)
-        }
-      })
-    } else {
-      const tableauId: string = menulistData.filter(
-        item => item.url === route.params.modelId
-      )[0].tableauId
-      if (tableauId === 0) return
-      getTableauInfo(tableauId).then(res => {
-        if (res.code === 0) {
-          dataLink.value = String(res.url)
-        } else {
-          return ElMessage(res.msg)
-        }
-      })
+    const tableauData = menulistData.filter(
+      item => item.id == route.params.id
+    )[0]
+    console.log('tableauData: ', tableauData)
+    // const menuId: string = String(route.params.id)
+    if (tableauData.tableauType === 0 && tableauData.tableauId === 0) return
+    const params = {
+      id: route.params.id
     }
-
+    getTableauPage(params).then(res => {
+      if (res.code === 0) {
+        dataLink.value = String(res.url)
+      } else {
+        return ElMessage(res.msg)
+      }
+    })
     return {
       dataLink
     }

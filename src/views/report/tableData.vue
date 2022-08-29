@@ -469,6 +469,10 @@ export default defineComponent({
           backgroundColor: ' #eeeeee',
           border: ' 1px solid #dddddd'
         }
+      } else {
+        return {
+          border: ' 1px solid #dddddd'
+        }
       }
     }
     const getOptionSelectData = async (params: any, index: number) => {
@@ -625,7 +629,7 @@ export default defineComponent({
   },
   beforeDestroy() {
     // 移除绑定的listenResizeFn事件监听
-    window.removeEventListener("resize",() => {
+    window.removeEventListener('resize', () => {
       this.tableHeight = 300
     })
   },
@@ -1105,9 +1109,19 @@ export default defineComponent({
 .elform-inline {
   display: inline;
 }
-.el-table .cell.el-tooltip {
+// .el-table .cell.el-tooltip {
+//   // width: 100% !important;
+// }
+.el-table__header,
+.el-table__body,
+.el-table__footer {
   width: 100% !important;
+  table-layout: fixed !important;
+  .cell.el-tooltip {
+    width: auto !important;
+  }
 }
+
 .date-form-item {
   margin-right: 15px !important;
 }
