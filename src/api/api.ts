@@ -135,6 +135,15 @@ export const getOptionSelect = (colRefTab: string): Promise<IResponse> => {
     .get(`bi/olapModel/initBdRptDropDown/${colRefTab}`)
     .then((res) => res.data)
 }
+// 下载报表
+export const downLoadRptForExcel = (
+  params: IModelSearch
+): Promise<IResponse> => {
+  return axiosInstance
+    .post('/bi/olapModel/downLoadRptForExcel', { ...params })
+    .then((res) => res.data)
+}
+
 // 退出
 export const logout = (): Promise<IResponse> => {
   return axiosInstance

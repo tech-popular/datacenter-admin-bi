@@ -94,6 +94,7 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" plain @click="onSearch">查询</el-button>
+        <el-button type="primary" plain @click="downLoad">导出</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -158,7 +159,8 @@ import {
   // getReportColumns,
   getReportSearchData,
   getAnalysisModelColumn,
-  getOptionSelect
+  getOptionSelect,
+  downLoadRptForExcel
 } from '@/api/api'
 import { IResponse, IModelSearch } from '@/api/type'
 import { ElMessage, ElLoading, ElMessageBox } from 'element-plus'
@@ -329,14 +331,18 @@ export default defineComponent({
                 if (citem.value === 'TOTAL') {
                   if (checkedDim.value.length && checkedDim.value.length > 7) {
                     fixedIndex = fixedIndex + 1
+                    if (fixedIndex < 6) {
+                      item['fixed'] = 'left'
+                    }
+                  } else {
+                    checkedDim.value.includes(item.colName)
+                      ? (item['fixed'] = 'left')
+                      : (item['fixed'] = false)
                   }
                   totalNumber === 0
                     ? (totalRowListData[item.colName] = 'TOTAL')
                     : (totalRowListData[item.colName] = '')
                   totalNumber = totalNumber + 1
-                  if (fixedIndex < 6) {
-                    item['fixed'] = 'left'
-                  }
                 } else {
                   totalRowListData[item.colName] = citem.value
                 }
@@ -375,14 +381,18 @@ export default defineComponent({
             } else {
               if (checkedDim.value.length && checkedDim.value.length > 7) {
                 fixedIndex = fixedIndex + 1
+                if (fixedIndex < 6) {
+                  item['fixed'] = 'left'
+                }
+              } else {
+                checkedDim.value.includes(item.colName)
+                  ? (item['fixed'] = 'left')
+                  : (item['fixed'] = false)
               }
               totalNumber === 0
                 ? (totalListData[item.colName] = 'TOTAL')
                 : (totalListData[item.colName] = '')
               totalNumber = totalNumber + 1
-              if (fixedIndex < 6) {
-                item['fixed'] = 'left'
-              }
             }
           })
 
@@ -570,6 +580,10 @@ export default defineComponent({
         }
       }
     }
+    const downLoadTableData = async (params: IModelSearch) => {
+      const res: IResponse = await downLoadRptForExcel(params)
+      console.log('res: ', res)
+    }
     return {
       modelId,
       columnDatas,
@@ -613,7 +627,8 @@ export default defineComponent({
       objectSpanMethod,
       shortcuts, // 日期快捷选择
       tableHeight, // 窗口高度调节报表高度
-      tableloading // 表格的loading
+      tableloading, // 表格的loading
+      downLoadTableData // 下载报表数据
     }
   },
   mounted() {
@@ -635,7 +650,7 @@ export default defineComponent({
   },
   methods: {
     // 搜索数据
-    searchData() {
+    getSearchData() {
       let params: IModelSearch = {
         modelID: Number(this.modelId),
         pageNo: this.page,
@@ -798,7 +813,7 @@ export default defineComponent({
         })
         params.dimCodeJSON = dimCodeDataJSON
       }
-      this.getTableData(params)
+      return params
     },
     async getColumns() {
       const res: IResponse = await getAnalysisModelColumn(this.modelId)
@@ -911,19 +926,26 @@ export default defineComponent({
       }
       this.loading = false
       // 获取表数据
-      this.searchData()
+      this.onSearch()
     },
     handleInputString(value) {},
     handleSizeChange(val: number) {
       this.pageSize = val
-      this.searchData()
+      this.onSearch()
     },
     handleCurrentChange(val: number) {
       this.page = val
-      this.searchData()
+      this.onSearch()
     },
+    // 查询
     onSearch() {
-      this.searchData()
+      let params = this.getSearchData()
+      this.getTableData(params)
+    },
+    // 下载报表
+    downLoad() {
+      let params = this.getSearchData()
+      this.downLoadTableData(params)
     },
     onSortChange({ order, prop }) {
       this.sortField[prop] = order
