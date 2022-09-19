@@ -136,17 +136,14 @@ export const getOptionSelect = (colRefTab: string): Promise<IResponse> => {
     .then((res) => res.data)
 }
 // 下载报表
+
+
 export const downLoadRptForExcel = (
   params: IModelSearch
 ): Promise<IResponse> => {
-  return axiosInstance({
-    method: 'post',
-    url: '/bi/olapModel/downLoadRptForExcel',
-    data: params,
-    responseType: 'blob',//服务器返回的数据类型
-  }).then((res) => res.data)
-  // .post('/bi/olapModel/downLoadRptForExcel', { ...params })
-  // .then((res) => res.data)
+  return axiosInstance
+    .post('/bi/olapModel/downLoadRptForExcel', { ...params })
+    .then((res) => res.data)
 }
 
 // 退出

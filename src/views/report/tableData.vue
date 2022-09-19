@@ -583,14 +583,8 @@ export default defineComponent({
     const downLoadTableData = async (params: IModelSearch) => {
       const res: IResponse = await downLoadRptForExcel(params)
       console.log('res: ', res)
-      if (res.code === 0) {
-        let url = window.URL.createObjectURL(res.data)
-        let a = document.createElement('a')
-        a.href = url
-        a.click()
-        window.URL.revokeObjectURL(url)
-      } else {
-        ElMessageBox.confirm(`${res.msg},'请稍后再试'`, '提示', {
+      if (res.code !== 0) {
+         ElMessageBox.confirm(`${res.msg},'请稍后再试'`, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -958,7 +952,7 @@ export default defineComponent({
     // 下载报表
     downLoad() {
       let params = this.getSearchData()
-      ElMessageBox.confirm(`确定进行[退出]操作?`, '提示', {
+      ElMessageBox.confirm(`确定下载报表操作?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
