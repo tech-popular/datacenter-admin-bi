@@ -118,7 +118,7 @@
       :header-align="center"
       scrollbar-always-on
     >
-      <template v-for="(column, index) in columnDatas" :key="column.modelId">
+      <template v-for="(column, index) in columnDatas" :key="column.colCode">
         <el-table-column
           :min-width="flexColumnWidth(column.colBizName)"
           :fixed="column.fixed"
@@ -395,7 +395,6 @@ export default defineComponent({
               totalNumber = totalNumber + 1
             }
           })
-
           tableData.value.push(totalListData)
         }
         // 给表头添加排序功能
