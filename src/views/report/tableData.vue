@@ -118,7 +118,7 @@
       :header-align="center"
       scrollbar-always-on
     >
-      <template v-for="(column, index) in columnDatas" :key="column.colCode">
+      <template v-for="(column, index) in columnDatas" :key="index">
         <el-table-column
           :min-width="flexColumnWidth(column.colBizName)"
           :fixed="column.fixed"
@@ -292,6 +292,7 @@ export default defineComponent({
     const tableData: any = ref([])
     const totalList: any = ref([]) // 查询报表数据的totalList
     const totalRow: any = ref([]) // 查询报表数据的totalRow
+    const dimPlayBackData: any = ref([]) // 查询报表数据回显的指标（为统一字段名）
     const tableRef = ref(null)
     let tableHeight: Number = window.innerHeight - 260
     const tableloading = ref(false)
@@ -306,16 +307,20 @@ export default defineComponent({
       const res: IResponse = await getReportSearchData(params)
       columnArr.value = []
       tableData.value = []
+      columnDatas.value = []
       if (res.code === 0) {
         res.analysisModel.rowList.forEach(citem => {
           const rowListData = {}
-          columnDatas.value = []
+          columnDatas.value = res.analysisModel.headRows
           totalList.value = res.analysisModel.totalList
           totalRow.value = res.analysisModel.totalRow
           citem.fieldValueList.forEach(item => {
             rowListData[item.column.colName] = item.value
-            if (!columnDatas.value.includes(item.column)) {
-              columnDatas.value.push(item.column)
+            if (
+              item.column.colFlag === 'dim' &&
+              !dimPlayBackData.value.includes(item.column.colName)
+            ) {
+              dimPlayBackData.value.push(item.column.colName)
             }
           })
           tableData.value.push(rowListData)
@@ -329,15 +334,11 @@ export default defineComponent({
               if (cindex === index) {
                 item['fixed'] = false
                 if (citem.value === 'TOTAL') {
-                  if (checkedDim.value.length && checkedDim.value.length > 7) {
+                  if (item.colFlag === 'dim') {
                     fixedIndex = fixedIndex + 1
-                    if (fixedIndex < 6) {
+                    if (fixedIndex < 7) {
                       item['fixed'] = 'left'
                     }
-                  } else {
-                    checkedDim.value.includes(item.colName)
-                      ? (item['fixed'] = 'left')
-                      : (item['fixed'] = false)
                   }
                   totalNumber === 0
                     ? (totalRowListData[item.colName] = 'TOTAL')
@@ -374,20 +375,16 @@ export default defineComponent({
           let totalNumber = 0
           columnDatas.value.forEach((item, index) => {
             item['fixed'] = false
-            if (checkedFields.value.indexOf(item.colName) > -1) {
+            if (item.colFlag === 'kpi') {
               totalListIndex = totalListIndex + 1
               totalListData[item.colName] =
                 res.analysisModel.totalList[totalListIndex]
             } else {
-              if (checkedDim.value.length && checkedDim.value.length > 7) {
+              if (item.colFlag === 'dim') {
                 fixedIndex = fixedIndex + 1
                 if (fixedIndex < 6) {
                   item['fixed'] = 'left'
                 }
-              } else {
-                checkedDim.value.includes(item.colName)
-                  ? (item['fixed'] = 'left')
-                  : (item['fixed'] = false)
               }
               totalNumber === 0
                 ? (totalListData[item.colName] = 'TOTAL')
@@ -424,7 +421,7 @@ export default defineComponent({
 
     const objectSpanMethod = ({ row, column, rowIndex, columnIndex }) => {
       if (
-        checkedDim.value.includes(column.property) &&
+        dimPlayBackData.value.includes(column.property) &&
         !columnArr.value.includes(columnIndex)
       ) {
         columnArr.value.push(columnIndex)
@@ -456,6 +453,7 @@ export default defineComponent({
     }
     //设置指定行、列、具体单元格颜色
     const cellStyle = ({ row, column, rowIndex, columnIndex }) => {
+      console.log('columnArr.value: ', columnArr.value)
       if (
         rowIndex === tableData.value.length - 1 &&
         (totalList.value.length > 1 || totalRow.value)
@@ -583,7 +581,7 @@ export default defineComponent({
       const res: IResponse = await downLoadRptForExcel(params)
       console.log('res: ', res)
       if (res.code !== 0) {
-         ElMessageBox.confirm(`${res.msg},'请稍后再试'`, '提示', {
+        ElMessageBox.confirm(`${res.msg},'请稍后再试'`, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -628,6 +626,7 @@ export default defineComponent({
       checkedDim,
       totalList,
       totalRow,
+      dimPlayBackData,
       tableRef,
       cellStyle,
       objectSpanMethod,
