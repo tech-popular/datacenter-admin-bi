@@ -36,9 +36,9 @@
           </el-row>
           <div v-for="(item,index) in optionParams" :key="index">
             <el-form-item :label="item.colBizName" label-width="150px" prop="filterParams" v-if="conditionTextType.includes(item.conditionType)">
-              <el-input v-model="item.filterParams" @input="handleInputString" placeholder="请输入过滤条件"></el-input>
+              <el-input v-model="item.filterParams" @input="handleInputString" clearable placeholder="请输入过滤条件"></el-input>
             </el-form-item>
-            <el-form-item :label="item.colBizName" label-width="150px" prop="filterParams" v-if="item.conditionType === 12">
+            <!-- <el-form-item :label="item.colBizName" label-width="150px" prop="filterParams" v-if="item.conditionType === 12">
               <InputTag
                 v-model="item.filterParams"
                 @change="inputTagChange"
@@ -50,7 +50,7 @@
                 class="itemIput inputTag"
                 placeholder="可用回车输入多条"
               />
-            </el-form-item>
+            </el-form-item>-->
             <el-form-item :label="item.colBizName" label-width="150px" prop="filterParams" v-if="!item.conditionType">
               <el-select :teleported="false" v-model="item.filterParams" @focus="getOptionSelectData(item, index)" multiple filterable clearable placeholder="请选择">
                 <el-option :value="pitem.column1" :label="pitem.column2" v-for="(pitem, pindex) in item.optionSelectData" :key="pindex"></el-option>
@@ -152,7 +152,8 @@ import {
   toRefs,
   nextTick,
   defineAsyncComponent,
-  computed
+  computed,
+  onMounted
 } from 'vue'
 import { useRoute, RouteLocationNormalized } from 'vue-router'
 import {
@@ -273,7 +274,7 @@ export default defineComponent({
         }
       }
     ]
-    const conditionTextType: any = ref([3, 4, 5, 6, 9, 10, 13]) // 字符输入类型
+    const conditionTextType: any = ref([3, 4, 5, 6, 9, 10, 12, 13]) // 字符输入类型
     const conditiondataTextType = ref([1, 7, 8, 11, 16, 17, 18, 20, 22, 23, 26]) // 两个日期类型
     const conditiondataTextSingleType: any = ref([27, 19, 24, 14, 15]) // 一个日期类型
     const conditiondateOptionType: any = ref([2, 21]) // 年月下拉选日期类型
@@ -309,9 +310,9 @@ export default defineComponent({
       tableData.value = []
       columnDatas.value = []
       if (res.code === 0) {
+        columnDatas.value = res.analysisModel.headRows
         res.analysisModel.rowList.forEach(citem => {
           const rowListData = {}
-          columnDatas.value = res.analysisModel.headRows
           totalList.value = res.analysisModel.totalList
           totalRow.value = res.analysisModel.totalRow
           citem.fieldValueList.forEach(item => {
@@ -453,7 +454,6 @@ export default defineComponent({
     }
     //设置指定行、列、具体单元格颜色
     const cellStyle = ({ row, column, rowIndex, columnIndex }) => {
-      console.log('columnArr.value: ', columnArr.value)
       if (
         rowIndex === tableData.value.length - 1 &&
         (totalList.value.length > 1 || totalRow.value)
@@ -588,6 +588,12 @@ export default defineComponent({
         })
       }
     }
+    onMounted(() => {
+      document.oncopy = function() {
+        event.returnValue = false
+      }
+      //另一种直接在body上 <body oncopy = "return false" ></body>
+    })
     return {
       modelId,
       columnDatas,
@@ -738,11 +744,23 @@ export default defineComponent({
             } else {
               this.textConditionHTMLList.filter(element => {
                 if (Object.keys(element)[0] == item.colBizName) {
+                  console.log(
+                    ' item.filterParams.i ',
+                    item.filterParams.indexOf('，') !== -1
+                  )
+                  console.log(
+                    'item.filterParams.r ',
+                    item.filterParams.replace('，', ',')
+                  )
+                  console.log(
+                    ' item.filterParams.iwew ',
+                    item.filterParams.replace('，', ',').indexOf('，') !== -1
+                  )
                   textJSONData[textJSONDataIndex] = {
                     column: element[Object.keys(element)[0]],
                     value:
-                      item.conditionType === 12
-                        ? item.filterParams.join(',')
+                      item.filterParams.indexOf('，') !== -1
+                        ? item.filterParams.replace('，', ',')
                         : item.filterParams,
                     type: item.type
                   }
