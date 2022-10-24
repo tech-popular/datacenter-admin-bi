@@ -82,7 +82,7 @@ export const DdLogin = (params: ILogin): Promise<IResponse> => {
 }
 
 export const SysLogin = (params: ZLogin): Promise<IResponse> => {
-  return axiosInstance.post('/bi/sys/login', { ...params }).then((res) => res)
+  return axiosInstance.post('/sys/login', { ...params }).then((res) => res)
 }
 
 // 报表-查询列名接口
