@@ -1,7 +1,8 @@
-import { State } from './index';
+// import { State } from './index';
 import { InjectionKey } from 'vue'
 import { createStore, useStore as baseUseStore, Store } from 'vuex'
 import type { App } from 'vue'
+import {getUrlParam} from '@/utils'
 
 // InjectionKey 将store安装到Vue应用程序时提供类型,将类型传递InjectionKey给useStore方法
 // 手动声明 state 类型
@@ -17,6 +18,17 @@ export interface State {
 
 // 定义注入类型
 const key: InjectionKey<Store<State>> = Symbol()
+const initToken = ()=> {
+  let token = ''
+  if (localStorage.getItem('token')) {
+    token = localStorage.getItem('token') || ''
+  }
+  if (getUrlParam('token')) {
+    token = getUrlParam('token')
+  }
+  localStorage.setItem('token', token)
+  return token
+}
 
 const store = createStore<State>({
   state() {
@@ -25,7 +37,7 @@ const store = createStore<State>({
       menuType: 0,
       sidebarFold: false,
       defaultActive: '',
-      token: localStorage.getItem('token') ? localStorage.getItem('token') : '',
+      token: initToken(),
       menuName: '',
       principal: ''
     }

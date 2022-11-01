@@ -27,12 +27,11 @@ export default defineConfig({
 		alias: {
 			'@': resolve('/src'),
 			comps: resolve('src/components'),
-			apis: resolve('src/apis'),
+			apis: resolve('src/api'),
 			views: resolve('src/views'),
 			utils: resolve('src/utils'),
 			routes: resolve('src/routes'),
 			styles: resolve('src/styles')
-			// types: resolve('src/types')
 		}
 	},
 	server: {
@@ -47,10 +46,10 @@ export default defineConfig({
 		//自定义代理规则
 		proxy: {
 			// 选项写法
-			'/api': {
-				target: 'http://jsonplaceholder.typicode.com',
+			'/canary-admin/': {
+				target: 'http://192.168.208.14:8000/canary-admin/',
 				changeOrigin: true,
-				rewrite: path => path.replace(/^\/api/, '')
+				rewrite: path => path.replace(/^\/canary-admin/, '')
 			}
 		}
 	}
