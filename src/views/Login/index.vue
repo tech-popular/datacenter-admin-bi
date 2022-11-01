@@ -13,7 +13,10 @@
 <script lang="ts">
 import { defineComponent, toRefs, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { SysLogin, initDimForeignTableRedis } from '@/api/api'
+import {
+   SysLogin, 
+//   initDimForeignTableRedis
+ } from '@/api/api'
 import { ElMessage } from 'element-plus'
 import * as dd from 'dingtalk-jsapi'
 import { useStore } from '@/store/index'
@@ -87,9 +90,9 @@ export default defineComponent({
         })
       }
     }
-    let initTableRedis = async () => {
-      const res: any = await initDimForeignTableRedis()
-      console.log('res:3333 ', res)
+    // 初始化登陆凭证token
+    let initUserTokenState = ()=>{
+      localStorage.removeItem('token')
     }
     if (dd.env.platform !== 'notInDingTalk') {
       //钉钉内打开
@@ -98,6 +101,7 @@ export default defineComponent({
       })
     }
     onMounted(() => {
+      initUserTokenState()
       getUUID()
       getTime()
     })
