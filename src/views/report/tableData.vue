@@ -93,7 +93,7 @@
         </el-popover>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" plain @click="onSearch">查询</el-button>
+        <el-button type="primary" plain :disabled="tableloading" @click="onSearch">查询</el-button>
         <el-button type="primary" plain @click="downLoad">导出</el-button>
       </el-form-item>
     </el-form>
