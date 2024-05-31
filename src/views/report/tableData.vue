@@ -93,7 +93,7 @@
         </el-popover>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" plain :disabled="searchValid" @click="onSearch">查询</el-button>
+        <el-button type="primary" plain @click="onSearch">查询</el-button>
         <el-button type="primary" plain @click="downLoad">导出</el-button>
       </el-form-item>
     </el-form>
@@ -195,8 +195,7 @@ export default defineComponent({
       // 维度
       checkDimAll: false, // 全选状态
       isDimIndeterminate: false, // 全选状态
-      tabNum: 1,
-      searchValid: false
+      tabNum: 1
     }
   },
   setup() {
@@ -306,7 +305,6 @@ export default defineComponent({
     // const tableRef: Ref<div | null> = ref(null);
     const getTableData = async (params: IModelSearch) => {
       tableloading.value = true
-      this.searchValid = true
       const res: IResponse = await getReportSearchData(params)
       columnArr.value = []
       tableData.value = []
@@ -407,7 +405,6 @@ export default defineComponent({
         })
         pagination.total = Number(res.analysisModel.portalPage.totalRows)
         tableloading.value = false
-        this.searchValid = false
       } else {
         ElMessageBox.confirm(`${res.msg},'请稍后再试'`, '提示', {
           confirmButtonText: '确定',
@@ -416,11 +413,9 @@ export default defineComponent({
         })
           .then(() => {
             tableloading.value = false
-            this.searchValid = false
           })
           .catch(() => {
             tableloading.value = false
-            this.searchValid = false
           })
       }
     }
