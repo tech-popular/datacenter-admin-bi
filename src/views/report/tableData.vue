@@ -25,9 +25,9 @@
         </el-form-item>
       </el-form-item>
       <el-form-item v-if="optionParams.length">
-        <el-popover placement="bottom-start" :width="500" trigger="click">
+        <el-popover placement="bottom-start" :width="500" trigger="manual">
           <template #reference>
-            <el-button type="info" plain>过滤条件</el-button>
+            <el-button type="info" plain @click="showPopover">过滤条件</el-button>
           </template>
           <el-row justify="start">
             <el-col :span="12">
@@ -65,6 +65,8 @@
               <el-date-picker class="option-form-date" v-model="item.filterParams" :clearable="false" type="date" placeholder="选择日期"></el-date-picker>
             </el-form-item>
           </div>
+          <!-- 添加关闭按钮 -->
+          <el-button type="text" @click="hidePopover">关闭</el-button>
         </el-popover>
       </el-form-item>
       <el-form-item v-if="dimParams.length || indexParams.length">
@@ -660,6 +662,12 @@ export default defineComponent({
     })
   },
   methods: {
+    showPopover() {
+      this.$refs.filterPopover.show();
+    },
+    hidePopover() {
+      this.$refs.filterPopover.hide();
+    },
     // 搜索数据
     getSearchData() {
       let params: IModelSearch = {
