@@ -25,7 +25,7 @@
         </el-form-item>
       </el-form-item>
       <el-form-item v-if="optionParams.length">
-        <el-popover placement="bottom-start" :width="500" trigger="manual">
+        <el-popover v-if="isPopoverVisible" placement="bottom-start" :width="500" trigger="manual">
           <template #reference>
             <el-button type="info" plain @click="showPopover">过滤条件</el-button>
           </template>
@@ -197,7 +197,8 @@ export default defineComponent({
       // 维度
       checkDimAll: false, // 全选状态
       isDimIndeterminate: false, // 全选状态
-      tabNum: 1
+      tabNum: 1,
+      isPopoverVisible: false // 控制 popover 显示的布尔值
     }
   },
   setup() {
@@ -663,10 +664,10 @@ export default defineComponent({
   },
   methods: {
     showPopover() {
-      this.$refs.filterPopover.show();
+      this.isPopoverVisible = !this.isPopoverVisible;
     },
     hidePopover() {
-      this.$refs.filterPopover.hide();
+      this.isPopoverVisible = false;
     },
     // 搜索数据
     getSearchData() {
