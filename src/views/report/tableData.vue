@@ -25,9 +25,9 @@
         </el-form-item>
       </el-form-item>
       <el-form-item v-if="optionParams.length">
-        <el-popover v-model="isPopoverVisible" placement="bottom-start" :width="500" trigger="manual">
+        <el-popover v-model="visible" placement="bottom-start" :width="500" trigger="manual">
           <template #reference>
-            <el-button type="info" plain @click="isPopoverVisible = !isPopoverVisible">过滤条件</el-button>
+            <el-button type="info" plain @click="visible = !visible">过滤条件</el-button>
           </template>
           <el-row justify="start">
             <el-col :span="12">
@@ -196,7 +196,7 @@ export default defineComponent({
       checkDimAll: false, // 全选状态
       isDimIndeterminate: false, // 全选状态
       tabNum: 1,
-      isPopoverVisible: false // 控制 popover 显示的布尔值
+      visible: false // 控制 popover 显示的布尔值
     }
   },
   setup() {
@@ -661,12 +661,6 @@ export default defineComponent({
     })
   },
   methods: {
-    showPopover() {
-      this.isPopoverVisible = !this.isPopoverVisible;
-    },
-    hidePopover() {
-      this.isPopoverVisible = false;
-    },
     // 搜索数据
     getSearchData() {
       let params: IModelSearch = {
