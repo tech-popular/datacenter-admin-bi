@@ -26,7 +26,9 @@
       </el-form-item>
       <el-form-item v-if="optionParams.length">
         <el-popover v-model="isPopoverVisible" placement="bottom-start" :width="500" trigger="manual">
-          <el-button slot="reference" type="info" plain @click="isPopoverVisible = !isPopoverVisible">过滤条件</el-button>
+          <template #reference>
+            <el-button type="info" plain @click="isPopoverVisible = !isPopoverVisible">过滤条件</el-button>
+          </template>
           <el-row justify="start">
             <el-col :span="12">
               <span>请选择过滤条件</span>
@@ -659,6 +661,12 @@ export default defineComponent({
     })
   },
   methods: {
+    showPopover() {
+      this.isPopoverVisible = !this.isPopoverVisible;
+    },
+    hidePopover() {
+      this.isPopoverVisible = false;
+    },
     // 搜索数据
     getSearchData() {
       let params: IModelSearch = {
