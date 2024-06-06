@@ -64,8 +64,8 @@
             >
               <el-date-picker class="option-form-date" v-model="item.filterParams" :clearable="false" type="date" placeholder="选择日期"></el-date-picker>
             </el-form-item>
-            <el-button type="info" plain @click="visible = false">确认</el-button>
           </div>
+          <el-button type="info" style="float: right;" plain @click="visible = false">确认</el-button>
         </el-popover>
       </el-form-item>
       <el-form-item v-if="dimParams.length || indexParams.length">
