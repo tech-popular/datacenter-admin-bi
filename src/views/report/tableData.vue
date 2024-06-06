@@ -25,7 +25,7 @@
         </el-form-item>
       </el-form-item>
       <el-form-item v-if="optionParams.length">
-        <el-popover v-model="visible" placement="bottom-start" :width="500" trigger="contextmenu">
+        <el-popover :visible="visible" placement="bottom-start" :width="500" >
           <template #reference>
             <el-button type="info" plain @click="visible = !visible">过滤条件</el-button>
           </template>
