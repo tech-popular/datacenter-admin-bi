@@ -125,8 +125,9 @@ export default defineComponent({
         menuData.value = res.data.menulist
         username.value = res.data.username
       } else {
+        console.log('当前hostName:', window.location.hostname)
         let res: any = await PcLogin({
-          // userId: 315
+          hostName: window.location.hostname
         })
         PCgradeMenu.value = []
         fnMenuRoutes(res.data.menulist)

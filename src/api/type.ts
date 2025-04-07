@@ -16,6 +16,7 @@ export interface IResponse {
 export interface ILogin {
   code?: string
   userId?: string
+  hostName?: string
 }
 
 /**中台登录 */
