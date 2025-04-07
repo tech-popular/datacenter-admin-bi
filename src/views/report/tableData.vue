@@ -675,7 +675,7 @@ export default defineComponent({
         optionJSON: {}, // 过滤条件为下拉选
         orderJSON: {}, // 排序入参
         compareTextJson: {},
-        hostUrl: {}
+        hostName: {}
       }
       // 统计日期
       if (this.dataSearchForm.length) {
@@ -839,7 +839,8 @@ export default defineComponent({
         })
         params.dimCodeJSON = dimCodeDataJSON
       }
-      params.hostUrl = window.location.host
+      console.log('hostName: ', window.location.hostname)
+      params.hostName = window.location.hostname
       return params
     },
     async getColumns() {
