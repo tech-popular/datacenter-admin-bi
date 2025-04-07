@@ -674,7 +674,8 @@ export default defineComponent({
         // dateOptionJSON: {}, // 下拉日期
         optionJSON: {}, // 过滤条件为下拉选
         orderJSON: {}, // 排序入参
-        compareTextJson: {}
+        compareTextJson: {},
+        hostUrl: {}
       }
       // 统计日期
       if (this.dataSearchForm.length) {
