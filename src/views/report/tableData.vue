@@ -838,6 +838,7 @@ export default defineComponent({
         })
         params.dimCodeJSON = dimCodeDataJSON
       }
+      params.hostUrl = window.location.host
       return params
     },
     async getColumns() {
