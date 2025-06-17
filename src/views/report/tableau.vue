@@ -20,7 +20,7 @@ export default defineComponent({
     console.log('tableauData: ', tableauData)
     // const menuId: string = String(route.params.id)
     if (tableauData.tableauType === 0 && tableauData.tableauId === 0) return
-    const currentHost = window.location.origin
+    const currentHost =  window.location.hostname
     console.log('currentHost: ', currentHost)
     const params = {
       id: route.params.id,
